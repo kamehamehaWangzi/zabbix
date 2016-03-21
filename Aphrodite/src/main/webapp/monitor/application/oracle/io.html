@@ -1,0 +1,64 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="OraIOController">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Logical I/O</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeLogic" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraLogicalIOChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Physical I/O</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangePhysical" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraPhysicalIOChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function OraIOController($scope, $http, $stateParams) {
+	
+	var logicalParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraLogicalIOChart',
+			title: 'Logical I/O',
+			key: ['lio_consistent_read', 'lio_block_changes', 'lio_current_read'],
+			graphType: 'area',
+			formatter: 'KBlocks/s',
+			scaler: 1024,
+			dateRangeId: 'dateRangeLogic'
+	};
+	
+	var physicalParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraPhysicalIOChart',
+			title: 'Physical I/O',
+			key: ['phio_redo_writes', 'phio_datafile_reads', 'phio_datafile_writes'],
+			graphType: 'area',
+			formatter: 'IO/s',
+			dateRangeId: 'dateRangePhysical'
+	};
+	
+	renderGraph(logicalParams);
+	renderGraph(physicalParams);
+	
+}
+</script>

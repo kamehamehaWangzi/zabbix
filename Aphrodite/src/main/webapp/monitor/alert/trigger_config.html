@@ -1,0 +1,236 @@
+<div data-ng-controller="TriggerConfigController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-bell"></i> 告警配置</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>告警</a>
+				</li>
+				<li class="active">
+					<strong>告警配置</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="ibox-content">		
+		<span style="margin-left:1550px;">
+			<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addTriggerModal">添加触发器</button>
+		</span>
+		<!-- <span  style="margin-left:20px;">
+			<button class="btn btn-sm btn-primary" type="button" data-ng-click="delTrigger()">删除触发器</button>
+		</span> -->
+		<form class="form-horizontal" role="form">
+			<div class="form-group">			
+				<div class="form-group">
+					<label for="name" class="col-sm-2 control-label">名称</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="name" data-ng-model="action.name" placeholder="name"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="title" class="col-sm-2 control-label">标题</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="title" data-ng-model="action.title" placeholder="{TRIGGER.NAME}: {TRIGGER.STATUS}"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="content" class="col-sm-2 control-label">内容</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="content" data-ng-model="action.content" placeholder="{TRIGGER.NAME}: {TRIGGER.STATUS}\r\nLast value: {ITEM.LASTVALUE}\r\n\r\n{TRIGGER.URL}"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="evaltype" class="col-sm-2 control-label">计算方式</label>
+					<div class="col-sm-10">
+						<select class="form-control" name="evaltype" id="evaltype" data-ng-model="action.evaltype">
+							<option value="0">与/或</option>
+							<option value="1">与</option>
+							<option value="2">或</option>							
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="value" class="col-sm-2 control-label">触发条件</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="value" data-ng-model="action.value" placeholder="value"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="time" class="col-sm-2 control-label">步骤持续时间</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="time" data-ng-model="action.time" placeholder="最少60s，默认为0"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="stepfrom" class="col-sm-2 control-label">起始步骤</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="stepfrom" data-ng-model="action.stepfrom" placeholder="*"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="stepto" class="col-sm-2 control-label">终止步骤</label>
+					<div class="col-sm-10">
+						<input type="text" class="form-control" id="stepto" data-ng-model="action.stepto" placeholder="*"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="operationtype" class="col-sm-2 control-label">操作类型</label>
+					<div class="col-sm-10">
+						<select class="form-control" name="operationtype" id="operationtype" data-ng-model="action.operationtype">
+							<option value="0">send message</option>
+							<option value="1">remote command</option>																				
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="user" class="col-sm-2 control-label">送到用户</label>
+					<div class="col-sm-10">
+						<select class="form-control" name="user" id="user" data-ng-model="action.user">
+							<option value="1">Admin</option>																				
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="mediatypeid" class="col-sm-2 control-label">媒介类型</label>
+					<div class="col-sm-10">
+						<select class="form-control" name="mediatypeid" id="mediatypeid" data-ng-model="action.mediatypeid">
+							<option value="1">Email</option>
+							<option value="2">Jabber</option>	
+							<option value="3">SMS</option>
+							<option value="5">Email_py</option>																			
+						</select>
+					</div>
+				</div>
+		    </div>
+		</form>	
+		<div class="modal-footer">				
+			<button type="button" class="btn btn-sm btn-primary" data-ng-click="addAction()">提交</button>
+		</div>	
+	</div>
+	<div class="modal fade" id="addTriggerModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">		
+			<div class="modal-content animated bounceInRight">				
+				<div class="modal-body">							    
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="priority" class="col-sm-2 control-label">请选择模板：</label>
+							<div class="col-sm-10">
+								<select style="width: 300px; height:34px;" name="template" id="template" ng-model="templates" ng-change="change()"">
+									<option ng-repeat="template in templates" value="{{template.templateid}}">{{template.name}}</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="priority" class="col-sm-2 control-label">请选择监控项：</label>
+							<div class="col-sm-10">
+								<select style="width: 300px; height:34px;" ng-model="item" ng-options="item for item in items" ng-change="change1()">
+					            </select>
+							</div>
+						</div>	
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="name" data-ng-model="trigger.name" placeholder="name"/>
+							</div>
+						</div>				
+						<div class="form-group">
+							<label for="ip" class="col-sm-2 control-label">表达式</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="expression" data-ng-model="trigger.expression" placeholder="{<server>:<key>.<function><parameter>}<operator><constant>"/>
+							</div>
+						</div>												
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">描述</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="description" data-ng-model="trigger.description" placeholder="description"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">URL</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="url" data-ng-model="trigger.url" placeholder="url"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="priority" class="col-sm-2 control-label">等级</label>
+							<div class="col-sm-10">
+								<select class="form-control" name="priority" id="priority" data-ng-model="trigger.priority">
+									<option value="0">未分类</option>
+									<option value="1">资讯</option>
+									<option value="2">警告</option>
+									<option value="3">一般严重</option>
+									<option value="4">严重</option>
+									<option value="5">灾难</option>
+								</select>
+							</div>
+						</div>					
+					</form>
+				</div>
+				<div class="modal-footer">	
+				    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>				
+					<button type="button" class="btn btn-sm btn-primary" data-ng-click="addTrigger()">提交</button>
+				</div>
+			</div>
+	    </div>
+	</div>				
+</div>
+<script type="text/javascript">
+function TriggerConfigController($scope, $http) {
+	$http.get('r/alert/template').success(function(data) {
+        $scope.templates = data;		
+		
+		$scope.change =function(){
+			var templateid = $("#template option:selected").val();
+			getItem(templateid);
+		} 
+		function getItem(templateid){
+			$http({
+			method: 'get',
+			url: 'r/alert/item',
+			params: {'name':templateid}
+			}).success(function(data){
+				$scope.items = data;
+				$scope.item =$scope.items[0];				
+			}).error(function(data){
+				console.log(data);
+			});
+		}
+    });
+    $scope.change1 =function(){
+        document.getElementById("expression").value="{"+$("#template option:selected").text()+":"+$scope.item+".";
+        
+    }
+    $scope.addTrigger =function(){
+    	$http({
+    		method: 'POST',
+    		url   : 'r/alert/add',
+    		params: {'trigger':$scope.trigger}
+    	}).success(function(data){
+    		if(data != null){
+    			alert("添加触发器成功！触发器ID："+data);
+    			$('#addTriggerModal').modal('hide');
+    		}
+    	}).error(function(data){
+			console.log(data);
+		});
+    }
+    $scope.addAction =function(){
+       $http({
+    		method: 'POST',
+    		url   : 'r/alert/create',
+    		params: {'action':$scope.action}
+    	}).success(function(data){
+    		if(data != null){
+    			alert("添加action成功！actionid："+data);
+    		}
+    	}).error(function(data){
+			console.log(data);
+		}); 
+    }
+    
+}
+</script>
+

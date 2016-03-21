@@ -1,0 +1,124 @@
+<div class="tab-pane fade in active" id="info">
+	<div class="panel panel-default" data-ng-controller="NetworkInfoController">
+		<div class="panel-heading">
+			<h3 class="panel-title"><span class="glyphicon glyphicon-list"></span> {{info.name}}</h3>
+		</div>
+		<div class="panel-body">
+			<table class="table table-striped">
+				<tbody>
+					<tr>
+						<th>设备名</th>
+						<td>{{info.name}}</td>
+						<th>IP</th>
+						<td>{{info.ip}}</td>
+					</tr>
+					<tr>
+						<th>设备型号</th>
+						<td>{{info.model}}</td>
+						<th>设备类型</th>
+						<td>
+							<span data-ng-show="info.type == 'firewall'">防火墙</span>
+							<span data-ng-show="info.type == 'route'">路由器</span>
+							<span data-ng-show="info.type == 'switch'">交换机</span>
+						</td>
+					</tr>
+					<tr>
+						<th>操作系统</th>
+						<td>{{info.osType}}</td>
+						<th>系统版本</th>
+						<td>{{info.osVersion}}</td>
+					</tr>
+					<tr>
+						<th>厂家</th>
+						<td>{{info.vendor}}</td>
+						<th>序列号</th>
+						<td>{{info.sn}}</td>
+					</tr>
+					<tr>
+						<th>风扇状态</th>
+						<td>
+							<span data-ng-show="model.fanStatus == 0">良好</span>
+							<span data-ng-show="model.fanStatus == 1">不在位</span>
+							<span data-ng-show="model.fanStatus == 2">警告</span>
+							<span data-ng-show="model.fanStatus == 3">失败</span>
+							<span data-ng-show="model.fanStatus == 4">失败或者未供电</span>
+						</td>
+						<th>HA状态</th>
+						<td>
+							<span data-ng-show="model.haStatus == 0">无效</span>
+							<span data-ng-show="model.haStatus == 1">启动</span>
+							<span data-ng-show="model.haStatus == 2">hello</span>
+							<span data-ng-show="model.haStatus == 3">备份设备</span>
+							<span data-ng-show="model.haStatus == 4">主设备</span>
+							<span data-ng-show="model.haStatus == 5">从设备</span>
+							<span data-ng-show="model.haStatus == 15">失败</span>
+						</td>
+					</tr>
+					<tr>
+						<th>电源PS0</th>
+						<td>
+							<span data-ng-show="model.power0Status == 0">良好</span>
+							<span data-ng-show="model.power0Status == 1">不在位</span>
+							<span data-ng-show="model.power0Status == 2">警告</span>
+							<span data-ng-show="model.power0Status == 3">失败</span>
+							<span data-ng-show="model.power0Status == 4">失败或者未供电</span>
+							<span data-ng-show="model.power0Status == 5">系统不支持获取电源状态</span>
+						</td>
+						<th>电源PS1</th>
+						<td>
+							<span data-ng-show="model.power1Status == 0">良好</span>
+							<span data-ng-show="model.power1Status == 1">不在位</span>
+							<span data-ng-show="model.power1Status == 2">警告</span>
+							<span data-ng-show="model.power1Status == 3">失败</span>
+							<span data-ng-show="model.power1Status == 4">失败或者未供电</span>
+							<span data-ng-show="model.power1Status == 5">系统不支持获取电源状态</span>
+						</td>
+					</tr>
+					<tr>
+						<th>支持最大会话数</th>
+						<td>{{model.sessionTotal}}</td>
+						<th>当前在线用户数</th>
+						<td>{{model.onlineUser}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function NetworkInfoController($scope, $http, $stateParams) {
+	
+	$scope.model = {
+			fanStatus: '',
+			haStatus: '',
+			power0Status: '',
+			power1Status: '',
+			sessionTotal: '',
+			onlineUser: ''
+	};
+	
+	$http.get('r/network/' + $stateParams.id + '/info').success(function(data) {
+		$scope.info = data;
+    });
+	
+	$http({
+		method: 'GET',
+		url: 'r/graph/value',
+		params: {
+			'id': $stateParams.hostId, 
+			'key': JSON.stringify(['hillstone.fan.status', 'hillstone.ha.status', 'hillstone.power.ps0', 'hillstone.power.ps1', 'hillstone.session.total', 'hillstone.online.user'])}
+	}).success(function(data){
+		console.log(data);
+		if(data) {
+			$scope.model.fanStatus = data[0].lastvalue;
+			$scope.model.haStatus = data[1].lastvalue;
+			$scope.model.sessionTotal = data[2].lastvalue;
+			$scope.model.onlineUser = data[3].lastvalue;
+		}
+	}).error(function(data){
+		console.log(data);
+	});
+	
+}
+</script>

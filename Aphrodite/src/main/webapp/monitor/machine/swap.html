@@ -1,0 +1,36 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Swap</h3>
+			</div>
+			<div class="input-prepend input-group">
+				<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+				<input type="text" style="width: 300px;" id="dateRangeSwap" class="form-control" readonly="readonly"/>
+			</div>
+			<div class="panel-body" data-ng-controller="MachineSwapController">
+				<div id="swapChart" style="height:400px;"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function MachineSwapController($scope, $http, $stateParams) {
+	
+	var params = {
+			id: $stateParams.hostId,
+			graphDiv: 'swapChart',
+			title: 'Swap',
+			key: ['system.swap.size[,free]', 'system.swap.size[,total]'],
+			graphType: 'area',
+			formatter: 'G',
+			scaler: 1024*1024*1024,
+			defaultDateRange: 3,
+			dateRangeId: 'dateRangeSwap'
+	};
+	
+	renderGraph(params);
+	
+}
+</script>

@@ -1,0 +1,61 @@
+<div class="tab-pane fade in active" id="octets" data-ng-controller="NetworkDiskController">		
+	 <div class="tab-pane animated fadeIn active">
+		<div class="panel-body">
+			<div class="row">				
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>磁盘域ID</th>
+							<th>磁盘域名称</th>
+							<th>磁盘域健康状态</th>											
+						</tr>
+					</thead>
+					<tbody>
+						<tr data-ng-repeat="disk in disks">						
+							<td>{{disk.d_domainId}}</td>
+							<td>{{disk.d_domainName}}</td>	
+							<td>
+						    <span data-ng-show="disk.d_domainHealthStat == 0">未知</span>
+							<span data-ng-show="disk.d_domainHealthStat == 1">正常</span>
+							<span data-ng-show="disk.d_domainHealthStat == 2">故障</span>
+							<span data-ng-show="disk.d_domainHealthStat == 3">即将故障</span>
+							<span data-ng-show="disk.d_domainHealthStat >= 4">部分损坏</span>
+							<span data-ng-show="disk.d_domainHealthStat == 5">降级</span>
+							<span data-ng-show="disk.d_domainHealthStat == 6">有坏块</span>
+							<span data-ng-show="disk.d_domainHealthStat == 7">有误码</span>
+							<span data-ng-show="disk.d_domainHealthStat == 8">一致</span>
+							<span data-ng-show="disk.d_domainHealthStat >= 9">不一致</span>
+							<span data-ng-show="disk.d_domainHealthStat == 10">繁忙</span>
+							<span data-ng-show="disk.d_domainHealthStat == 11">无输入</span>
+							<span data-ng-show="disk.d_domainHealthStat == 12">电量不足</span>
+							<span data-ng-show="disk.d_domainHealthStat == 13">单链路故障</span>
+							<span data-ng-show="disk.d_domainHealthStat >= 14">失效</span>
+							<span data-ng-show="disk.d_domainHealthStat >= 15">写保护</span>
+						    </td>												
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>		
+</div>
+<script type="text/javascript"> 
+  function NetworkDiskController($scope, $http, $stateParams) {
+        var params="stor.domain.id"+",stor.domain.name"+",stor.domain.health.status";
+        var hostid =$stateParams.hostId;	           
+		getValue(params,hostid);        		
+		function getValue(params,hostid){			
+			$http({
+	    		method: 'GET',
+	    		url   : 'r/network/storage',
+	    		params: {'params':params,'hostid':hostid},
+	    	}).success(function(data){
+	    		if(data != null){    		
+	    		  $scope.disks =data; 			
+	    		}
+	    	}).error(function(data){
+				console.log(data);
+			});
+		}				   	          
+}
+</script>

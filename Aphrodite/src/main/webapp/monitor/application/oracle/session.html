@@ -1,0 +1,63 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="OraSessionController">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Sessions</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeSession" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraSessionChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Session/Process</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeProcess" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraProcessChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function OraSessionController($scope, $http, $stateParams) {
+	
+	var sessionParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraSessionChart',
+			title: 'Sessions',
+			key: ['session_inactive', 'session_system', 'session_active'],
+			likeSearch: false,
+			graphType: 'area',
+			dateRangeId: 'dateRangeSession'
+	};
+	
+	var processParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraProcessChart',
+			title: 'Session/Process',
+			key: ['session', 'procnum'],
+			likeSearch: false,
+			graphType: 'line',
+			dateRangeId: 'dateRangeProcess'
+	};
+	
+	renderGraph(sessionParams);
+	renderGraph(processParams);
+	
+}
+</script>

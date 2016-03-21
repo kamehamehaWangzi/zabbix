@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.HostDao">
+	<resultMap type="org.pbccrc.platform.vo.HostVO" id="hostVO">
+		<id property="id" column="ID" />
+		<result property="groups" column="GROUPS" />
+		<result property="teamplates" column="TEAMPLATES" />
+		<result property="zabbixHostid" column="ZABBIX_HOSTID" />
+		<result property="name" column="NAME" />
+		<result property="type" column="TYPE" />
+		<result property="osType" column="OS_TYPE" />
+		<result property="osVersion" column="OS_VERSION" />
+		<result property="ip1" column="IP1" />
+		<result property="ip2" column="IP2" />
+		<result property="ip3" column="IP3" />
+		<result property="ip4" column="IP4" />
+		<result property="vendor" column="VENDOR" />
+		<result property="model" column="MODEL" />
+		<result property="cpu" column="CPU" />
+		<result property="disk" column="DISK" />
+		<result property="memory" column="MEMORY" />
+		<result property="sn" column="SN" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="isMonitor" column="IS_MONITOR" />
+	</resultMap>
+	
+	<select id="queryAll" parameterType="org.pbccrc.platform.vo.HostVO" resultMap="hostVO">
+		select * from host
+		<where>
+			<if test="zabbixHostid != null">
+				and zabbix_hostid = #{zabbixHostid}
+			</if>
+			<if test="(name != null) || (ip1 != null)">
+				and ((name like concat(concat('%', #{name}), '%')) or (ip1 = #{ip1}))
+			</if>
+			<if test="type != null">
+				and type = #{type}
+			</if>
+			<if test="osType != null">
+				and os_type = #{osType}
+			</if>
+			<if test="sn != null">
+				and sn = #{sn}
+			</if>
+			<if test="isMonitor != null">
+				and is_monitor = #{isMonitor}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryById" parameterType="java.lang.String" resultMap="hostVO">
+		select * from host where id = #{id}
+	</select>
+	
+	<select id="queryByHostId" parameterType="java.lang.String" resultMap="hostVO">
+		select * from host where zabbix_hostid = #{id}
+	</select>
+	
+	<select id="queryHostsByApp" parameterType="java.util.Map" resultMap="hostVO">
+		select a.* from host a
+		inner join host_app c on c.host_id = a.id
+		inner join app b on b.id = c.app_id
+		where b.id = #{appId}
+		<if test="(name != null) || (ip1 != null)">
+			and ((a.name like concat(concat('%', #{name}), '%')) or (a.ip1 = #{ip1}))
+		</if>
+	</select>
+	
+	<select id="queryHostsExceptApp" parameterType="java.lang.String" resultMap="hostVO">
+		select h.* from host h
+		where h.id not in (
+			select a.id from host a inner join host_app b on a.id = b.host_id where b.app_id = #{appId}
+		)
+	</select>
+	
+	<insert id="insertHost" parameterType="org.pbccrc.platform.vo.HostVO">
+		insert into host(zabbix_hostid, groups, teamplates, name, type, os_type, os_version, ip1, sn, description, is_monitor)
+		values(#{zabbixHostid}, #{groups}, #{teamplates}, #{name}, #{type}, #{osType}, #{osVersion}, #{ip1}, #{sn}, #{description}, #{isMonitor})
+	</insert>
+	
+	<delete id="deleteHost" parameterType="java.lang.String">
+		delete from host where id = #{id}
+	</delete>
+	
+	<delete id="deleteHostByZabbixHostId" parameterType="java.lang.String">
+		delete from host where zabbix_hostid = #{hostId}
+	</delete>
+	
+	
+	<select id="queryHosts" parameterType="java.lang.String" resultMap="hostVO">
+		select h.* from host h
+	</select>
+	
+	<select id="queryHostsByIds" resultMap="hostVO">
+		select h.* from host h where h.id in 
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">  
+		  #{item}  
+		</foreach>
+	</select>
+	
+</mapper>

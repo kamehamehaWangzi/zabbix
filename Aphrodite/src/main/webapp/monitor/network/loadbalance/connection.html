@@ -1,0 +1,38 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="LoadBalanceConnectionController">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span>连接数</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeLoad" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="connectionChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+function LoadBalanceConnectionController($scope, $http, $stateParams) {
+	
+	var params = {
+			id: $stateParams.hostId,
+			graphDiv: 'connectionChart',
+			title: 'Connection',
+			key: ['netopti.concurrent.connection.nums','netopti.new.connection.nums','netopti.vs.concurrent.nums'],
+			graphType: 'line',
+			dateRangeId: 'dateRangeLoad'
+	};
+	
+	renderGraph(params);
+	
+}
+</script>

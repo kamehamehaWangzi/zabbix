@@ -1,0 +1,28 @@
+<div class="tab-pane animated fadeIn active" data-ng-controller="ProjectHostController">
+	<div class="panel-body">
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th nowrap>主机名称</th>
+					<td>
+						<ul data-ng-repeat="h in host">
+						     <li>{{h}}</li>
+						</ul>
+					</td>
+				</tr>
+				
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+function ProjectHostController($scope, $http, $stateParams) {
+	
+	$http.get('r/project/' + $stateParams.id + '/host').success(function(data) {
+		$scope.host = data;
+    });
+	
+}
+
+</script>

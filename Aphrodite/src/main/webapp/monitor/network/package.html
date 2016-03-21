@@ -1,0 +1,93 @@
+<div class="row" data-ng-controller="NetworkpackageController">
+	<div class="tab-pane animated fadeIn active">
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Errors package </h3>
+						</div>
+						<div class="input-prepend input-group">
+							<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+							<input type="text" style="width: 300px;" id="dateRangeerrors" class="form-control" readonly="readonly"/>
+							<select style="width: 300px; height:34px;" ng-model="item1" ng-options="item1 as item1 for item1 in items1" ng-change="change()"></select>	
+						</div>
+						<div class="panel-body">
+							<div id="errorsChart" style="height:400px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+	<div class="tab-pane animated fadeIn active">
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span>Discard package</h3>
+						</div>
+						<div class="input-prepend input-group">
+							<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+							<input type="text" style="width: 300px;" id="dateRangediscard" class="form-control" readonly="readonly"/>
+							<select   style="width: 300px; height:34px;" ng-model="item" ng-options="item as item for item in items" ng-change="change2()"></select>
+						</div>
+						<div class="panel-body">
+							<div id="discardChart" style="height:400px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+
+function NetworkpackageController($scope, $http, $stateParams) {
+	$http.get('r/network/' + $stateParams.hostId).success(function(data) {
+		$scope.items = data;		
+	    $scope.item =$scope.items[0];       
+		getData("ifInErrors"+$scope.item,
+		        "ifOutErrors"+$scope.item,
+		        'dateRangeerrors',
+		        'errorsChart',
+		        'Errors package');
+		$scope.items1 = data;        
+		$scope.item1 =$scope.items1[0];      
+		getData("ifInDiscards"+$scope.item1,
+		        "ifOutDiscards"+$scope.item1,
+		        'dateRangediscard',
+		        'discardChart',
+		        'Discard package');		
+		$scope.change=function(){	   
+		    var In ="ifInErrors"+$scope.item1;
+		    var Out ="ifOutErrors"+$scope.item1;
+		    var dateRangeId ='dateRangeerrors';
+		    var graphDiv = 'errorsChart';
+		    var title ='Errors package';
+		    getData(In,Out,dateRangeId,graphDiv,title);
+		}
+		$scope.change2=function(){	    
+		    var In ="ifInDiscards"+$scope.item ;
+		    var Out ="ifOutDiscards"+$scope.item ;
+		    var dateRangeId ='dateRangediscard';
+		    var graphDiv = 'discardChart';
+		    var title ='Discard package';
+		    getData(In,Out,dateRangeId,graphDiv,title);
+		}	
+		function getData(In,Out,dateRangeId,graphDiv,title){
+			var params = {
+				id: $stateParams.hostId,
+				graphDiv: graphDiv,
+				title: title,
+				key: [In,Out],
+				graphType: 'line',
+				dateRangeId: dateRangeId
+		};	
+		renderGraph(params);
+		}
+	});	
+		
+}
+</script>

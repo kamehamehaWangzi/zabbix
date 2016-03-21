@@ -1,0 +1,125 @@
+<div class="tab-pane fade in active" id="octets" data-ng-controller="NetworkoctetsController">
+	<div class="tab-pane animated fadeIn active">
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Octets </h3>
+						</div>
+						<div class="input-prepend input-group">
+							<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+							<input type="text" class="form-control" style="width: 300px;" id="dateRangeoctets" class="form-control" readonly="readonly"/>
+							<select style="width: 300px; height:34px;" ng-model="item" ng-options="item as item for item in items" ng-change="change()"></select>
+						</div>					
+						<div class="panel-body">		    
+							<div id="octetsChart" style="height:400px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tab-pane animated fadeIn active">
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> UcastPkts</h3>
+						</div>
+						<div class="input-prepend input-group">
+							<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+							<input type="text" style="width: 300px;" id="dateRange1" class="form-control" readonly="readonly"/>
+							<select style="width: 300px; height:34px;" ng-model="item1" ng-options="item1 as item1 for item1 in items1" ng-change="change1()"></select>	
+						</div>
+						<div class="panel-body">
+							<div id="ucastPktsChart" style="height:400px;"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> NUcastPkts</h3>
+						</div>
+						<div class="input-prepend input-group">
+							<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+							<input type="text" style="width: 300px;" id="dateRange2" class="form-control" readonly="readonly"/>
+							<select style="width: 300px; height:34px;" ng-model="item2" ng-options="item2 as item2 for item2 in items2" ng-change="change2()"></select>	
+						</div>
+						<div class="panel-body">
+							<div id="nUcastPktsChart" style="height:400px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+
+function NetworkoctetsController($scope, $http, $stateParams) {
+	$http.get('r/network/' + $stateParams.hostId).success(function(data) {
+		$scope.items = data;
+        $scope.item =$scope.items[0];	           
+		getData("ifInOctets"+$scope.item,
+		        "ifOutOctets"+$scope.item,
+		        'dateRangeoctets',
+		        'octetsChart',
+		        'Octets');
+		$scope.items1 =data;
+	    $scope.item1 =$scope.items1[0];       
+		getData("ifInUcastPkts"+$scope.item1,
+		        "ifOutUcastPkts"+$scope.item1,
+		        'dateRange1',
+		        'ucastPktsChart',
+		        'UcastPkts');	
+		$scope.items2 = data;
+	    $scope.item2 =$scope.items2[0];       
+		getData("ifInNUcastPkts"+$scope.item2,
+		        "ifOutNUcastPkts"+$scope.item2,
+		        'dateRange2',
+		        'nUcastPktsChart',
+		        'NUcastPkts');
+		$scope.change=function(){			    
+		    var In ="ifInOctets"+$scope.item;
+		    var Out ="ifOutOctets"+$scope.item;
+		    var dateRangeId ='dateRangeinoctets';
+		    var graphDiv = 'octetsChart';
+		    var title ='Octets';
+		    getData(In,Out,dateRangeId,graphDiv,title);
+		}
+		$scope.change1=function(){	    
+		    var In ="ifInUcastPkts"+$scope.item1 ;
+		    var Out ="ifOutUcastPkts"+$scope.item1 ;
+		    var dateRangeId ='dateRange1';
+		    var graphDiv = 'ucastPktsChart';
+		    var title ='UcastPkts';
+		    getData(In,Out,dateRangeId,graphDiv,title);
+		}
+		$scope.change2=function(){	    
+		    var In ="ifInNUcastPkts"+$scope.item ;
+		    var Out ="ifOutNUcastPkts"+$scope.item ;
+		    var dateRangeId ='dateRange2';
+		    var graphDiv = 'nUcastPktsChart';
+		    var title ='NUcastPkts';
+		    getData(In,Out,dateRangeId,graphDiv,title);
+		}	
+		function getData(In,Out,dateRangeId,graphDiv,title){
+			var params = {
+				id: $stateParams.hostId,
+				graphDiv: graphDiv,
+				title: title,
+				key: [In,Out],
+				graphType: 'line',
+				formatter: 'G',
+				scaler: 1024*1024*1024,
+				dateRangeId: dateRangeId
+		};	
+		renderGraph(params);
+		}	
+    });
+    
+}
+</script>

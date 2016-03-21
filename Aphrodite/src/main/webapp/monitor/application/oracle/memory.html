@@ -1,0 +1,93 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="OraMemoryController">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> PGA</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangePGA" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraPGAChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> SGA Memory Usage</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeSGA" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraSGAChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Shared Pool</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangePool" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraPoolChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function OraMemoryController($scope, $http, $stateParams) {
+	
+	var pgaParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraPGAChart',
+			title: 'PGA',
+			key: ['pga'],
+			likeSearch: false,
+			graphType: 'line',
+			dateRangeId: 'dateRangePGA'
+	};
+	
+	var sgaParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraSGAChart',
+			title: 'SGA Memory Usage',
+			key: ['sga_buffer_cache', 'sga_fixed', 'sga_java_pool', 'sga_large_pool', 'sga_log_buffer', 'sga_shared_pool'],
+			likeSearch: false,
+			graphType: 'area',
+			formatter: 'KM',
+			scaler: 1024,
+			dateRangeId: 'dateRangeSGA'
+	};
+	
+	var poolParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraPoolChart',
+			title: 'Shared Pool',
+			key: ['pool_dict_cache', 'pool_free_mem', 'pool_lib_cache', 'pool_misc', 'pool_sql_area'],
+			likeSearch: false,
+			graphType: 'area',
+			formatter: 'M',
+			dateRangeId: 'dateRangePool'
+	};
+	
+	renderGraph(pgaParams);
+	renderGraph(sgaParams);
+	renderGraph(poolParams);
+	
+}
+</script>

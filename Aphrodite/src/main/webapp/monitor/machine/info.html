@@ -1,0 +1,43 @@
+<div class="tab-pane animated fadeIn active" data-ng-controller="MachineInfoController">
+	<div class="panel-body">
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th>主机名</th>
+					<td>{{info.name}}</td>
+					<th>IP</th>
+					<td>{{info.ip1}}</td>
+				</tr>
+				<tr>
+					<th>机器型号</th>
+					<td>{{info.model}}</td>
+					<th>操作系统</th>
+					<td>{{info.osVersion}}</td>
+				</tr>
+				<tr>
+					<th>CPU型号</th>
+					<td>{{info.cpu}}</td>
+					<th>内存</th>
+					<td>{{info.memory}}</td>
+				</tr>
+				<tr>
+					<th>磁盘</th>
+					<td>{{info.disk}}</td>
+					<th>厂家</th>
+					<td>{{info.vendor}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+function MachineInfoController($scope, $http, $stateParams) {
+	
+	$http.get('r/machine/' + $stateParams.id + '/info').success(function(data) {
+		$scope.info = data;
+    });
+	
+}
+
+</script>

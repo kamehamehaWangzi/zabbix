@@ -1,0 +1,93 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="OraOtherController">
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Archivelog</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeLog" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraArchivelogChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> DB Size/FileSize</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeSize" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraFileSizeChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Events Waits</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeEvent" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraEventWaitChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function OraOtherController($scope, $http, $stateParams) {
+	
+	var archivelogParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraArchivelogChart',
+			title: 'Archivelog',
+			key: ['archive'],
+			likeSearch: false,
+			graphType: 'line',
+			formatter: 'MB',
+			dateRangeId: 'dateRangeLog'
+	};
+	
+	var fileSizeParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraFileSizeChart',
+			title: 'DB Size/FileSize',
+			key: ['dbsize', 'dbfilesize'],
+			likeSearch: false,
+			graphType: 'line',
+			formatter: 'MB',
+			dateRangeId: 'dateRangeSize'
+	};
+	
+	var eventWaitParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraEventWaitChart',
+			title: 'Events Waits',
+			subTitle: 'ms waits/s',
+			key: ['waits_latch', 'waits_file_io', 'waits_other', 'waits_singleblock_read', 'waits_multiblock_read', 'waits_directpath_read', 'waits_sqlnet', 'waits_controfileio', 'waits_logwrite'],
+			likeSearch: false,
+			graphType: 'area',
+			dateRangeId: 'dateRangeEvent'
+	};
+	
+	renderGraph(archivelogParams);
+	renderGraph(fileSizeParams);
+	renderGraph(eventWaitParams);
+	
+}
+</script>

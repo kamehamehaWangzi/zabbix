@@ -1,0 +1,90 @@
+<div class="tab-pane fade in active" id="info">
+	<div class="panel panel-default" data-ng-controller="NetworkInfoController">
+		<div class="panel-heading">
+			<h3 class="panel-title"><span class="glyphicon glyphicon-list"></span> {{info.name}}</h3>
+		</div>
+		<div class="panel-body">
+			<table class="table table-striped">
+				<tbody>
+					<tr>
+						<th>设备名</th>
+						<td>{{info.name}}</td>
+						<th>IP</th>
+						<td>{{info.ip}}</d>
+					</tr>
+					<tr>
+						<th>设备型号</th>
+						<td>{{info.model}}</td>
+						<th>设备类型</th>
+						<td>{{info.type}}</d>
+					</tr>
+					<tr>
+						<th>操作系统</th>
+						<td>{{info.osType}}</td>
+						<th>系统版本</th>
+						<td>{{info.osVersion}}</d>
+					</tr>
+					<tr>
+						<th>位置</th>
+						<td>{{info.location}}</td>
+						<th>备注</th>
+						<td>{{info.description}}</td>
+						
+					</tr>
+					<tr>
+						<th>厂家</th>
+						<td>{{info.vendor}}</td>
+						<th>序列号</th>
+						<td>{{info.sn}}</td>
+					</tr>					
+					<tr>
+						<th>风扇状态</th>
+						<td>
+							<span data-ng-show="model.fanStatus == 1">active</span>
+							<span data-ng-show="model.fanStatus == 2">deactive</span>
+							<span data-ng-show="model.fanStatus == 3">not-install</span>
+							<span data-ng-show="model.fanStatus == 4">unsupport</span>
+						</td>	
+						<th>电源状态</th>
+						<td>							
+							<span data-ng-show="model.powerStatus == 1">active</span>
+							<span data-ng-show="model.powerStatus == 2">deactive</span>
+							<span data-ng-show="model.powerStatus == 3">not-install</span>
+							<span data-ng-show="model.powerStatus == 4">unsupport</span>							
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function NetworkInfoController($scope, $http, $stateParams) {
+	
+	$http.get('r/network/' + $stateParams.id + '/info').success(function(data) {
+		$scope.info = data;
+    });
+    $scope.model = {
+			fanStatus: '',
+			powerStatus: '',	
+	};
+	
+	$http({
+		method: 'GET',
+		url: 'r/graph/value',
+		params: {
+			'id': $stateParams.hostId, 
+			'key': JSON.stringify(['router.fan.status', 'router.input.power'])}
+	}).success(function(data){
+		console.log(data);
+		if(data) {
+			$scope.model.fanStatus = data[0].lastvalue;
+			$scope.model.powerStatus = data[1].lastvalue;
+		}
+	}).error(function(data){
+		console.log(data);
+	});
+	
+}
+</script>

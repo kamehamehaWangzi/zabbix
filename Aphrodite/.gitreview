@@ -1,0 +1,5 @@
+[gerrit]
+host=10.128.146.37
+port=29418
+project=Avengers/Aphrodite
+defaultbranch=master

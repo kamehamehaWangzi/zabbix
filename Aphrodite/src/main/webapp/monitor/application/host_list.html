@@ -1,0 +1,343 @@
+<div data-ng-controller="AppHostListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-desktop"></i> 已部署主机</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>监控</a>
+				</li>
+				<li>
+					<a data-ui-sref="app">应用</a>
+				</li>
+				<li class="active">
+					<strong>已部署主机</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5><i class="glyphicon glyphicon-list"></i></h5>
+						<div class="ibox-tools">
+							<a class="collapse-link">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+							<a class="close-link">
+								<i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+						<div class="col-lg-6" style="float: right;">
+							<div class="input-group">
+								<input type="text" class="input-sm form-control" data-ng-keyup="search()" data-ng-model="nameOrIp" placeholder="Search in table" />
+								<span class="input-group-btn">
+									<button type="button" class="btn btn-sm btn-primary" data-ng-click="search()"> Go!</button>
+								</span>
+								<span class="input-group-btn" style="padding-left: 5px;">
+									<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#deployAppModal" data-ng-click="loadApp()">部署至主机</button>
+								</span>
+								<span class="input-group-btn" style="padding-left: 5px;">
+									<button class="btn btn-sm btn-primary" type="button" data-ng-click="removeApp()">卸载应用</button>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th>序号</th>
+									<th>主机名</th>
+									<th>IP</th>
+									<th>操作系统</th>
+									<th>状态</th>
+									<th>操作</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="item in items">
+									<td>
+										<input data-icheck data-ng-model="iCheck" type="checkbox" name="selectId" value="{{item.id}}"/>
+									</td>
+									<td>{{(currentPage - 1) * pageSize + $index + 1}}</td>
+									<td data-ui-sref="app_{{appType}}.info({id:appId, hostId:item.zabbixHostid})">
+										<a href="#">{{item.name}}</a>
+									</td>
+									<td>{{item.ip1}}</td>
+									<td>{{item.osVersion}}</td>
+									<td>
+										<i class="fa fa-check fa-lg text-navy" data-ng-if="item.status == 1"></i>
+										<i class="fa fa-remove fa-lg text-danger" data-ng-if="item.status == 0"></i>
+									</td>
+									<td>
+										<span style="cursor: pointer;" data-ng-if="item.status == 0" data-ng-click="serviceCmd(item.name, 'start');" title="启动"><i class="fa fa-play fa-lg text-navy"></i></span>
+										<span style="cursor: pointer;" data-ng-if="item.status == 1" data-ng-click="serviceCmd(item.name, 'stop');" title="停止"><i class="fa fa-stop fa-lg text-danger"></i></span>
+										<span style="cursor: pointer;" data-ng-click="serviceCmd(item.name, 'restart');" title="重启"><i class="fa fa-repeat fa-lg text-navy"></i></span>
+									</td>
+								</tr>
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan="7" align="right">
+										<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="5" items-per-page="pageSize" previous-text="上一页" next-text="下一页" boundary-link-numbers="true" force-ellipses="true" ng-change="search()"></uib-pagination>
+									</td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+				</div>
+			</div>
+		  </div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="deployAppModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<div class="modal-header">
+		            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">
+						部署应用
+					</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">应用名称</label>
+							<div class="col-sm-10">
+								<p class="form-control-static">{{app.name}}</p>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="version" class="col-sm-2 control-label">版本</label>
+							<div class="col-sm-10">
+								<p class="form-control-static">{{app.version}}</p>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">监控模板</label>
+							<div class="col-sm-10">
+								<select id="multiselectTemplate" class="multiselect" multiple="multiple" data-ng-model="model.templates"></select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">部署至</label>
+							<div class="col-sm-10">
+								<select id="multiselect" class="multiselect" multiple="multiple" data-ng-model="model.hosts"></select>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-sm btn-primary" data-ng-click="deployApp()">开始部署</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function AppHostListController($scope, $http, $stateParams) {
+		
+		$scope.currentPage = 1;
+		$scope.pageSize = 10;
+		
+		$scope.appId = $stateParams.id;
+		$scope.appType = $stateParams.type;
+		
+		$scope.model = {
+				appId: $stateParams.id,
+				appType: $stateParams.type,
+				templates: '',
+				hosts: ''
+		};
+		
+		$scope.search = function() {
+			$http({
+				method: 'GET',
+				url: 'r/machine/' + $stateParams.id + '/app',
+				params: {'nameOrIp': $scope.nameOrIp, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
+			}).success(function(data) {
+				$scope.items = data.result;
+				$scope.totalItems = data.totalCount;
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+		
+		$scope.search();
+		
+		$scope.loadApp = function() {
+			loadDeployHost();
+			loadTemplate();
+			
+			$http({
+				method: 'GET',
+				url: 'r/app/info',
+				params: {'appId': $stateParams.id}
+			}).success(function(data) {
+				$scope.app = data;
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+		
+		$scope.deployApp = function() {
+			var hostIds = $('#multiselect').val();
+			
+			if(hostIds && hostIds != '') {
+				$http({
+					method: 'POST',
+					url: 'r/app/host',
+					params: {'param': $scope.model}
+				}).success(function(data) {
+					if(data == '200') {
+						$('#deployAppModal').modal('hide');
+						$scope.search();
+					}
+				}).error(function(data) {
+					console.log(data);
+				});
+			}
+		}
+		
+		$scope.removeApp = function() {
+			$scope.ids = '';
+			$("input[name='selectId']:checked").each(function() {
+				$scope.ids += ',' + $(this).val();
+			});
+			
+			if($scope.ids != '') {
+				swal({
+		            title: "确定卸载?",
+		            text: "确定从主机上卸载应用",
+		            type: "warning",
+		            showCancelButton: true,
+		            confirmButtonColor: "#DD6B55",
+		            cancelButtonText: "取消",
+		            confirmButtonText: "卸载",
+		            closeOnConfirm: false
+		        }, function () {
+		        	$http({
+						method: 'DELETE',
+						url: 'r/app/host',
+						params: {'appId': $stateParams.id, 'hostIds': $scope.ids}
+					}).success(function(data) {
+						if(data == '200') {
+							swal("Deleted!", "应用已卸载.", "success");
+							$scope.search();
+						}
+					}).error(function(data){
+						console.log(data);
+					});
+		        });
+			}
+		}
+		
+		$scope.serviceCmd = function(hostName, cmd) {
+			toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                showMethod: 'fadeIn',
+                timeOut: 4000
+            };
+			
+			toastr.info('<strong>' + $stateParams.type + ' ' + cmd + '.</strong>', '<strong>操作执行中 <i class="fa fa-spinner fa-lg fa-spin"></i></strong>');
+			
+			$http({
+				method: 'POST',
+				url: 'r/deploy/service',
+				params: {'ids': hostName, 'app': $stateParams.type, 'cmd': cmd}
+			}).success(function(data) {
+				toastr.clear();
+				if(data == 200) {
+		            toastr.success('<strong>' + $stateParams.type + ' ' + cmd + ' success.</strong>', '<strong>操作成功 !</strong>');
+		            $scope.search();
+				} else {
+					toastr.error('<strong></strong>', '<strong>操作失败 !</strong>');
+				}
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+		
+		var loadDeployHost = function() {
+			$http({
+				method: 'GET',
+				url: 'r/machine/except',
+				params: {'appId': $stateParams.id}
+			}).success(function(data) {
+				var hosts = new Array();
+				$.each(data, function(index, item) {
+					obj = {
+					    label : item.name,
+					    value : item.id
+					};
+					hosts.push(obj);
+				});
+				
+				$('#multiselect').multiselect({
+					buttonClass: 'btn btn-sm btn-primary',
+					enableFiltering: true,
+		            includeSelectAllOption: true,
+		            buttonWidth: '100%'
+				});
+				
+				if(hosts.length == 0) {
+					$("#multiselect").multiselect('disable');
+				} else {
+					$("#multiselect").multiselect('dataprovider', hosts);
+				}
+				
+			}).error(function(data){
+				console.log(data);
+			});
+		}
+		
+		var loadTemplate = function() {
+			$http({
+				method: 'GET',
+				url: 'r/machine/template',
+				params: {'group': 'template_application'}
+			}).success(function(data) {
+				if(data) {
+					var temps = new Array();
+					$.each(data.result, function(index, item) {
+						obj = {
+						    label : item.name,
+						    value : item.templateid
+						};
+						temps.push(obj);
+					});
+					
+					$('#multiselectTemplate').multiselect({
+						buttonClass: 'btn btn-sm btn-primary',
+						enableFiltering: true,
+				        includeSelectAllOption: true,
+				        buttonWidth: '100%'
+					});
+					
+					if(temps.length == 0) {
+						$("#multiselectTemplate").multiselect('disable');
+					} else {
+						$("#multiselectTemplate").multiselect('dataprovider', temps);
+					}
+				}
+			}).error(function(data){
+				console.log(data);
+				alert('error');
+			});
+		}
+		
+	}
+</script>

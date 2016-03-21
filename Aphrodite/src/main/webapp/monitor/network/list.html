@@ -1,0 +1,289 @@
+<div data-ng-controller="NetListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-sitemap"></i> 网络设备</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>监控</a>
+				</li>
+				<li class="active">
+					<strong>网络设备</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5><i class="glyphicon glyphicon-list"></i></h5>
+						<div class="ibox-tools">
+							<a class="collapse-link">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+							<a class="close-link">
+								<i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+							<div class="col-lg-6" style="float: right;">
+								<div class="input-group">
+									<input type="text" class="input-sm form-control" data-ng-keyup="search()" data-ng-model="param" placeholder="Search in table" />
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary" data-ng-click="search()"> Go!</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addNetworkModal" data-ng-click="loadTemplate()">添加新设备</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delNetwork()">删除设备</button>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>序号</th>
+										<th>设备名</th>
+										<th>IP</th>
+										<th>类型</th>
+										<th>状态</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="item in items">
+										<td>
+											<input data-icheck data-ng-model="iCheck" type="checkbox" name="selectId" value="{{item.zabbixHostid}}" />
+										</td>
+										<td>{{(currentPage - 1) * pageSize + $index + 1}}</td>
+										<td data-ui-sref="network_{{item.type}}.info({id:item.id, hostId:item.zabbixHostid})">
+											<a href="#">{{item.name}}</a>
+										</td>
+										<td>{{item.ip}}</td>
+										<td>
+											<span data-ng-show="item.type == 'switch'">交换机</span>
+											<span data-ng-show="item.type == 'route'">路由器</span>
+											<span data-ng-show="item.type == 'firewall'">防火墙</span>
+											<span data-ng-show="item.type == 'loadbalance'">负载均衡</span>
+											<span data-ng-show="item.type == 'storage'">存储</span>
+										</td>
+										<td>
+											<i data-ng-if="item.status == '0'" class="fa fa-check fa-lg text-navy"></i>
+											<i data-ng-if="item.status == '1'" class="fa fa-remove fa-lg text-danger"></i>
+										</td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="6" align="right">
+											<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="5" items-per-page="pageSize" previous-text="上一页" next-text="下一页" boundary-link-numbers="true" force-ellipses="true" ng-change="search()"></uib-pagination>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+	<div class="modal fade" id="addNetworkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<div class="modal-header">
+		            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">
+						添加设备
+					</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form">					    
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">设备名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="name" data-ng-model="network.name" placeholder="主机名称"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="ip" class="col-sm-2 control-label">IP</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="ip" data-ng-model="network.ip" placeholder="IP"/>
+							</div>
+						</div>											
+						<div class="form-group">
+							<label for="type" class="col-sm-2 control-label">设备类型</label>
+							<div class="col-sm-10">
+								<select class="form-control" name="type" id="type" data-ng-model="network.type">
+									<option value="switch">交换机</option>
+									<option value="route">路由器</option>
+									<option value="firewall">防火墙</option>
+									<option value="loadbalance">负载均衡</option>
+									<option value="storage">存储</option>
+								</select>
+							</div>
+						</div>						
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">SN</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="sn" data-ng-model="network.sn" placeholder="xxxxxx,xxxxxx"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">监控模板</label>
+							<div class="col-sm-10">
+								<select id="multiselect" class="multiselect" multiple="multiple" data-ng-model="network.templates"></select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="3" id="description" data-ng-model="host.description"></textarea>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-sm btn-primary" data-ng-click="addNetwork()">添加设备</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="delNetworkModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel2" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+		            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 class="modal-title" id="myModalLabel2">
+						<i class="glyphicon glyphicon-exclamation-sign"></i>删除设备
+					</h3>
+				</div>
+				<div class="modal-body">
+					确定删除设备?
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-danger" data-ng-click="confirmDelNetwork()">删除设备</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function NetListController($scope, $http) {
+	
+	$scope.currentPage = 1;
+	$scope.pageSize = 10;
+    
+    $scope.search = function() {
+		$http({
+			method: 'GET',
+			url: 'r/network',
+			params: {'param': $scope.param, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
+		}).success(function(data){
+			$scope.items = data.result;
+			$scope.totalItems = data.totalCount;
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+    
+    $scope.search();
+	
+    $scope.loadTemplate = function() {
+		$http({
+			method: 'GET',
+			url: 'r/machine/template',
+			params: {'group': 'template_network'}
+		}).success(function(data) {
+			if(data) {
+				var temps = new Array();
+				$.each(data.result, function(index, item) {
+					obj = {
+					    label : item.name,
+					    value : item.templateid
+					};
+					temps.push(obj);
+				});
+				
+				$('#multiselect').multiselect({
+					buttonClass: 'btn btn-sm btn-primary',
+					enableFiltering: true,
+			        includeSelectAllOption: true,
+			        buttonWidth: '100%'
+				});
+				
+				if(temps.length == 0) {
+					$("#multiselect").multiselect('disable');
+				} else {
+					$("#multiselect").multiselect('dataprovider', temps);
+				}
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+    
+	$scope.addNetwork = function() {
+		$http({
+			async: false,
+			method: 'POST',
+			url: 'r/network',
+			params: {'network': $scope.network}
+		}).success(function(data){
+			if(data == '200') {
+				$('#addNetworkModal').modal('hide');
+				$scope.search();
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+	
+	$scope.delNetwork = function() {
+		$scope.ids = '';
+		$("input[name='selectId']:checked").each(function() {
+			$scope.ids += ',' + $(this).val();
+		});
+		
+		if($scope.ids != '') {
+			swal({
+	            title: "确定删除?",
+	            text: "确定不再监控该服务器并删除",
+	            type: "warning",
+	            showCancelButton: true,
+	            confirmButtonColor: "#DD6B55",
+	            cancelButtonText: "取消",
+	            confirmButtonText: "删除",
+	            closeOnConfirm: false
+	        }, function () {
+	        	$http({
+	    			method: 'DELETE',
+	    			url: 'r/network',
+	    			params: {'ids': $scope.ids}
+	    		}).success(function(data) {
+	    			if(data == '200') {
+	    				swal("Deleted!", "设备已删除.", "success");
+	    				$scope.search();
+	    			}
+	    		}).error(function(data){
+	    			console.log(data);
+	    		});
+	        });
+		}
+    }
+}
+</script>

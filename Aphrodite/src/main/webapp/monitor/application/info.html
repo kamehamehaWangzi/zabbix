@@ -1,0 +1,38 @@
+<div class="tab-pane animated fadeIn active" data-ng-controller="AppInfoController">
+	<div class="panel-body">
+		<table class="table table-striped">
+			<tbody>
+				<tr>
+					<th>应用名</th>
+					<td>{{info.name}}</td>
+					<th>应用版本</th>
+					<td>{{info.version}}</td>
+				</tr>
+				<tr>
+					<th>应用类型</th>
+					<td>{{info.type}}</td>
+					<th>应用状态</th>
+					<td>
+						<i class="fa fa-check text-navy"></i>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<script type="text/javascript">
+function AppInfoController($scope, $http, $stateParams) {
+	
+	$http({
+		method: 'GET',
+		url: 'r/app/info',
+		params: {'appId': $stateParams.id}
+	}).success(function(data){
+		$scope.info = data;
+	}).error(function(data){
+		console.log(data);
+	});
+	
+}
+</script>

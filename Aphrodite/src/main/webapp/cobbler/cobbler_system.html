@@ -1,0 +1,590 @@
+
+<div data-ng-controller="CobblerListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2>
+				<i class="fa fa-laptop"></i>操作系统部署
+			</h2>
+			<ol class="breadcrumb">
+				<li><a data-ui-sref="monitor">首页</a></li>
+				<li><a>部署</a></li>
+
+				<li class="active"><strong>操作系统部署</strong></li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5>
+							<i class="glyphicon glyphicon-list"></i>
+						</h5>
+						<div class="ibox-tools">
+							<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+							</a> <a class="close-link"> <i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+							<div class="col-lg-8" style="float: right;">
+								<div class="input-group">
+									<input type="text" class="input-sm form-control"
+										data-ng-keyup="search()" data-ng-model="param"
+										placeholder="Search in table" /> <span
+										class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary"
+											data-ng-click="search()">Go!</button>
+									</span> <span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button"
+											data-ng-click="createSystemModal()">Create New System</button>
+									</span> <span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button"
+											data-ng-click="modifySystemModal()">Edit</button>
+									</span> <span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button"
+											data-ng-click="DeleteSystem()">Delete</button>
+									</span> 
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button"
+											data-ng-click="DeploySystem()">Deploy</button>
+									</span> 
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button"
+											data-ng-click="Saltminion()">Install salt-minion</button>
+									</span> 
+								</div>
+							</div>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>Index</th>
+										<th>Name</th>
+										<th>Profile</th>
+										<th>Status</th>
+										<th>Host Name</th>
+										<th>Mac Address</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="item in items">
+										<td><input data-icheck data-ng-model="iCheck"
+											type="checkbox" name="selectId" value="{{item.uid}}" /></td>
+										<td scope="row">{{$index + 1}}</td>
+										<td><a href="javascript:void(0);"
+											data-ng-click="modifySystemModal(item.uid)">{{item.name}}</a></td>
+										<td>{{item.profile}}</td>
+										<td>{{item.status}}</td>
+										<td>{{item.hostname}}</td>
+										<td>{{item.mac_address}}</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="createsystemModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form"
+					data-ng-submit="addSystem()">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Create New System</h4>
+					</div>
+					<div class="modal-body">
+
+						<div class="form-group">
+							<label for="name" class="col-sm-5 control-label">Name</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="name"
+									data-ng-model="systems.name" placeholder="Name" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="name" class="col-sm-5 control-label">Profile</label>
+							<div class="col-sm-7">
+								<select class="form-control" id="profile"
+									data-ng-model="systems.profile" required >
+							  <option value="">-- 请选择 --</option>
+									<option ng-repeat="profile in profiles" value="{{profile}}">{{profile}}</option>
+									</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Status</label>
+							<div class="col-sm-7">
+							<select class="form-control" data-ng-model="systems.status" required>
+							        <option value="">-- 请选择 --</option>
+									<option value="production">production</option>
+									<option value="development">development</option>
+									<option value="tesing">tesing</option>
+									<option value="acceptance">acceptance</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Hostname</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="hostname"
+									data-ng-model="systems.hostname" placeholder="Hostname" required/>
+							</div>
+						</div>
+					
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Interface</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="interfaces"
+									data-ng-model="systems.interfaces" placeholder="Interface" required />
+							</div>
+						</div>
+						<div class="form-group">
+						
+							<label for="type" class="col-sm-5 control-label">Gateway</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="gateway"
+									data-ng-model="systems.gateway" placeholder="Gateway" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">MAC Address</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="mac_address"
+									data-ng-model="systems.mac_address" placeholder="MAC Address" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">IP Address</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="ip_address"
+									data-ng-model="systems.ip_address" placeholder="IP Address" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">DNS Name</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="dns_name"
+									data-ng-model="systems.dns_name" placeholder="DNS Name" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Power Management Type</label>
+							<div class="col-sm-7">
+							<div data-ng-init="systems.power_type='ipmilan'">
+								<input class="form-control" id="power_type"
+									data-ng-model="systems.power_type" placeholder="" readonly="readonly"/>
+									</div>
+							</div>
+						</div>
+							<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Power Management Address</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="power_address"
+									data-ng-model="systems.power_address" placeholder="Power Management Address" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Power Management Username</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="power_user"
+									data-ng-model="systems.power_user" placeholder="Power Management Username" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Power Management Password</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="power_pass"
+									data-ng-model="systems.power_pass" placeholder="Power Management Password" required />
+							</div>
+						</div>
+						</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default"
+							data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">提交</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modifysystemModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form"
+					data-ng-submit="modifySystem()">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">Modify System</h4>
+					</div>
+					<div class="modal-body">
+
+						<div class="form-group">
+							<label for="name" class="col-sm-5 control-label">Name</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="name"
+									data-ng-model="systems.name" placeholder="Name" readonly="readonly"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="name" class="col-sm-5 control-label">Profile</label>
+							<div class="col-sm-7">
+								<select class="form-control" id="profile"
+									data-ng-model="systems.profile" required >
+							  <option value="">-- 请选择 --</option>
+									<option ng-repeat="profile in profiles" value="{{profile}}">{{profile}}</option>
+									</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Status</label>
+							<div class="col-sm-7">
+							<select class="form-control" data-ng-model="systems.status" required>
+							        <option value="">-- 请选择 --</option>
+									<option value="production">production</option>
+									<option value="development">development</option>
+									<option value="tesing">tesing</option>
+									<option value="acceptance">acceptance</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Hostname</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="hostname"
+									data-ng-model="systems.hostname" placeholder="Hostname"  required/>
+							</div>
+						</div>
+					
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Interface</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="interfaces"
+									data-ng-model="systems.interfaces" placeholder="Interface" required />
+							</div>
+						</div>
+						<div class="form-group">
+						
+							<label for="type" class="col-sm-5 control-label">Gateway</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="gateway"
+									data-ng-model="systems.gateway" placeholder="Gateway" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">MAC Address</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="mac_address"
+									data-ng-model="systems.mac_address" placeholder="MAC Address" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">IP Address</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="ip_address"
+									data-ng-model="systems.ip_address" placeholder="IP Address" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">DNS Name</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="dns_name"
+									data-ng-model="systems.dns_name" placeholder="DNS Name" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Power Management Type</label>
+							<div class="col-sm-7">
+							<div data-ng-init="systems.power_type='ipmilan'">
+								<input class="form-control" id="power_type"
+									data-ng-model="systems.power_type" placeholder="" readonly="readonly"/>
+									</div>
+							</div>
+						</div>
+							<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Power Management Address</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="power_address"
+									data-ng-model="systems.power_address" placeholder="Power Management Address" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Power Management Username</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="power_user"
+									data-ng-model="systems.power_user" placeholder="Power Management Username" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-5 control-label">Power Management Password</label>
+							<div class="col-sm-7">
+								<input class="form-control" id="power_pass"
+									data-ng-model="systems.power_pass" placeholder="Power Management Password" required />
+							</div>
+						</div>
+						</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default"
+							data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">提交</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function CobblerListController($scope, $http, $stateParams) {
+
+		toastr.options = {
+			closeButton : true,
+			progressBar : true,
+			showMethod : 'fadeIn',
+			timeOut : 4000
+		};
+		function loadprofile(){
+			$http({
+				method : 'GET',
+				url : 'r/cobbler_system/loadprofile',
+				params : ''
+			}).success(function(data) {
+				$scope.profiles = data;
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+		
+		$http.get('r/cobbler_system/list').success(function(data) {
+				$scope.items = data;
+				
+			}).error(function(data) {
+				console.log(data);
+			});
+
+		$scope.search = function() {
+			$http({
+				method : 'GET',
+				url : 'r/cobbler_system/list',
+				params : {
+					'param' : $scope.param
+				}
+			}).success(function(data) {
+				$scope.items = data;
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+
+		$scope.modifySystemModal = function(id) {
+			$scope.id = '';
+			var count = 0;
+			if(id==null){
+				$("input[name='selectId']:checked").each(function() {
+					$scope.id = $(this).val();
+					count += 1;
+				});
+
+				if (count > 1) {
+					swal("", "请选择一个系统配置信息进行修改", "warning");
+					return false;
+				}
+			}else{
+				$scope.id=id;
+			}
+			
+			loadprofile();
+			if ($scope.id != '') {
+				$http({
+					method : 'GET',
+					url : 'r/cobbler_system/list/' + $scope.id + '/info'
+				}).success(function(data) {
+					$scope.systems = data;
+				}).error(function(data) {
+					console.log(data);
+				});
+
+				$("#modifysystemModal").modal('show');
+			} else {
+				swal("", "请选择要修改的系统配置", "warning");
+
+			}
+		}
+		$scope.modifySystem = function() {
+
+			$http({
+				async : false,
+				method : 'POST',
+				url : 'r/cobbler_system/add',
+				params : {
+					'systems' : $scope.systems
+				}
+			}).success(function(data) {
+				if (data == '200') {
+					$('#modifysystemModal').modal('hide');
+					swal("", "系统配置信息修改成功", "success");
+					$scope.systems = null;
+					$scope.search();
+				}else if(data!=null&&data.indexOf("exception")!=-1){
+					swal("error", data, "error");
+				}
+				
+
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+
+		$scope.createSystemModal = function() {
+
+			loadprofile();
+		
+			$("#createsystemModal").modal('show');
+		}
+
+		$scope.addSystem = function() {
+
+			$http({
+				async : false,
+				method : 'POST',
+				url : 'r/cobbler_system/add',
+				params : {
+					'systems' : $scope.systems
+				}
+			}).success(function(data) {
+				if (data == '200') {
+					$('#createsystemModal').modal('hide');
+					swal("", "系统创建成功", "success");
+					$scope.systems = null;
+					$scope.search();
+				}else if(data!=null&&data.indexOf("exception")!=-1){
+					swal("error", data, "error");
+				}
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+
+		$scope.DeleteSystem = function() {
+			$scope.ids = '';
+
+			$("input[name='selectId']:checked").each(function() {
+				
+				$scope.ids += ',' + $(this).val();
+			});
+
+			if ($scope.ids != '') {
+				swal({
+					title : "确定删除?",
+					text : "确定删除",
+					type : "warning",
+					showCancelButton : true,
+					confirmButtonColor : "#DD6B55",
+					cancelButtonText : "取消",
+					confirmButtonText : "确认",
+					closeOnConfirm : false
+				}, function() {
+					$http({
+						method : 'PUT',
+						url : 'r/cobbler_system/delSystem',
+						params : {
+							'Ids' : $scope.ids
+						}
+					}).success(function(data) {
+						if (data == '200') {
+							swal("Deleted!", "已删除", "success");
+							$scope.search();
+						}else if(data!=null&&data.indexOf("exception")!=-1){
+							swal("error", data, "error");
+						}
+					}).error(function(data) {
+						console.log(data);
+					});
+				});
+			} else {
+				swal("", "请选择要删除的系统信息", "warning");
+
+			}
+		}
+
+		$scope.DeploySystem = function() {
+			$scope.ids = '';
+
+			$("input[name='selectId']:checked").each(function() {
+				
+				$scope.ids += ',' + $(this).val();
+			});
+
+			if ($scope.ids != '') {
+				$http({
+						method : 'PUT',
+						url : 'r/cobbler_system/deploy',
+						params : {
+							'Ids' : $scope.ids
+						}
+					}).success(function(data) {
+						if (data == '200') {
+							swal("Deployed!", "已部署", "success");
+							$scope.search();
+						}else if(data!=null&&data.indexOf("exception")!=-1){
+							swal("error", data, "error");
+						}
+					}).error(function(data) {
+						console.log(data);
+					});
+			
+			} else {
+				swal("", "请选择要部署的系统", "warning");
+
+			}
+		}
+		
+	
+	$scope.Saltminion = function() {
+		$scope.ids = '';
+
+		$("input[name='selectId']:checked").each(function() {
+			
+			$scope.ids += ',' + $(this).val();
+		});
+
+		if ($scope.ids != '') {
+			$http({
+					method : 'PUT',
+					url : 'r/cobbler_system/salt',
+					params : {
+						'Ids' : $scope.ids
+					}
+				}).success(function(data) {
+					if (data == '200') {
+						swal("Installed!", "已部署安装，请到部署任务列表中查询安装结果", "success");
+						$scope.search();
+					}else if(data!=null&&data.indexOf("exception")!=-1){
+						swal("error", data, "error");
+					}
+				}).error(function(data) {
+					console.log(data);
+				});
+		
+		} else {
+			swal("", "请选择要安装的主机", "warning");
+
+		}
+	}
+	
+}
+</script>

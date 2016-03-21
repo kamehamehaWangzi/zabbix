@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ProjectDao">
+	<resultMap type="org.pbccrc.platform.vo.ProjectVO" id="projectVO">
+		<id property="id" column="ID" />
+		<result property="hosts" column="HOSTS" />
+		<result property="name" column="NAME" />
+		<result property="description" column="DESCRIPTION" />
+	</resultMap>
+	
+	<select id="queryAll" parameterType="org.pbccrc.platform.vo.ProjectVO" resultMap="projectVO">
+		select * from project
+		<where>
+			<if test="name != null">
+				and (name like concat(concat('%', #{name}), '%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryProjects" resultMap="projectVO">
+		select p.* from project p
+	</select>
+	
+	<select id="queryByProjectId" parameterType="java.lang.String" resultMap="projectVO">
+		select * from project where id = #{id}
+	</select>
+	
+	<insert id="insertProject" parameterType="org.pbccrc.platform.vo.ProjectVO">
+		insert into project(name, hosts, description)values(#{name}, #{hosts}, #{description})
+	</insert>
+	
+	<delete id="deleteProject" parameterType="java.lang.String">
+		delete from project where id = #{id}
+	</delete>
+	
+	
+</mapper>

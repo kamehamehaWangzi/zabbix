@@ -1,0 +1,66 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="OraHitRadioController">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Hit Radio</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeHit" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraHitRadioChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Pin Hit Radio</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangePin" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="oraPinHitRadioChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function OraHitRadioController($scope, $http, $stateParams) {
+	
+	var hitParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraHitRadioChart',
+			title: 'Hit Radio',
+			key: ['hitratio_table_proc', 'hitratio_body', 'hitratio_sqlarea', 'hitratio_trigger'],
+			likeSearch: false,
+			graphType: 'line',
+			formatter: '%',
+			dateRangeId: 'dateRangeHit'
+	};
+	
+	var pinHitParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'oraPinHitRadioChart',
+			title: 'Pin Hit Radio',
+			key: ['pinhitratio_table-proc', 'pinhitratio_body', 'pinhitratio_sqlarea', 'pinhitratio_trigger'],
+			likeSearch: false,
+			graphType: 'line',
+			formatter: '%',
+			dateRangeId: 'dateRangePin'
+	};
+	
+	renderGraph(hitParams);
+	renderGraph(pinHitParams);
+	
+}
+</script>

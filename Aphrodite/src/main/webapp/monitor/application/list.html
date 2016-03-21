@@ -1,0 +1,214 @@
+<div data-ng-controller="AppListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-desktop"></i> 应用</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>监控</a>
+				</li>
+				<li class="active">
+					<strong>应用</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5><i class="glyphicon glyphicon-list"></i></h5>
+						<div class="ibox-tools">
+							<a class="collapse-link">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+							<a class="close-link">
+								<i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+							<div class="col-lg-6" style="float: right;">
+								<div class="input-group">
+									<input type="text" class="input-sm form-control" data-ng-keyup="search()" data-ng-model="param" placeholder="Search in table" />
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary" data-ng-click="search()"> Go!</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addAppModal">添加新应用</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delApp()">删除应用</button>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>序号</th>
+										<th>名称</th>
+										<th>类型</th>
+										<th>版本</th>
+										<th>已部署主机</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="item in items">
+										<td>
+											<input data-icheck data-ng-model="iCheck" type="checkbox" class="i-checks" name="selectId" value="{{item.id}}"/>
+										</td>
+										<td>{{(currentPage - 1) * pageSize + $index + 1}}</td>
+										<td data-ui-sref="app_hosts({id:item.id, type:item.type})">
+											<a href="#">{{item.name}}</a>
+										</td>
+										<td>{{item.type}}</td>
+										<td>{{item.version}}</td>
+										<td>{{item.deployCount}}</td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="6" align="right">
+											<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="5" items-per-page="pageSize" previous-text="上一页" next-text="下一页" boundary-link-numbers="true" force-ellipses="true" ng-change="search()"></uib-pagination>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="addAppModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form" data-ng-submit="addApp()">
+					<div class="modal-header">
+			            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">
+							添加应用
+						</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">应用名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="app.name" placeholder="应用名称" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-2 control-label">类型</label>
+							<div class="col-sm-10">
+								<select class="form-control" data-ng-model="app.type">
+									<option value="mysql">MySQL</option>
+									<option value="oracle">Oracle</option>
+									<option value="tomcat">Tomcat</option>
+									<option value="weblogic">Weblogic</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="version" class="col-sm-2 control-label">版本</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="app.version" placeholder="版本"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="3" data-ng-model="app.description"></textarea>
+							</div>
+						</div>
+						
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">添加应用</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function AppListController($scope, $http) {
+		
+		$scope.currentPage = 1;
+		$scope.pageSize = 10;
+		
+		$scope.search = function() {
+			$http({
+				method: 'GET',
+				url: 'r/app',
+				params: {'param': $scope.param, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
+			}).success(function(data){
+				$scope.items = data.result;
+				$scope.totalItems = data.totalCount;
+			}).error(function(data){
+				console.log(data);
+			});
+		}
+		
+		$scope.search();
+		
+		$scope.addApp = function() {
+			$http({
+				async: false,
+				method: 'POST',
+				url: 'r/app',
+				params: {'app': $scope.app}
+			}).success(function(data){
+				if(data == '200') {
+					$('#addAppModal').modal('hide');
+					$scope.search();
+				}
+			}).error(function(data){
+				console.log(data);
+			});
+		}
+		
+		$scope.delApp = function() {
+			$scope.ids = '';
+			$("input[name='selectId']:checked").each(function() {
+				$scope.ids += ',' + $(this).val();
+			});
+			
+			if($scope.ids != '') {
+				swal({
+		            title: "确定删除?",
+		            text: "确定删除应用, 并从已部署的主机中卸载",
+		            type: "warning",
+		            showCancelButton: true,
+		            confirmButtonColor: "#DD6B55",
+		            cancelButtonText: "取消",
+		            confirmButtonText: "删除",
+		            closeOnConfirm: false
+		        }, function () {
+		        	$http({
+						method: 'DELETE',
+						url: 'r/app',
+						params: {'ids': $scope.ids}
+					}).success(function(data) {
+						if(data == '200') {
+							swal("Deleted!", "应用已删除.", "success");
+							$scope.search();
+						}
+					}).error(function(data){
+						console.log(data);
+					});
+		        });
+			}
+		}
+		
+	}
+</script>

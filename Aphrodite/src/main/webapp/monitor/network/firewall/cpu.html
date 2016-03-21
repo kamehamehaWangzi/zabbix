@@ -1,0 +1,39 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="HillstoneCpuController">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> CPU Load</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeLoad" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="cpuLoadChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+function HillstoneCpuController($scope, $http, $stateParams) {
+	
+	var cpuParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'cpuLoadChart',
+			title: 'CPU Load',
+			key: ['hillstone.cpu.load'],
+			graphType: 'line',
+			formatter: '%',
+			dateRangeId: 'dateRangeLoad'
+	};
+	
+	renderGraph(cpuParams);
+	
+}
+</script>

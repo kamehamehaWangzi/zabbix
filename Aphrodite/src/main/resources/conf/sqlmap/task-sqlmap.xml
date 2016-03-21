@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.TaskDao">
+	<resultMap type="org.pbccrc.platform.vo.TaskVO" id="taskVO">
+		<id property="id" column="ID" />
+		<result property="project" column="PROJECT" />
+		<result property="hosts" column="HOSTS" />
+		<result property="name" column="NAME" />
+		<result property="description" column="DESCRIPTION" />
+	</resultMap>
+	
+	<select id="queryAll" parameterType="org.pbccrc.platform.vo.TaskVO" resultMap="taskVO">
+		select t.*, p.name as projectName from task t
+			left join project p on t.project = p.id
+		<where>
+			<if test="name != null">
+				and (t.name like concat(concat('%', #{name}), '%'))
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryByTaskId" parameterType="java.lang.String" resultMap="taskVO">
+		select * from task where id = #{id}
+	</select>
+	
+	<insert id="insertTask" parameterType="org.pbccrc.platform.vo.TaskVO">
+		insert into task(name, project, hosts, description)values(#{name}, #{project}, #{hosts},#{description})
+	</insert>
+	
+	<delete id="deleteTask" parameterType="java.lang.String">
+		delete from task where id = #{id}
+	</delete>
+	
+	<delete id="deleteTaskByProject" parameterType="java.lang.String">
+		delete from task where project = #{project}
+	</delete>
+	
+</mapper>

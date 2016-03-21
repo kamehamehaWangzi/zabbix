@@ -1,0 +1,682 @@
+<!--  <link href="css/bootstrap-multiselect.css" rel="stylesheet">-->
+
+<script type="text/javascript">
+<!--
+	document.getElementById("uploadBtn").onchange = function() {
+		document.getElementById("uploadFile").value = this.value;
+	};
+//-->
+</script>
+
+
+
+<style>
+<!--
+.fileUpload {
+	position: relative;
+	overflow: hidden;
+	margin: 10px;
+}
+
+.fileUpload input.upload {
+	position: absolute;
+	top: 0;
+	right: 0;
+	margin: 0;
+	padding: 0;
+	font-size: 20px;
+	cursor: pointer;
+	opacity: 0;
+	filter: alpha(opacity = 0);
+}
+-->
+</style>
+
+<div data-ng-controller="ShellScriptListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2>
+				<i class="fa fa-edit"></i>脚本批量执行
+			</h2>
+			<ol class="breadcrumb">
+				<li><a data-ui-sref="monitor">首页</a></li>
+				<li><a>部署</a></li>
+
+				<li class="active"><strong>脚本批量执行</strong></li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5>
+							<i class="glyphicon glyphicon-list"></i>
+						</h5>
+						<div class="ibox-tools">
+							<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+							</a> <a class="close-link"> <i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+							<div class="col-lg-6" style="float: right;">
+								<div class="input-group">
+									<input type="text" class="input-sm form-control"
+										data-ng-keyup="search()" data-ng-model="param"
+										placeholder="Search in table" /> <span
+										class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary"
+											data-ng-click="search()">Go!</button>
+									</span> <span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button"
+											data-ng-click="createScriptModal()">新建脚本</button>
+									</span> <span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button"
+											data-ng-click="modifyScriptModal()">修改脚本</button>
+									</span> <span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button"
+											data-ng-click="removeScriptModal()">删除脚本</button>
+									</span> <span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button"
+											data-ng-click="uploadScriptModal()">
+											<span class="glyphicon glyphicon-cloud-upload"></span>上传脚本
+										</button>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>序号</th>
+										<th>脚本名称</th>
+										<th>脚本类型</th>
+										<th>脚本描述</th>
+										<th>创建时间</th>
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="item in items">
+										<td><input data-icheck data-ng-model="iCheck"
+											type="checkbox" name="selectId" value="{{item.id}}" /></td>
+										<td scope="row">{{(currentPage - 1) * pageSize + $index + 1}}</td>
+										<td><a href="javascript:void(0);"
+											data-ng-click="detail(item.id)">{{item.name}}</a></td>
+										<td>{{item.type}}</td>
+										<td>{{item.description}}</td>
+										<td>{{item.createtime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+										<td><span style="cursor: pointer;" title="执行脚本"
+											data-toggle="modal" data-target="#scriptModal"
+											data-ng-click="loadHosts(item.path)"><i
+												class="fa fa-play fa-lg text-navy"></i></span> &nbsp; <!--  
+										<span style="cursor: pointer;" title="下载脚本"
+											data-ng-click="download(item.id)"><i
+												class="glyphicon glyphicon-cloud-download text-navy"> <a href="/r/script/download" id="downloadurl"></a></i></span>
+												--> <a href="#" data-ng-click="download(item.id)"
+											id="downloadurl" title="下载脚本"><i
+												class="glyphicon glyphicon-cloud-download text-navy"> </i></a></td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="7" align="right">
+											<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="5" items-per-page="pageSize" previous-text="上一页" next-text="下一页" boundary-link-numbers="true" force-ellipses="true" ng-change="search()"></uib-pagination>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+
+
+	<div class="modal fade" id="scriptModal" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form"
+					data-ng-submit="executeScript(path)">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+						<h3 class="modal-title" id="myModalLabel">脚本执行</h3>
+					</div>
+					<div class="modal-body">
+
+						<div class="form-group">
+							<label for="hostid" class="col-sm-2 control-label">选择主机</label>
+							<div class="col-sm-10">
+								<select id="multiselect" class="multiselect" multiple="multiple" required></select>
+							</div>
+						</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-primary"
+							data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">开始执行</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+
+	<div class="modal fade" id="createscriptModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form"
+					data-ng-submit="addScript()">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">新建脚本</h4>
+					</div>
+					<div class="modal-body">
+
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">脚本名称</label>
+							<div class="col-sm-10">
+								<input class="form-control" id="name"
+									data-ng-model="scripts.name" placeholder="脚本名称" required />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-2 control-label">脚本类型</label>
+							<div class="col-sm-10">
+								<select class="form-control" data-ng-model="scripts.type"
+									data-ng-options="type.id as type.name for type in scriptTypes"
+									required>
+									<option value="">-- 请选择 --</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+
+							<label for="content" class="col-sm-2 control-label">脚本内容</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="8" id="content"
+									data-ng-model="scripts.content" placeholder="脚本内容" required></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="2" id="description"
+									data-ng-model="scripts.description"></textarea>
+							</div>
+						</div>
+
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default"
+							data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">提交</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="scriptDetailModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">脚本明细</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">脚本名称</label>
+							<div class="col-sm-10">
+								<pre>{{scripts.name}}</pre>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-2 control-label">脚本类型</label>
+							<div class="col-sm-10">
+								<pre>{{scripts.type}}</pre>
+							</div>
+						</div>
+						<div class="form-group">
+
+							<label for="content" class="col-sm-2 control-label">脚本内容</label>
+							<div class="col-sm-10">
+								<pre>{{scripts.content}}</pre>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-10">
+								<pre>{{scripts.description}}</pre>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-default"
+						data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modifyScriptModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form" data-ng-submit="modifyScript()">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">修改脚本</h4>
+					</div>
+					<div class="modal-body">
+
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">脚本名称</label>
+							<div class="col-sm-10">
+								<input type="hidden" data-nd-model="scripts.id" /> <input
+									type="hidden" data-nd-model="scripts.path" /> <input
+									class="form-control" id="name" data-ng-model="scripts.name"
+									placeholder="脚本名称" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-2 control-label">脚本类型</label>
+							<div class="col-sm-10">
+								<select class="form-control" data-ng-model="scripts.type"
+									data-ng-options="type.id as type.name for type in scriptTypes" required>
+									<option value="">-- 请选择 --</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+
+							<label for="content" class="col-sm-2 control-label">脚本内容</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="8" id="content"
+									data-ng-model="scripts.content" placeholder="脚本内容" required></textarea>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="2" id="description"
+									data-ng-model="scripts.description"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default"
+							data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">提交</button>
+					</div>
+				</form>
+
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="uploadScriptModal" tabindex="-1"
+		role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+			<form class="form-horizontal" role="form"
+						enctype="multipart/form-data" id="postForm" data-ng-submit="upload()">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">脚本上传</h4>
+				</div>
+				<div class="modal-body">
+					
+						<div class="form-group">
+							<label for="uploadBtn" class="col-sm-2 control-label">脚本文件</label>
+							<div class="col-sm-10">
+								<input id="uploadFile" placeholder="Choose File"
+									disabled="disabled" />
+								<div class="fileUpload btn btn-primary">
+									<span>Upload</span> <input id="uploadBtn" type="file"
+										name="file" class="upload" required/>
+								</div>
+
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-2 control-label">脚本类型</label>
+							<div class="col-sm-10">
+								<select class="form-control" data-ng-model="scripts.type"
+									data-ng-options="type.id as type.name for type in scriptTypes"
+									name="type" required>
+									<option value="">-- 请选择 --</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="2" id="description"
+									data-ng-model="scripts.description" name="description"></textarea>
+							</div>
+						</div>
+					
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-default"
+						data-dismiss="modal">关闭</button>
+					<button type="submit" class="btn btn-sm btn-primary">提交</button>
+				</div>
+				</form>
+			</div>
+			
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	function ShellScriptListController($scope, $http, $stateParams) {
+		$scope.currentPage = 1;
+		$scope.pageSize = 10;
+		
+		$scope.scriptTypes = [ {
+			id : 'shell',
+			name : 'shell'
+		}, {
+			id : 'python',
+			name : 'python'
+		} ];
+
+		toastr.options = {
+			closeButton : true,
+			progressBar : true,
+			showMethod : 'fadeIn',
+			timeOut : 4000
+		};
+
+		$scope.search = function() {
+			$http({
+				method : 'GET',
+				url : 'r/script/list',
+				params : {
+					'param' : $scope.param,
+					'currentPage': $scope.currentPage, 
+					'pageSize': $scope.pageSize
+				}
+			}).success(function(data) {
+				$scope.items = data.result;
+				$scope.totalItems = data.totalCount;
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+		$scope.search();
+		$scope.detail = function(id) {
+			$("#scriptDetailModal").modal('show');
+
+			$http({
+				method : 'GET',
+				url : 'r/script/list/' + id + '/info'
+			}).success(function(data) {
+				$scope.scripts = data;
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+
+		$scope.loadHosts = function(path) {
+			$http({
+				method : 'GET',
+				url : 'r/machine/hosts',
+				params : ''
+			}).success(function(data) {
+				var hosts = new Array();
+				$.each(data, function(index, item) {
+					obj = {
+						label : item.name,
+						value : item.id
+					};
+					hosts.push(obj);
+				});
+
+				$('#multiselect').multiselect({
+					enableFiltering : true,
+					includeSelectAllOption : true,
+					buttonWidth : '100%'
+				});
+
+				if (hosts.length == 0) {
+					$("#multiselect").multiselect('disable');
+				} else {
+					$("#multiselect").multiselect('dataprovider', hosts);
+				}
+				$scope.path = path;
+			}).error(function(data) {
+				console.log(data);
+			});
+
+		}
+
+		$scope.uploadScriptModal = function() {
+			$("#uploadScriptModal").modal('show');
+			$("#uploadFile").val("");
+
+		}
+
+		$scope.upload = function() {
+			var formData = new FormData($("#postForm")[0]);
+			var type=$scope.scripts.type;
+			var filename=$("#uploadBtn").val();
+
+				if((type=='python'&&filename.indexOf('.py')==-1)||(type=='shell'&&filename.indexOf('.sh')==-1)){
+						swal("", "上传的文件类型与选择的脚本类型不符!", "warning");
+						return false;
+				}
+			
+			$http({
+				
+				headers : {
+					'Content-Type' : undefined
+				},
+				async : false,
+				method : 'POST',
+				url : 'r/script/upload',
+				params : {
+					'scripts' : $scope.scripts
+				},
+				data : formData
+			}).success(function(data) {
+				if (data == '200') {
+					$('#uploadScriptModal').modal('hide');
+					swal("", "脚本上传成功", "success");
+					$scope.scripts = null;
+					$scope.search();
+				}
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+
+		$scope.modifyScriptModal = function() {
+			$scope.id = '';
+			var count = 0;
+
+			$("input[name='selectId']:checked").each(function() {
+				$scope.id = $(this).val();
+				count += 1;
+			});
+
+			if (count > 1) {
+				swal("", "请选择一个脚本进行修改", "warning");
+				return false;
+			}
+			if ($scope.id != '') {
+				$http({
+					method : 'GET',
+					url : 'r/script/list/' + $scope.id + '/info'
+				}).success(function(data) {
+					$scope.scripts = data;
+				}).error(function(data) {
+					console.log(data);
+				});
+
+				$("#modifyScriptModal").modal('show');
+			} else {
+				swal("", "请选择要修改的脚本", "warning");
+
+			}
+		}
+		$scope.modifyScript = function() {
+
+			$http({
+				async : false,
+				method : 'PUT',
+				url : 'r/script/modify',
+				params : {
+					'scripts' : $scope.scripts
+				}
+			}).success(function(data) {
+				if (data == '200') {
+					$('#modifyScriptModal').modal('hide');
+					swal("", "脚本修改成功", "success");
+					$scope.scripts = null;
+					$scope.search();
+				}
+
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+
+		$scope.createScriptModal = function() {
+			$("#createscriptModal").modal('show');
+			$scope.scripts = null;
+		}
+
+		$scope.addScript = function() {
+
+			$http({
+				async : false,
+				method : 'POST',
+				url : 'r/script/add',
+				params : {
+					'script' : $scope.scripts
+				}
+			}).success(function(data) {
+				if (data == '200') {
+					$('#createscriptModal').modal('hide');
+					swal("", "脚本创建成功", "success");
+					$scope.scripts = null;
+					$scope.search();
+				}
+			}).error(function(data) {
+				console.log(data);
+			});
+		}
+
+		$scope.removeScriptModal = function() {
+			$scope.ids = '';
+
+			$("input[name='selectId']:checked").each(function() {
+				$scope.ids += ',' + $(this).val();
+			});
+
+			if ($scope.ids != '') {
+				swal({
+					title : "确定删除脚本?",
+					text : "确定删除脚本",
+					type : "warning",
+					showCancelButton : true,
+					confirmButtonColor : "#DD6B55",
+					cancelButtonText : "取消",
+					confirmButtonText : "确认",
+					closeOnConfirm : false
+				}, function() {
+					$http({
+						method : 'PUT',
+						url : 'r/script/delScript',
+						params : {
+							'scriptIds' : $scope.ids
+						}
+					}).success(function(data) {
+						if (data == '200') {
+							swal("Deleted!", "脚本已删除", "success");
+							$scope.search();
+						}
+					}).error(function(data) {
+						console.log(data);
+					});
+				});
+			} else {
+				swal("", "请选择要删除的脚本", "warning");
+
+			}
+		}
+
+		$scope.executeScript = function(path) {
+			toastr.options = {
+				closeButton : true,
+				progressBar : true,
+				showMethod : 'fadeIn',
+				timeOut : 4000
+			};
+			toastr
+					.info('<strong>操作执行中 <i class="fa fa-spinner fa-lg fa-spin"></i></strong>');
+
+			var hostIds = $('#multiselect').val();
+			$http({
+				method : 'POST',
+				url : 'r/script/service',
+				params : {
+					'hostIds' : hostIds.join(","),
+					'scriptpath' : path
+				}
+			}).success(
+					function(data) {
+						toastr.clear();
+						if (data == 200) {
+							toastr.success('<strong>执行脚本 ' + path
+									+ ' 操作成功 !</strong>');
+							$('#scriptModal').modal('hide');
+							$scope.search();
+						} else {
+							toastr.error('<strong></strong>',
+									'<strong>操作失败 !</strong>');
+						}
+					}).error(function(data) {
+				console.log(data);
+			});
+		}
+
+		
+		$scope.download = function(id) {
+		
+			toastr.options = {
+				closeButton : true,
+				progressBar : true,
+				showMethod : 'fadeIn',
+				timeOut : 4000
+			};
+			toastr.info('<strong>操作执行中 <i class="fa fa-spinner fa-lg fa-spin"></i></strong>');
+			
+			$("#downloadurl").attr("href",'r/script/download?id='+id);
+
+		}
+
+	}
+</script>

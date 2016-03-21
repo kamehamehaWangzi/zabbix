@@ -1,0 +1,110 @@
+<div class="tab-pane fade in active" id="info">
+	<div class="panel panel-default" data-ng-controller="NetworkInfoController">
+		<div class="panel-heading">
+			<h3 class="panel-title"><span class="glyphicon glyphicon-list"></span> {{info.name}}</h3>
+		</div>
+		<div class="panel-body">
+			<table class="table table-striped">
+				<tbody>
+					<tr>
+						<th>设备名</th>
+						<td>{{info.name}}</td>
+						<th>IP</th>
+						<td>{{info.ip}}</d>
+					</tr>
+					<tr>
+						<th>设备型号</th>
+						<td>{{info.model}}</td>
+						<th>设备类型</th>
+						<td>{{info.type}}</d>
+					</tr>
+					<tr>
+						<th>操作系统</th>
+						<td>{{info.osType}}</td>
+						<th>系统版本</th>
+						<td>{{info.osVersion}}</d>
+					</tr>
+					<tr>
+						<th>位置</th>
+						<td>{{info.location}}</td>
+						<th>备注</th>
+						<td>{{info.description}}</td>
+						
+					</tr>
+					<tr>
+						<th>厂家</th>
+						<td>{{info.vendor}}</td>
+						<th>序列号</th>
+						<td>{{info.sn}}</td>
+					</tr>
+					<tr>
+					    <th>fan1</th>
+						<td>
+							<span data-ng-show="model.fan1Status == 1">active</span>
+							<span data-ng-show="model.fan1Status == 2">deactive</span>
+							<span data-ng-show="model.fan1Status == 3">not-install</span>
+							<span data-ng-show="model.fan1Status == 4">unsupport</span>
+						</td>
+						<th>fan2</th>
+						<td>
+							<span data-ng-show="model.fan2Status == 1">active</span>
+							<span data-ng-show="model.fan2Status == 2">deactive</span>
+							<span data-ng-show="model.fan2Status == 3">not-install</span>
+							<span data-ng-show="model.fan2Status == 4">unsupport</span>
+						</td>						
+					</tr>
+					<tr>
+					    <th>fan3</th>
+						<td>
+							<span data-ng-show="model.fan3Status == 1">active</span>
+							<span data-ng-show="model.fan3Status == 2">deactive</span>
+							<span data-ng-show="model.fan3Status == 3">not-install</span>
+							<span data-ng-show="model.fan3Status == 4">unsupport</span>
+						</td>
+						<th>fan4</th>
+						<td>
+							<span data-ng-show="model.fan4Status == 1">active</span>
+							<span data-ng-show="model.fan41Status == 2">deactive</span>
+							<span data-ng-show="model.fan4Status == 3">not-install</span>
+							<span data-ng-show="model.fan4Status == 4">unsupport</span>
+						</td>						
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function NetworkInfoController($scope, $http, $stateParams) {
+	
+	$http.get('r/network/' + $stateParams.id + '/info').success(function(data) {
+		$scope.info = data;
+    });
+    $scope.model = {
+			fan1Status: '',
+			fan2Status: '',
+			fan3Status: '',
+			fan4Status: '',			
+	};
+	
+	$http({
+		method: 'GET',
+		url: 'r/graph/value',
+		params: {
+			'id': $stateParams.hostId, 
+			'key': JSON.stringify(['fan1', 'fan2', 'fan3', 'fan4'])}
+	}).success(function(data){
+		console.log(data);
+		if(data) {
+			$scope.model.fan1Status = data[0].lastvalue;
+			$scope.model.fan2Status = data[1].lastvalue;
+			$scope.model.fan3Status = data[2].lastvalue;
+			$scope.model.fan4Status = data[3].lastvalue;
+		}
+	}).error(function(data){
+		console.log(data);
+	});
+	
+}
+</script>

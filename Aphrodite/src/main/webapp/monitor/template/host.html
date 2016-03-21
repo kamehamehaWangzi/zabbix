@@ -1,0 +1,213 @@
+<div data-ng-controller="HostListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-desktop"></i> 模板管理</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>监控</a>
+				</li>
+				<li>
+					<a data-ui-sref="template">模板</a>
+				</li>
+				<li class="active">
+					<strong>{{template.host}}</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5><i class="glyphicon glyphicon-list"></i></h5>
+						<div class="ibox-tools">
+							<a class="collapse-link">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+							<a class="close-link">
+								<i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">						
+							<div class="col-sm-6 m-b-xs">																
+							</div>
+							<div class="col-sm-4">
+	                            <div class="input-group">
+									<input type="text" class="input-sm form-control" data-ng-model="param" data-ng-keyup="search()" placeholder="Search by name" />
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary"> Go!</button>
+									</span>
+								</div>
+							</div>
+							<div class="col-sm-2 m-b-xs">
+								<span class="input-group-btn">
+									<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addHostModal">添加关联主机</button>
+								</span>
+							</div>																	
+	                    </div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>								
+										<th>序号</th>
+										<th>名称</th>
+										<th>状态</th>										
+									</tr>
+								</thead>
+								<tbody>							 
+									<tr data-ng-repeat="host in hosts">
+										<td>{{$index + 1}}</td>
+										<td><a href="#" data-ng-click="toTrigger(template.id)">{{host.name}}</a></td>
+										<td>
+											<span data-ng-show="host.status == '0'" style="color: #00EC00;">已启用</span>
+											<span data-ng-show="host.status == '1'" style="color: #FF6600;">停用的</span>									
+										</td>									
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="addHostModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<div class="modal-header">
+		            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">
+						添加关联主机
+					</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">
+							<label for="priority" class="col-sm-2 control-label">请选择群组：</label>
+							<div class="col-sm-10">
+								<select class="input-sm form-control input-s-sm inline"  data-ng-model="hostgroup" data-ng-options="hostgroup.groupid as hostgroup.name for hostgroup in hostgroups" data-ng-change="change()">
+									<option value="">{{hostgroup}}</option>
+								</select>
+								
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">请选择主机</label>
+							<div class="col-sm-10">
+								<select id="multiselect" class="multiselect" multiple="multiple" data-ng-model="host.hostids"></select>
+							</div>
+						</div>																																																	
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-sm btn-primary" data-ng-click="addHosts()">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function HostListController($scope, $http, $stateParams) {		       
+    getHostList($stateParams.id,"");
+    function getHostList(templateid,param){
+        $http({
+			method: 'GET',
+			url: 'r/template/host',
+			params: {'templateid': templateid,'param': param}
+		}).success(function(data){
+			$scope.hosts = data;
+		}).error(function(data){
+			console.log(data);
+		});
+    }
+    getTemplate($stateParams.id);    
+    function getTemplate(id){
+		$http({
+			method: 'GET',
+			url: 'r/template',
+			params: {'templateid':id}
+		}).success(function(data){
+			$scope.template =data;
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+	
+	$http.get('r/template/hostgroup').success(function(data) {
+        $scope.hostgroups = data;
+        $scope.hostgroup = $scope.hostgroups[0].name;
+        loadHosts($scope.hostgroups[0].groupid);    
+    });	
+    $scope.change = function(){
+		var groupid = $("#hostgroup option:selected").val();		
+		loadHosts($scope.hostgroup);
+	}     
+    $scope.search = function() {
+		$http({
+			method: 'GET',
+			url: 'r/template/host',
+			params: {'templateid': $stateParams.id,'param': $scope.param}
+		}).success(function(data){
+			$scope.hosts = data;
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+	function loadHosts(groupid) {
+		$http({
+			method: 'GET',
+			url: 'r/template/list',
+			params: {'groupid': groupid}
+		}).success(function(data) {
+			if(data) {
+			    console.log(data);
+				var temps = new Array();
+				$.each(data.result, function(index, item) {
+					obj = {
+					    label : item.host,
+					    value : item.hostid
+					};
+					temps.push(obj);
+				});
+				
+				$('#multiselect').multiselect({
+					buttonClass: 'btn btn-sm btn-primary',
+					enableFiltering: true,
+			        includeSelectAllOption: true,
+			        buttonWidth: '100%'
+				});
+				
+				if(temps.length == 0) {
+					$("#multiselect").multiselect('disable');
+				} else {
+					$("#multiselect").multiselect('dataprovider', temps);
+				}
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+	}	
+	$scope.addHosts =function(){
+    	$http({
+    		method: 'POST',
+    		url   : 'r/template',
+    		params: {'host':$scope.host,"templateid": $stateParams.id}
+    	}).success(function(data){
+    		if(data != null){
+    			swal("", "关联主机成功！", "");
+    			$('#addHostModal').modal('hide');
+    		}
+    	}).error(function(data){
+			swal("", "模板无法关联到该主机！", "");
+			console.log(data);
+		});
+    }		
+}
+</script>

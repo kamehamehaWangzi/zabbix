@@ -1,0 +1,40 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="HillstoneTempController">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> 温度</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeLoad" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="tempChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+function HillstoneTempController($scope, $http, $stateParams) {
+	
+	var params = {
+			id: $stateParams.hostId,
+			graphDiv: 'tempChart',
+			title: 'Temperature',
+			key: ['hillstone.temperature.cpu', 'hillstone.temperature.chassisInlet', 'hillstone.temperature.chassisOutlet', 'hillstone.temperature.slotInlet', 'hillstone.temperature.switch'],
+			graphType: 'line',
+			likeSearch: true,
+			formatter: '°C',
+			dateRangeId: 'dateRangeLoad'
+	};
+	
+	renderGraph(params);
+	
+}
+</script>

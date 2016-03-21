@@ -1,0 +1,166 @@
+<div data-ng-controller="DeployTaskController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-bell"></i> 部署</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>部署</a>
+				</li>
+				<li class="active">
+					<strong>部署任务</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5><i class="glyphicon glyphicon-list"></i></h5>
+						<div class="ibox-tools">
+							<a class="collapse-link">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+							<a class="close-link">
+								<i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+							<div class="col-lg-6" style="float: right;">
+								<div class="input-group">
+									<input type="text" class="input-sm form-control" data-ng-keyup="search()" data-ng-model="param" placeholder="Search in table" />
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary" data-ng-click="search()"> Go!</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button type="button" class="btn btn-sm btn-primary" data-ng-click="refreshJob()"> 手动刷新</button>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>任务号</th>
+										<th>主机名</th>
+										<th>任务</th>
+										<th>执行状态</th>
+										<th>部署时间</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="item in items">
+										<td>{{(currentPage - 1) * pageSize + $index + 1}}</td>
+										<td><a href="javascript: void(0);" data-ng-click="detail(item.id)">{{item.jobId}}</a></td>
+										<td><a href="javascript:void(0);">{{item.hostName}}</a></td>
+										<td>{{item.arg}}</td>
+										<td>
+											<i data-ng-if="item.status == 'wait'" class="fa fa-spinner fa-lg fa-spin text-navy" title="执行中"></i>
+											<i data-ng-if="item.status == 'success'" class="fa fa-check fa-lg text-navy" title="成功"></i>
+											<i data-ng-if="item.status == 'fail'" class="fa fa-remove fa-lg text-danger" title="失败"></i>
+										</td>
+										<td>{{item.deployTime | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+									</tr>
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="6" align="right">
+											<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="5" items-per-page="pageSize" previous-text="上一页" next-text="下一页" boundary-link-numbers="true" force-ellipses="true" ng-change="search()"></uib-pagination>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal inmodal fade" id="jobModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+		            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h3 class="modal-title" id="myModalLabel">
+						任务执行明细
+					</h3>
+				</div>
+				<div class="modal-body">
+					<pre>{{jobDetail | json}}</pre>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-primary" data-dismiss="modal">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function DeployTaskController($scope, $http) {
+	
+	$scope.currentPage = 1;
+	$scope.pageSize = 10;
+	
+	toastr.options = {
+	    closeButton: true,
+	    progressBar: true,
+	    showMethod: 'fadeIn',
+	    timeOut: 4000
+	};
+	
+	$scope.search = function() {
+		$http({
+			method: 'GET',
+			url: 'r/deploy/job',
+			params: {'param': $scope.param, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
+		}).success(function(data) {
+			$scope.items = data.result;
+			$scope.totalItems = data.totalCount;
+		}).error(function(data) {
+			console.log(data);
+		});
+	}
+	
+	$scope.search();
+	
+	$scope.detail = function(id) {
+		$scope.resultContent = '请求执行中 <i class="fa fa-spinner fa-lg fa-spin"></i>';
+		$("#jobModal").modal('show');
+		
+		$http({
+			method: 'GET',
+			url: 'r/deploy/job/' + id + '/result'
+		}).success(function(data) {
+			$scope.jobDetail = data;
+		}).error(function(data) {
+			console.log(data);
+		});
+	}
+	
+	$scope.refreshJob = function() {
+		toastr.info('<strong>请求执行中 <i class="fa fa-spinner fa-lg fa-spin"></i></strong>');
+		
+		$http({
+			method: 'PUT',
+			url: 'r/deploy/job'
+		}).success(function(data) {
+			if(data == 200) {
+				$scope.search();
+			}
+		}).error(function(data) {
+			console.log(data);
+		});
+	}
+	
+}
+</script>
+

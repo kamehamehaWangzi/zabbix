@@ -1,0 +1,35 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="panel panel-default">
+			<div class="panel-heading">
+				<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> bandwidth</h3>
+			</div>
+			<div class="input-prepend input-group">
+				<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+				<input type="text" style="width: 300px;" id="dateRangeBandwidth" class="form-control" readonly="readonly"/>
+			</div>
+			<div class="panel-body" data-ng-controller="AppBandwidthController">
+				<div id="bandwidthChart" style="height:400px;"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function AppBandwidthController($scope, $http, $stateParams) {
+	
+	var params = {
+			id: $stateParams.hostId,
+			graphDiv: 'bandwidthChart',
+			title: 'Bandwidth',
+			key: ['mysql.status[Bytes_received]', 'mysql.status[Bytes_sent]'],
+			graphType: 'area',
+			formatter: 'KBps',
+			scaler: 1024,
+			dateRangeId: 'dateRangeBandwidth'
+	};
+	
+	renderGraph(params);
+	
+}
+</script>

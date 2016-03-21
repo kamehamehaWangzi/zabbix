@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.DeployDao">
+	<resultMap type="org.pbccrc.platform.vo.SaltJobVO" id="saltJobVO">
+		<id property="id" column="ID" />
+		<result property="jobId" column="JOB_ID" />
+		<result property="title" column="TITLE" />
+		<result property="hostName" column="HOST_NAME" />
+		<result property="fun" column="FUN" />
+		<result property="returnValue" column="RETURN_VALUE" jdbcType="VARCHAR"/>
+		<result property="arg" column="ARG" />
+		<result property="param" column="PARAM" />
+		<result property="status" column="STATUS" />
+		<result property="deployTime" column="DEPLOY_TIME" />
+	</resultMap>
+	
+	<select id="queryAll" parameterType="org.pbccrc.platform.vo.SaltJobVO" resultMap="saltJobVO">
+		select * from salt_job
+		<where>
+			<if test="(jobId != null) || (title != null) || (hostName != null) || (arg != null)">
+				and ((job_id like concat(concat('%', #{jobId}), '%')) or (title like concat(concat('%', #{title}), '%')) or (host_name like concat(concat('%', #{hostName}), '%')) or (arg like concat(concat('%', #{arg}), '%')))
+			</if>
+			<if test="fun != null">
+				and fun = #{fun}
+			</if>
+			<if test="status != null">
+				and status = #{status}
+			</if>
+		</where>
+		order by job_id desc
+	</select>
+	
+	<select id="queryByJobIdAndHostName" parameterType="org.pbccrc.platform.vo.SaltJobVO" resultMap="saltJobVO">
+		select * from salt_job
+		<where>
+			<if test="jobId != null">
+				and job_id = #{jobId}
+			</if>
+			<if test="hostName != null">
+				and host_name = #{hostName}
+			</if>
+		</where>
+		order by deploy_time desc
+	</select>
+	
+	<select id="queryJobById" parameterType="java.lang.String" resultMap="saltJobVO">
+		select * from salt_job where id = #{id}
+	</select>
+	
+	<select id="queryDistinctJob" resultMap="saltJobVO">
+		select * from salt_job where status = 'wait' group by job_id
+	</select>
+	
+	<insert id="insertJob" parameterType="org.pbccrc.platform.vo.SaltJobVO">
+		insert into salt_job(job_id, title, host_name, fun, return_value, arg, param)
+		values(#{jobId}, #{title}, #{hostName}, #{fun}, #{returnValue}, #{arg}, #{param})
+	</insert>
+	
+	<update id="updateJob" parameterType="org.pbccrc.platform.vo.SaltJobVO">
+		update salt_job set return_value = #{returnValue}, status = #{status} where id = ${id}
+	</update>
+	
+</mapper>

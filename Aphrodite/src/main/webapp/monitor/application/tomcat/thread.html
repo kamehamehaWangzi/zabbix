@@ -1,0 +1,40 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="TomcatThreadController">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> 线程数</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeThread" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="tomcatThreadChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function TomcatThreadController($scope, $http, $stateParams) {
+	
+	var threadParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'tomcatThreadChart',
+			title: 'Threads',
+			key: ['jmx["java.lang:type=Threading",ThreadCount]', 
+			      'jmx["java.lang:type=Threading",PeakThreadCount]', 
+			      'jmx["java.lang:type=Threading",DaemonThreadCount]'],
+			likeSearch: false,
+			graphType: 'line',
+			dateRangeId: 'dateRangeThread'
+	};
+	
+	renderGraph(threadParams);
+	
+}
+</script>

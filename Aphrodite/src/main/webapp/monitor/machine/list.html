@@ -1,0 +1,312 @@
+<div data-ng-controller="MachineListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-server"></i> 服务器</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>监控</a>
+				</li>
+				<li class="active">
+					<strong>服务器</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5><i class="glyphicon glyphicon-list"></i></h5>
+						<div class="ibox-tools">
+							<a class="collapse-link">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+							<a class="close-link">
+								<i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+							<div class="col-lg-6" style="float: right;">
+								<div class="input-group">
+									<input type="text" class="input-sm form-control" data-ng-keyup="search()" data-ng-model="param" placeholder="Search in table" />
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary" data-ng-click="search()"> Go!</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addHostModal" data-ng-click="loadTemplate();loadGroup()">添加新主机</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delHost()">删除主机</button>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>序号</th>
+										<th>主机名</th>
+										<th>IP</th>
+										<th>操作系统</th>
+										<th>状态</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="item in items">
+										<td>
+											<input data-icheck data-ng-model="iCheck" type="checkbox" name="selectId" value="{{item.zabbixHostid}}" />
+										</td>
+										<td>{{(currentPage - 1) * pageSize + $index + 1}}</td>
+										<td><a href="#" data-ng-click="toInfo(item.id, item.zabbixHostid, item.name)">{{item.name}}</a></td>
+										<td>{{item.ip1}}</td>
+										<td>{{item.osVersion}}</td>
+										<td>
+											<i data-ng-if="item.status == '0'" class="fa fa-check fa-lg text-navy"></i>
+											<i data-ng-if="item.status == '1'" class="fa fa-remove fa-lg text-danger"></i>
+										</td>
+									</tr>
+									
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="6" align="right">
+											<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="5" items-per-page="pageSize" previous-text="上一页" next-text="下一页" boundary-link-numbers="true" force-ellipses="true" ng-change="search()"></uib-pagination>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="addHostModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form" data-ng-submit="addHost()">
+					<div class="modal-header">
+			            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">
+							添加主机
+						</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">主机名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="host.name" placeholder="主机名称" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="ip" class="col-sm-2 control-label">IP</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="host.ip" placeholder="IP" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">群组</label>
+							<div class="col-sm-10">
+								<select id="groups" class="multiselect" multiple="multiple" data-ng-model="host.groupids"></select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="osVersion" class="col-sm-2 control-label">操作系统</label>
+							<div class="col-sm-10">
+								<select class="form-control" data-ng-model="host.osVersion">
+									<option value="CentOS6.5">CentOS6.5</option>
+									<option value="CentOS7.0">CentOS7.0</option>
+									<option value="Ubuntu">Ubuntu</option>
+									<option value="Windows">Windows</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-2 control-label">机器类型</label>
+							<div class="col-sm-10">
+								<select class="form-control" name="type" data-ng-model="host.type">
+									<option value="physical">物理机</option>
+									<option value="virtual">虚拟机</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">SN</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="host.sn" placeholder="SN"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">监控模板</label>
+							<div class="col-sm-10">
+								<select id="multiselect" class="multiselect" multiple="multiple" data-ng-model="host.templates"></select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="3" data-ng-model="host.description"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">添加主机</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function MachineListController($scope, $http, $state) {
+	
+	$scope.currentPage = 1;
+	$scope.pageSize = 10;
+	
+	$scope.search = function() {
+		$http({
+			method: 'GET',
+			url: 'r/machine',
+			params: {'param': $scope.param, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
+		}).success(function(data){
+			$scope.items = data.result;
+			$scope.totalItems = data.totalCount;
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+    
+    $scope.search();
+    
+    $scope.loadGroup = function() {
+		$http({
+			method: 'GET',
+			url: 'r/machine/groupAll'
+		}).success(function(data) {
+			if(data) {
+				var temps = new Array();
+				$.each(data.result, function(index, item) {
+					obj = {
+					    label : item.name,
+					    value : item.groupid
+					};
+					temps.push(obj);
+				});
+				$('#groups').multiselect({
+					buttonClass: 'btn btn-sm btn-primary',
+					enableFiltering: true,
+			        includeSelectAllOption: true,
+			        buttonWidth: '100%'
+				});
+				if(temps.length == 0) {
+					$("#groups").multiselect('disable');
+				} else {
+					$("#groups").multiselect('dataprovider', temps);
+				}
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+	
+	$scope.loadTemplate = function() {
+		$http({
+			method: 'GET',
+			url: 'r/machine/template',
+			params: {'group': 'template_server'}
+		}).success(function(data) {
+			if(data) {
+				var temps = new Array();
+				$.each(data.result, function(index, item) {
+					obj = {
+					    label : item.name,
+					    value : item.templateid
+					};
+					temps.push(obj);
+				});
+				
+				$('#multiselect').multiselect({
+					buttonClass: 'btn btn-sm btn-primary',
+					enableFiltering: true,
+			        includeSelectAllOption: true,
+			        buttonWidth: '100%'
+				});
+				
+				if(temps.length == 0) {
+					$("#multiselect").multiselect('disable');
+				} else {
+					$("#multiselect").multiselect('dataprovider', temps);
+				}
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+	
+	$scope.toInfo = function(id, hostId, historyLocation) {
+		$state.go('machine_detail.info', {id: id, hostId: hostId, historyLocation: historyLocation});
+	}
+	
+	$scope.addHost = function() {
+		var tempIds = $('#multiselect').val();
+		
+		$http({
+			async: false,
+			method: 'POST',
+			url: 'r/machine',
+			params: {'host': $scope.host}
+		}).success(function(data){
+			if(data == '200') {
+				$('#addHostModal').modal('hide');
+				$scope.search();
+				$scope.host = {};
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+	
+	$scope.delHost = function() {
+		$scope.ids = '';
+		$("input[name='selectId']:checked").each(function() {
+			$scope.ids += ',' + $(this).val();
+		});
+		
+		if($scope.ids != '') {
+			swal({
+	            title: "确定删除?",
+	            text: "确定不再监控该服务器并删除",
+	            type: "warning",
+	            showCancelButton: true,
+	            confirmButtonColor: "#DD6B55",
+	            cancelButtonText: "取消",
+	            confirmButtonText: "删除",
+	            closeOnConfirm: false
+	        }, function () {
+	        	$http({
+	    			method: 'DELETE',
+	    			url: 'r/machine',
+	    			params: {'ids': $scope.ids}
+	    		}).success(function(data) {
+	    			if(data == '200') {
+	    				swal("Deleted!", "服务器已删除.", "success");
+	    				$scope.search();
+	    			}
+	    		}).error(function(data){
+	    			console.log(data);
+	    		});
+	        });
+		}
+    }
+	
+}
+</script>

@@ -1,0 +1,120 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="row" data-ng-controller="TomcatErrorLogController">
+		<div class="col-lg-12">
+			<div class="ibox float-e-margins">
+				<div class="ibox-content">
+					<div class="row">
+						<div class="col-sm-4">
+							<div class="input-group date">
+	                           	<span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+	                           	<input type="text" id="dateRangeTime" class="input-sm form-control" readonly="readonly"/>
+							</div>
+						</div>
+						<div class="col-sm-3 m-b-xs">
+							<select class="input-sm form-control input-s-sm inline" data-ng-model="model.logLevel" data-ng-change="search()">
+								<option value="-1">日志级别</option>
+								<option value="DEBUG">DEBUG</option>
+								<option value="INFO">INFO</option>
+								<option value="WARN">WARN</option>
+								<option value="ERROR">ERROR</option>
+							</select>
+						</div>
+                        <div class="col-sm-5">
+                            <div class="input-group">
+								<input type="text" class="input-sm form-control" data-ng-model="model.message" data-ng-keyup="search()" placeholder="Search in table"/>
+								<span class="input-group-btn">
+									<button type="button" class="btn btn-sm btn-primary"> Go!</button>
+								</span>
+							</div>
+						</div>
+					</div>
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>#</th>
+									<th nowrap="nowrap">级别</th>
+									<th nowrap="nowrap">类名</th>
+									<th nowrap="nowrap">内容</th>
+									<th nowrap="nowrap">时间</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="item in items">
+									<td scope="row">{{$index + 1}}</td>
+									<td nowrap="nowrap">{{item._source.log_level}}</td>
+									<td nowrap="nowrap">{{item._source.class_name}}</td>
+									<td>{{item._source.content}}</td>
+									<td nowrap="nowrap">{{item._source.datetime}}</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function TomcatErrorLogController($scope, $http, $stateParams) {
+	
+	$scope.startDate = new Date(new Date().getTime() - 3600 * 1000).Format("yyyy-MM-dd hh:mm:ss");
+	$scope.endDate = new Date().Format("yyyy-MM-dd hh:mm:ss");
+	
+	$scope.model = {
+			logLevel: '-1',
+			message: ''
+	};
+	
+	$scope.search = function() {
+		var param = {};
+		
+		if($scope.model.logLevel != '-1') {
+			param.log_level = $scope.model.logLevel;
+		}
+		
+		if($scope.model.message != '') {
+			param.message = $scope.model.message;
+		}
+		
+		$http({
+			method: 'GET',
+			url: 'r/elk/log',
+			params: {
+				'id': $stateParams.hostId,
+				'app': 'tomcat',
+				'type': 'errorlog',
+				'startDate': $scope.startDate,
+				'endDate': $scope.endDate,
+				'param': param
+			}
+		}).success(function(data){
+			$scope.items = data.hits;
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+	
+	$scope.search();
+	
+	$('#dateRangeTime').daterangepicker({
+		timePicker: true,
+		timePicker24Hour: true,
+		autoUpdateInput: true,
+		showDropdowns: true,
+		timePickerIncrement: 1,
+		startDate: $scope.startDate,
+		endDate: $scope.endDate,
+		locale: {
+            format: 'YYYY-MM-DD HH:mm'
+        }
+	}, function(start, end, label) {
+		$scope.startDate = start.format('YYYY-MM-DD HH:mm:ss');
+		$scope.endDate = end.format('YYYY-MM-DD HH:mm:ss');
+		
+		$scope.search();
+	});
+	
+}
+</script>

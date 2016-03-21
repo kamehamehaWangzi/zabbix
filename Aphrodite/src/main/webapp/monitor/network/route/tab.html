@@ -1,0 +1,46 @@
+<div class="row wrapper border-bottom white-bg page-heading" data-ng-controller="RouteTabCtrl">
+	<div class="col-lg-12">
+		<h2><i class="fa fa-align-justify"></i> 路由器</h2>
+		<ol class="breadcrumb">
+			<li>
+				<a data-ui-sref="monitor">首页</a>
+			</li>
+			<li>
+				<a>监控</a>
+			</li>
+			<li>
+				<a data-ui-sref="network">网络</a>
+			</li>
+			<li class="active">
+				<strong>{{historyLocation}}</strong>
+			</li>
+		</ol>
+	</div>
+</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="tabs-container">
+				<ul class="nav nav-tabs">
+	<li data-ui-sref-active="active" data-ui-sref="network_route.info"><a href="#" data-toggle="tab">基本信息</a></li>
+	<li data-ui-sref-active="active" data-ui-sref="network_route.port"><a href="#" data-toggle="tab">接口信息</a></li>
+	<li data-ui-sref-active="active" data-ui-sref="network_route.temperature"><a href="#" data-toggle="tab">温度</a></li>
+	<li data-ui-sref-active="active" data-ui-sref="network_route.cpu"><a href="#" data-toggle="tab">CPU</a></li>
+	<li data-ui-sref-active="active" data-ui-sref="network_route.memory"><a href="#" data-toggle="tab">内存</a></li>
+	<li data-ui-sref-active="active" data-ui-sref="network_route.octets"><a href="#" data-toggle="tab">流量</a></li>
+	<li data-ui-sref-active="active" data-ui-sref="network_route.package"><a href="#" data-toggle="tab">包</a></li>
+				</ul>
+				<div class="tab-content">
+					<div data-ui-view="network"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+	function RouteTabCtrl($scope, $http, $stateParams) {
+		$http.get('r/network/' + $stateParams.id + '/info').success(function(data) {
+			$scope.historyLocation = data.name;
+	    });
+	}
+</script>

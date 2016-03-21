@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.NetworkDao">
+	<resultMap type="org.pbccrc.platform.vo.NetworkVO" id="networkVO">
+		<id property="id" column="ID" />
+		<result property="zabbixHostid" column="ZABBIX_HOSTID" />
+		<result property="name" column="NAME" />
+		<result property="type" column="TYPE" />
+		<result property="osType" column="OS_TYPE" />
+		<result property="osVersion" column="OS_VERSION" />
+		<result property="ip" column="IP" />
+		<result property="vendor" column="VENDOR" />
+		<result property="location" column="LOCATION" />
+		<result property="model" column="MODEL" />
+		<result property="memory" column="MEMORY" />
+		<result property="sn" column="SN" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="isMonitor" column="IS_MONITOR" />
+	</resultMap>
+	
+	<select id="queryAll" parameterType="org.pbccrc.platform.vo.NetworkVO" resultMap="networkVO">
+		select * from network 
+		<where>
+			<if test="zabbixHostid != null">
+				and zabbix_hostid = #{zabbixHostid}
+			</if>
+			<if test="(name != null) || (ip != null)">
+				and ((name like concat(concat('%', #{name}), '%')) or (ip = #{ip}))
+			</if>
+			<if test="type != null">
+				and type = #{type}
+			</if>
+			<if test="osType != null">
+				and os_type = #{osType}
+			</if>
+			<if test="sn != null">
+				and sn = #{sn}
+			</if>
+			<if test="isMonitor != null">
+				and is_monitor = #{isMonitor}
+			</if>
+		</where>
+	</select>
+	
+	<select id="queryById" parameterType="java.lang.String" resultMap="networkVO">
+		select * from network where id = #{id}
+	</select>
+	
+	<select id="queryByHostId" parameterType="java.lang.String" resultMap="networkVO">
+		select * from network where zabbix_hostid = #{id}
+	</select>
+	
+	<insert id="insertNetwork" parameterType="org.pbccrc.platform.vo.NetworkVO">
+		insert into network(zabbix_hostid, name, type, ip, sn, description, is_monitor)
+		values(#{zabbixHostid}, #{name}, #{type}, #{ip}, #{sn}, #{description}, #{isMonitor})
+	</insert>				
+	
+	<delete id="deleteHost" parameterType="java.lang.String">
+		delete from network where id = #{id}
+	</delete>
+</mapper>

@@ -1,0 +1,94 @@
+<div class="tab-pane fade in active" id="octets" data-ng-controller="NetworkController">		
+	 <div class="tab-pane animated fadeIn active">
+		<div class="panel-body">
+			<div class="row">				
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>控制器CPU信息</th>
+							<th>控制器角色</th>																		
+						</tr>
+					</thead>
+					<tbody>
+						<tr data-ng-repeat="controller in controllers">						
+							<td>{{controller.c_cpuInfo}}</td>							
+							<td>
+						    <span data-ng-show="controller.c_role == 0">普通成员</span>
+							<span data-ng-show="controller.c_role == 1">集群主</span>
+							<span data-ng-show="controller.c_role == 2">集群备</span>
+						    </td>																				
+						</tr>
+					</tbody>
+				</table>
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<span class="glyphicon glyphicon-stats"></span> cpu usage
+						</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeCpu" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="cpuChart" style="height:400px;"></div>
+					</div>
+				</div>	
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<span class="glyphicon glyphicon-stats"></span> memory usage
+						</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeMemory" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="memoryChart" style="height:400px;"></div>
+					</div>
+				</div>								
+			</div>
+		</div>
+	</div>		
+</div>
+<script type="text/javascript"> 
+  function NetworkController($scope, $http, $stateParams) {
+        var params="stor.controller.cpu"+",stor.controller.role";
+        var hostid =$stateParams.hostId;	           
+		getValue(params,hostid);        		
+		function getValue(params,hostid){			
+			$http({
+	    		method: 'GET',
+	    		url   : 'r/network/storage',
+	    		params: {'params':params,'hostid':hostid},
+	    	}).success(function(data){
+	    		if(data != null){    		
+	    		  $scope.controllers =data; 			
+	    		}
+	    	}).error(function(data){
+				console.log(data);
+			});
+		}	
+		var params = {
+				id: $stateParams.hostId,
+				graphDiv: 'memoryChart',
+				title: 'Memory usage',
+				key: ['stor.controller.usage.memory1','stor.controller.usage.memory2','stor.controller.usage.memory3','stor.controller.usage.memory4'],
+				graphType: 'line',
+				dateRangeId: 'dateRangeMemory'
+		};
+		
+		renderGraph(params);
+		var params = {
+				id: $stateParams.hostId,
+				graphDiv: 'cpuChart',
+				title: 'cpu usage',
+				key: ['stor.controller.usage.cpu1','stor.controller.usage.cpu2','stor.controller.usage.cpu3','stor.controller.usage.cpu4'],
+				graphType: 'line',
+				dateRangeId: 'dateRangeCpu'
+		};
+		
+		renderGraph(params);			   	          
+}
+</script>

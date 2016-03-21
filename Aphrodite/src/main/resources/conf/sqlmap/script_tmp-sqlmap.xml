@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.ScriptTmpDao">
+	<resultMap type="org.pbccrc.platform.vo.ScriptTmpVO" id="ScriptTmpVO">
+		<id property="id" column="ID" />
+		<result property="name" column="NAME" />
+		<result property="content" column="CONTENT" />
+		<result property="description" column="DESCRIPTION" />
+		<result property="status" column="STATUS" />
+		<result property="os" column="OS" />
+		<result property="createtime" column="CREATETIME" />
+		<result property="type" column="TYPE" />
+	</resultMap>
+
+	<select id="queryAll" parameterType="org.pbccrc.platform.vo.ScriptTmpVO"
+		resultMap="ScriptTmpVO">
+		select * from script_template
+		<where>
+			status =0
+			<if test="(name != null)">
+				and (name like concat(concat('%', #{name}), '%'))
+			</if>
+		</where>
+		order by createtime desc
+	</select>
+
+	<delete id="deleteTemplate" parameterType="java.lang.String">
+		update script_template
+		set status=1 where id = #{id}
+	</delete>
+
+
+	<insert id="insertTemplate" parameterType="org.pbccrc.platform.vo.ScriptTmpVO">
+		insert into script_template(name,
+		os, content, description,status,type)
+		values(#{name}, #{os}, #{content},
+		#{description},#{status},#{type})
+	</insert>
+	
+	
+	<select id="queryTmpInfo" parameterType="java.lang.String" resultMap="ScriptTmpVO">
+		select * from script_template where status =0 and id=#{id}
+	</select>
+
+	<update id="updateTemplate" parameterType="org.pbccrc.platform.vo.ScriptTmpVO">
+		update script_template set name = #{name}, content=#{content},description=#{description},os=#{os},type=#{type} where id = ${id}
+	</update>
+	
+</mapper>

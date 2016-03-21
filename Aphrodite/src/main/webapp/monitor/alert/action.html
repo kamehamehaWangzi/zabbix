@@ -1,0 +1,207 @@
+<div data-ng-controller="ActionListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-bell"></i> 告警配置</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a data-ui-sref="alarm">告警</a>
+				</li>
+				<li class="active">
+					<strong>动作配置</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5><i class="glyphicon glyphicon-list"></i></h5>
+						<div class="ibox-tools">
+							<a class="collapse-link">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+							<a class="close-link">
+								<i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">						
+							<div class="col-sm-6 m-b-xs">																
+							</div>
+							<div class="col-sm-4">
+	                            <div class="input-group">
+									<input type="text" class="input-sm form-control" data-ng-model="param" data-ng-keyup="search()" placeholder="Search by name" />
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary"> Go!</button>
+									</span>
+								</div>
+							</div>
+							<div class="col-sm-2 m-b-xs">
+								<span class="input-group-btn">
+									<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addActionModal" >添加告警动作</button>
+								</span>
+							</div>																	
+	                    </div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>								
+										<th>序号</th>
+										<th>名称</th>
+										<th>状态</th>										
+									</tr>
+								</thead>
+								<tbody>							 
+									<tr data-ng-repeat="action in actions">
+										<td>{{$index + 1}}</td>
+										<td><a href="#" ">{{action.name}}</a></td>
+										<td>
+											<span data-ng-show="action.status == '0'" style="color: #00EC00;">已启用</span>
+											<span data-ng-show="action.status == '1'" style="color: #FF6600;">停用的</span>									
+										</td>									
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="addActionModal" tabindex="-1" role="dialog" data-aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content animated bounceInRight">
+				<div class="modal-header">
+		            <button type="button" class="close" data-dismiss="modal" data-aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">
+						添加告警动作
+					</h4>
+				</div>
+				<div class="modal-body">
+					<form class="form-horizontal" role="form">
+						<div class="form-group">			
+							<div class="form-group">
+								<label for="name" class="col-sm-2 control-label">名称</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="name" data-ng-model="action.name" placeholder="name"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="title" class="col-sm-2 control-label">标题</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="title" data-ng-model="action.title" placeholder="{TRIGGER.NAME}: {TRIGGER.STATUS}"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="content" class="col-sm-2 control-label">内容</label>
+								<div class="col-sm-10">
+									<textarea rows="7" class="form-control" id="content" data-ng-model="action.content">
+									</textarea>									
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="value" class="col-sm-2 control-label">触发器</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="value" data-ng-model="action.value" placeholder="value"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="time" class="col-sm-2 control-label">步骤持续时间</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="time" data-ng-model="action.time" placeholder="最少60s，默认为0"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="stepfrom" class="col-sm-2 control-label">起始步骤</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="stepfrom" data-ng-model="action.stepfrom" placeholder="*"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="stepto" class="col-sm-2 control-label">终止步骤</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="stepto" data-ng-model="action.stepto" placeholder="*"/>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="user" class="col-sm-2 control-label">送到用户</label>
+								<div class="col-sm-10">
+									<select class="form-control" name="user" id="user" data-ng-model="action.user">
+										<option value="1">Admin</option>																				
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="mediatypeid" class="col-sm-2 control-label">媒介类型</label>
+								<div class="col-sm-10">
+									<select class="form-control" name="mediatypeid" id="mediatypeid" data-ng-model="action.mediatypeid">
+										<option value="1">Email</option>
+										<option value="2">Jabber</option>	
+										<option value="3">SMS</option>
+										<option value="5">Email_py</option>																			
+									</select>
+								</div>
+							</div>
+					    </div>					
+					</form>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">取消</button>
+					<button type="button" class="btn btn-sm btn-primary" data-ng-click="addAction()">提交</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function ActionListController($scope, $http, $stateParams) {	
+	$scope.action = {
+   			title: "{TRIGGER.STATUS}: {TRIGGER.NAME}",
+   			content: "Trigger: {TRIGGER.NAME}\r\nTrigger status: {TRIGGER.STATUS}\r\nTrigger severity: {TRIGGER.SEVERITY}\r\nTrigger URL: {TRIGGER.URL}\r\n\r\nItem values:\r\n\r\n1. {ITEM.NAME1} ({HOST.NAME1}:{ITEM.KEY1}): {ITEM.VALUE1}\r\n2. {ITEM.NAME2} ({HOST.NAME2}:{ITEM.KEY2}): {ITEM.VALUE2}\r\n3. {ITEM.NAME3} ({HOST.NAME3}:{ITEM.KEY3}): {ITEM.VALUE3}\r\n\r\nOriginal event ID: {EVENT.ID}"
+   		};  			       
+    getActionList();
+    function getActionList(param){
+        $http({
+			method: 'GET',
+			url: 'r/alert/action',
+			params: {'param': param}
+		}).success(function(data){
+			$scope.actions = data;
+		}).error(function(data){
+			console.log(data);
+		});
+    }
+    $scope.search = function() {
+		$http({
+			method: 'GET',
+			url: 'r/alert/action',
+			params: {'param': $scope.param}
+		}).success(function(data){
+			$scope.actions = data;
+		}).error(function(data){
+			console.log(data);
+		});
+	}   
+   $scope.addAction =function(){
+       $http({
+    		method: 'POST',
+    		url   : 'r/alert/create',
+    		params: {'action':$scope.action}
+    	}).success(function(data){
+    		if(data != null){
+    		    alert("添加action成功！actionid："+data);
+    			$('#addActionModal').modal('hide');
+    		}
+    	}).error(function(data){
+			console.log(data);
+		}); 
+    }
+}
+</script>

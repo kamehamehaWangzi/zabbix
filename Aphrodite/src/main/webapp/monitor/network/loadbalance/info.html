@@ -1,0 +1,93 @@
+<div class="tab-pane fade in active" id="info">
+	<div class="panel panel-default" data-ng-controller="NetworkInfoController">
+		<div class="panel-heading">
+			<h3 class="panel-title"><span class="glyphicon glyphicon-list"></span> {{info.name}}</h3>
+		</div>
+		<div class="panel-body">
+			<table class="table table-striped">
+				<tbody>
+					<tr>
+						<th>设备名</th>
+						<td>{{info.name}}</td>
+						<th>IP</th>
+						<td>{{info.ip}}</td>
+					</tr>
+					<tr>
+						<th>设备型号</th>
+						<td>{{info.model}}</td>
+						<th>设备类型</th>
+						<td>
+							<span data-ng-show="info.type == 'firewall'">防火墙</span>
+							<span data-ng-show="info.type == 'route'">路由器</span>
+							<span data-ng-show="info.type == 'switch'">交换机</span>
+							<span data-ng-show="info.type == 'loadbalance'">负载均衡</span>
+						</td>
+					</tr>
+					<tr>
+						<th>操作系统</th>
+						<td>{{info.osType}}</td>
+						<th>系统版本</th>
+						<td>{{info.osVersion}}</td>
+					</tr>
+					<tr>
+						<th>厂家</th>
+						<td>{{info.vendor}}</td>
+						<th>序列号</th>
+						<td>{{info.sn}}</td>
+					</tr>
+					
+					<tr>
+						<th>vs名称</th>
+						<td>{{model.vsname}}</td>
+						<th>系统温度</th>
+						<td>{{model.sys_temperature}}</td>
+					</tr>
+					<tr>
+						<th>cpu1温度</th>
+						<td>{{model.cpu1temperature}}</td>
+						<th>cpu2温度</th>
+						<td>{{model.cpu2temperature}}<td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function NetworkInfoController($scope, $http, $stateParams) {
+	
+	$scope.model = {
+			vsname: '',
+			sys_temperature: '1',
+			cpu1temperature: '',
+			cpu2temperature: ''
+	};
+	
+	$http.get('r/network/' + $stateParams.id + '/info').success(function(data) {
+		$scope.info = data;
+    });
+	
+	$http({
+		method: 'GET',
+		url: 'r/graph/type_value',
+		params: {
+			'id': $stateParams.hostId, 
+			'key': JSON.stringify(['netopti.vs.name','netopti.temperature']),
+			'type':'loadbalance'}
+	}).success(function(data){
+		console.log(data);
+		if(data) {
+			$scope.model.vsname = data[0].lastvalue;
+		   var temp=data[1].lastvalue;
+			$scope.model.sys_temperature=temp.substring(temp.indexOf("sys:")+4,temp.indexOf(",cpu1"));
+			$scope.model.cpu1temperature = temp.substring(temp.indexOf("cpu1:")+5,temp.indexOf(",cpu2"));
+			$scope.model.cpu2temperature = temp.substr(temp.indexOf("cpu2:")+5);
+		
+		}
+	}).error(function(data){
+		console.log(data);
+	});
+	
+}
+</script>

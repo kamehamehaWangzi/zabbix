@@ -1,0 +1,178 @@
+<div data-ng-controller="JTopoController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2>
+				<i class="fa fa-server"></i> JTopo
+			</h2>
+			<ol class="breadcrumb">
+				<li><a data-ui-sref="monitor">首页</a></li>
+				<li><a>监控</a></li>
+				<li class="active"><strong>JTopo</strong></li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5>
+							<i class="glyphicon glyphicon-list"></i>
+						</h5>
+						<div class="ibox-tools">
+							<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+							</a> <a class="close-link"> <i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+							<canvas width="1024" height="600" id="canvas" style="background-color: #EEEEEE; border: 1px solid #444;"></canvas>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript" src="js/libs/jtopo/jtopo-0.4.8-min.js"></script>
+
+<script type="text/javascript">
+	function JTopoController($scope, $http, $state) {
+		var currentNode = null;
+
+		//$("#canvas").attr("width", $(window).get(0).innerWidth);
+		//$("#canvas").attr("height", $(window).get(0).innerHeight);
+
+		var stage = new JTopo.Stage($("#canvas").get(0));
+		stage.frames = 24;
+		stage.eagleEye.visible = true;
+		stage.wheelZoom = 0.85;
+
+		//显示工具栏
+		//showJTopoToobar(stage);
+		var scene = new JTopo.Scene();
+		scene.background = 'image/bg.jpg';
+
+		function node(x, y, img, text) {
+			var node = new JTopo.Node();
+			node.text = text;
+			node.setImage('image/' + img, true);
+			node.setLocation(x, y);
+			node.shadow = true;
+			scene.add(node);
+			return node;
+		}
+
+		function linkNode(nodeA, nodeZ, f) {
+			var link;
+			if (f) {
+				link = new JTopo.FoldLink(nodeA, nodeZ);
+			} else {
+				link = new JTopo.Link(nodeA, nodeZ);
+			}
+			link.direction = 'vertical';
+			link.strokeColor = JTopo.util.randomColor();
+			link.lineWidth = 1;
+			//link.dashedPattern = 5;
+			//link.arrowsRadius = 10;
+			scene.add(link);
+			return link;
+		}
+
+		var s1 = node(305, 43, 'server.png', 'server1');
+		s1.alarm = '2 W';
+		s1.click(function() {
+			$state.go('alarm');
+		});
+
+		s1.addEventListener('mouseup', function(event) {
+			currentNode = this;
+			handler(event);
+		});
+
+		var s2 = node(365, 43, 'server.png', 'server2');
+		var s3 = node(425, 43, 'server.png', 'server3');
+
+		var g1 = node(366, 125, 'gather.png');
+		linkNode(s1, g1, true);
+		linkNode(s2, g1, true);
+		linkNode(s3, g1, true);
+
+		var w1 = node(324, 167, 'wanjet.png');
+		linkNode(g1, w1);
+
+		var c1 = node(364, 214, 'center.png');
+		linkNode(w1, c1);
+
+		var cloud = node(344, 259, 'cloud.png');
+		linkNode(c1, cloud);
+
+		var c2 = node(364, 328, 'center.png');
+		linkNode(cloud, c2);
+
+		var w2 = node(324, 377, 'wanjet.png');
+		linkNode(c2, w2);
+
+		var g2 = node(366, 411, 'gather.png');
+		linkNode(w2, g2);
+
+		function hostLink(nodeA, nodeZ, isAlarm) {
+			var link = new JTopo.FlexionalLink(nodeA, nodeZ);
+			link.shadow = false;
+			link.offsetGap = 44;
+			link.lineWidth = 1;
+			link.strokeColor = '204,204,204';
+			
+			if(isAlarm) {
+				link.strokeColor = '255,0,0';
+			}
+			
+			scene.add(link);
+			return link;
+		}
+
+		var h1 = node(218, 520, 'host.png');
+		h1.alarm = '';
+		hostLink(g2, h1);
+		var h2 = node(292, 520, 'host.png');
+		hostLink(g2, h2);
+		var h3 = node(366, 520, 'host.png');
+		h3.alarm = '二级告警';
+		h3.alarmColor = '255,0,0';
+		//h3.alarmAlpha = 0.9;
+		hostLink(g2, h3, true);
+		var h4 = node(447, 520, 'host.png');
+		h4.alarm = 'error';
+		hostLink(g2, h4, true);
+		var h5 = node(515, 520, 'host.png');
+		h5.alarm = '1M';
+		hostLink(g2, h5, true);
+
+		setInterval(function() {
+			if (h3.alarm == '二级告警') {
+				h3.alarm = null;
+			} else {
+				h3.alarm = '二级告警'
+			}
+		}, 600);
+
+		stage.add(scene);
+
+		function handler(event) {
+			if (event.button == 2) {// 右键
+				alert(event.pageX);
+			}
+		}
+
+		/* $(window).resize(resizeCanvas);
+		
+		function resizeCanvas() {
+			canvas.attr("width", $(window).get(0).innerWidth);
+			canvas.attr("height", $(window).get(0).innerHeight);
+			context.fillRect(0, 0, canvas.width(), canvas.height());      
+		}; */
+
+	}
+</script>

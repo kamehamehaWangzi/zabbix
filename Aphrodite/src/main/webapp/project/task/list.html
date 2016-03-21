@@ -1,0 +1,268 @@
+<div data-ng-controller="TaskListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-server"></i> 项目</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>项目与任务</a>
+				</li>
+				<li class="active">
+					<strong>任务</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5><i class="glyphicon glyphicon-list"></i></h5>
+						<div class="ibox-tools">
+							<a class="collapse-link">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+							<a class="close-link">
+								<i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+							<div class="col-lg-6" style="float: right;">
+								<div class="input-group">
+									<input type="text" class="input-sm form-control" data-ng-keyup="search()" data-ng-model="param" placeholder="Search in table" />
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary" data-ng-click="search()"> Go!</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addTaskModal" data-ng-click="loadProject()">添加任务</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delTask()">删除任务</button>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>序号</th>
+										<th>所属项目</th>
+										<th>任务名</th>
+										<th></th>
+										<th></th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr data-ng-repeat="item in items">
+										<td>
+											<input data-icheck data-ng-model="iCheck" type="checkbox" name="selectId" value="{{item.id}}" />
+										</td>
+										<td>{{(currentPage - 1) * pageSize + $index + 1}}</td>
+										<td>{{item.projectName}}</td>
+										<td>{{item.name}}</td>
+										<td></td>
+										<td></td>
+									</tr>
+									
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="6" align="right">
+											<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="5" items-per-page="pageSize" previous-text="上一页" next-text="下一页" boundary-link-numbers="true" force-ellipses="true" ng-change="search()"></uib-pagination>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="addTaskModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form" data-ng-submit="addTask()">
+					<div class="modal-header">
+			            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">
+							添加任务
+						</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">任务名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="task.name" placeholder="任务名称" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">选择项目</label>
+							<div class="col-sm-10">
+							<select id="project" class="form-control" data-ng-change="loadHost()" 
+								data-ng-model="task.project" data-ng-options="x.value as x.label for x in projects"></select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">选择主机</label>
+							<div class="col-sm-10">
+								<select id="hosts" class="multiselect" multiple="multiple" data-ng-model="task.hosts"></select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">任务描述</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="3" data-ng-model="task.description"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">添加任务</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function TaskListController($scope, $http, $state) {
+	
+	$scope.currentPage = 1;
+	$scope.pageSize = 10;
+	
+	$scope.task = {};
+	
+	$scope.search = function() {
+		$http({
+			method: 'GET',
+			url: 'r/task',
+			params: {'param': $scope.param, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
+		}).success(function(data){
+			$scope.items = data.result;
+			$scope.totalItems = data.totalCount;
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+    
+    $scope.search();
+    
+	$scope.loadHost = function() {
+    	$http({
+			method: 'GET',
+			params: {'projectId': $("#project").val()},
+			url: 'r/task/getHost'
+		}).success(function(data) {
+			if(data) {
+				var temps = new Array();
+				$.each(data, function(index, item) {
+					obj = {
+					    label : item.name,
+					    value : item.id
+					};
+					temps.push(obj);
+				});
+				
+				if(temps.length == 0) {
+					$("#hosts").multiselect('disable');
+				} else {
+					$("#hosts").multiselect('dataprovider', temps);
+				}
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+    }
+    
+    $scope.loadProject = function() {
+		$http({
+			method: 'GET',
+			url: 'r/task/getProject'
+		}).success(function(data) {
+			if(data) {
+				var temps = new Array();
+				$.each(data, function(index, item) {
+					obj = {
+					    label : item.name,
+					    value : item.id
+					};
+					temps.push(obj);
+				});
+				
+				$scope.projects = temps;
+				$scope.task.project = temps[0].value;
+				
+				$('#hosts').multiselect({
+					buttonClass: 'btn btn-sm btn-primary',
+					enableFiltering: true,
+			        includeSelectAllOption: true,
+			        buttonWidth: '100%'
+				});
+				$scope.loadHost();
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+  
+	$scope.addTask = function() {
+		
+		$http({
+			async: false,
+			method: 'POST',
+			url: 'r/task',
+			params: {'task': $scope.task}
+		}).success(function(data){
+			if(data == '200') {
+				$('#addTaskModal').modal('hide');
+				$scope.search();
+				$scope.task = {};
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+	
+	$scope.delTask = function() {
+		$scope.ids = '';
+		$("input[name='selectId']:checked").each(function() {
+			$scope.ids += ',' + $(this).val();
+		});
+		
+		if($scope.ids != '') {
+			swal({
+	            title: "确定删除?",
+	            text: "删除项目及项目下所有任务",
+	            type: "warning",
+	            showCancelButton: true,
+	            confirmButtonColor: "#DD6B55",
+	            cancelButtonText: "取消",
+	            confirmButtonText: "删除",
+	            closeOnConfirm: false
+	        }, function () {
+	        	$http({
+	    			method: 'DELETE',
+	    			url: 'r/task',
+	    			params: {'ids': $scope.ids}
+	    		}).success(function(data) {
+	    			if(data == '200') {
+	    				swal("Deleted!", "任务已删除.", "success");
+	    				$scope.search();
+	    			}
+	    		}).error(function(data){
+	    			console.log(data);
+	    		});
+	        });
+		}
+    }
+	
+}
+</script>

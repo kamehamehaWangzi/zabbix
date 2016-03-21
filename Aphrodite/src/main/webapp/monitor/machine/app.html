@@ -1,0 +1,48 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div data-ng-controller="HostAppController">
+			<div class="tab-pane fade in active" id="app">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-list"></span> 已部署应用</h3>
+					</div>
+					<div class="panel-body">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>序号</th>
+									<th>名称</th>
+									<th>版本</th>
+									<th>类型</th>
+									<th>状态</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr data-ng-repeat="item in items">
+									<td scope="row">{{$index + 1}}</td>
+									<td data-ui-sref="app_{{item.type}}.info({id:item.id, hostId:hostId})">
+										<a href="#">{{item.name}}</a>
+									</td>
+									<td>{{item.version}}</td>
+									<td>{{item.type}}</td>
+									<td>
+										<i class="fa fa-check fa-lg text-navy"></i>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+</div>
+</div>
+
+<script type="text/javascript">
+	function HostAppController($scope, $http, $stateParams) {
+		$http.get('r/app/' + $stateParams.id + '/host').success(function(data) {
+			$scope.hostId = $stateParams.hostId;
+	        $scope.items = data;
+	    });		
+	}
+</script>

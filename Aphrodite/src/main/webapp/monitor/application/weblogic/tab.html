@@ -1,0 +1,42 @@
+<div class="row wrapper border-bottom white-bg page-heading" data-ng-controller="appTabCtrl">
+	<div class="col-lg-12">
+		<h2><i class="fa fa-desktop"></i> Weblogic</h2>
+		<ol class="breadcrumb">
+			<li>
+				<a data-ui-sref="monitor">首页</a>
+			</li>
+			<li>
+				<a>监控</a>
+			</li>
+			<li>
+				<a data-ui-sref="app">应用</a>
+			</li>
+			<li>
+				<a href="#" data-ng-click="toDeployHost()">已部署主机</a>
+			</li>
+			<li class="active">
+				<strong>{{historyLocation}}</strong>
+			</li>
+		</ol>
+	</div>
+</div>
+
+<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="tabs-container">
+				<ul class="nav nav-tabs">
+					<li data-ui-sref-active="active" data-ui-sref="app_weblogic.info"><a href="#" data-toggle="tab">基本信息</a></li>
+					<li data-ui-sref-active="active" data-ui-sref="app_weblogic.classLoader"><a href="#" data-toggle="tab">类加载器</a></li>
+					<li data-ui-sref-active="active" data-ui-sref="app_weblogic.connectionPool"><a href="#" data-toggle="tab">连接池</a></li>
+					<li data-ui-sref-active="active" data-ui-sref="app_weblogic.memoryPool"><a href="#" data-toggle="tab">内存池</a></li>
+					<li data-ui-sref-active="active" data-ui-sref="app_weblogic.thread"><a href="#" data-toggle="tab">线程</a></li>
+					<li data-ui-sref-active="active" data-ui-sref="app_weblogic.gc"><a href="#" data-toggle="tab">垃圾回收</a></li>
+				</ul>
+				<div class="tab-content">
+					<div data-ui-view="app"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

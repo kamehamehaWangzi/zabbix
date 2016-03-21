@@ -1,0 +1,72 @@
+<div class="tab-pane animated fadeIn active">
+	<div class="panel-body">
+		<div class="row" data-ng-controller="AppOperationController">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Questions</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeQuery" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="queryChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> Operation</h3>
+					</div>
+					<div class="input-prepend input-group">
+						<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+						<input type="text" style="width: 300px;" id="dateRangeOper" class="form-control" readonly="readonly"/>
+					</div>
+					<div class="panel-body">
+						<div id="operationChart" style="height:400px;"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+function AppOperationController($scope, $http, $stateParams) {
+	
+	var queryParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'queryChart',
+			title: 'Questions',
+			key: ['mysql.status[Questions]'],
+			graphType: 'line',
+			formatter: 'qps',
+			dateRangeId: 'dateRangeQuery'
+	};
+	
+	var operParams = {
+			id: $stateParams.hostId,
+			graphDiv: 'operationChart',
+			title: 'Operation',
+			key: [
+			      'mysql.status[Com_begin]', 
+			      'mysql.status[Com_commit]', 
+			      'mysql.status[Com_delete]', 
+			      'mysql.status[Com_insert]', 
+			      'mysql.status[Com_rollback]', 
+			      'mysql.status[Com_select]', 
+			      'mysql.status[Com_update]'
+				],
+			graphType: 'line',
+			formatter: 'qps',
+			dateRangeId: 'dateRangeOper'
+	};
+	
+	renderGraph(queryParams);
+	renderGraph(operParams);
+	
+}
+</script>

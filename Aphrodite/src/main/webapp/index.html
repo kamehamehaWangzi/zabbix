@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en" data-ng-app="aphrodite">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-Control" content="no-cache">
+	<meta http-equiv="Expires" content="0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+    <title>中国人民银行征信中心运维平台</title>
+    
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/daterangepicker.css" rel="stylesheet">
+    <link href="css/font-awesome.min.css" rel="stylesheet">
+    <link href="css/toastr/toastr.min.css" rel="stylesheet">
+    <link href="css/sweetalert/sweetalert.css" rel="stylesheet">
+    <link href="js/libs/gritter/jquery.gritter.css" rel="stylesheet">
+    <link href="css/icheck/custom.css" rel="stylesheet">
+    <link href="css/bootstrap-multiselect.css" rel="stylesheet">
+    
+    <link href="css/animate.css" rel="stylesheet">
+    <link id="loadBefore" href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+	<div id="wrapper" data-ng-controller="indexCtrl">
+        <nav class="navbar-default navbar-static-side" role="navigation">
+            <div class="sidebar-collapse">
+                <ul class="nav metismenu" id="side-menu">
+                    <li class="nav-header">
+                        <div class="dropdown profile-element">
+                        	<span><i class="fa fa-user fa-4x"></i></span>
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+	                            <span class="clear">
+	                            	<span class="block m-t-xs"><strong class="font-bold">{{current_user_name}}</strong></span>
+	                            	<span class="text-muted text-xs block">System Admin <b class="caret"></b></span>
+	                            </span>
+                            </a>
+                            <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                                <li><a href="#" data-toggle="modal" data-target="#settings">Settings</a></li>
+                                <li><a href="#" data-toggle="modal" data-target="#about">About</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#" data-ng-click="logout()">Logout</a></li>
+                            </ul>
+                        </div>
+                        <div class="logo-element">
+                            AMP
+                        </div>
+                    </li>
+                    <li class="active">
+                        <a href="#"><i class="fa fa-th-large"></i> <span class="nav-label">总览</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li data-ui-sref-active="active"><a data-ui-sref="monitor">仪表板 (fake)</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">监控</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level collapse">
+                            <li data-ui-sref-active="active"><a data-ui-sref="machine">服务器</a></li>
+                            <li data-ui-sref-active="active"><a data-ui-sref="network">网络设备</a></li>
+                            <li data-ui-sref-active="active"><a data-ui-sref="app">应用</a></li>
+                            <li data-ui-sref-active="active"><a data-ui-sref="template">模板管理</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#"><i class="fa fa-bell"></i> <span class="nav-label">告警</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level collapse">
+                            <li><a data-ui-sref="alarm">告警事件</a></li>                             
+                            <li><a data-ui-sref="alarm_action">告警配置</a></li> 
+                        </ul>
+                    </li>
+                    <li>
+						<a href="#"><i class="fa fa-cogs"></i> <span class="nav-label">部署</span><span class="fa arrow"></span></a>
+						<ul class="nav nav-second-level collapse">
+							<li><a data-ui-sref="script_template">脚本模板配置</a></li>
+							<li><a data-ui-sref="script_execute">脚本批量执行</a></li>
+							<li><a data-ui-sref="cobbler_system">部署操作系统</a></li>
+							<li><a data-ui-sref="deploy">部署任务</a></li>
+						</ul>
+                    </li>
+                    <li>
+						<a href="#"><i class="fa fa-desktop"></i> <span class="nav-label">项目与任务</span><span class="fa arrow"></span></a>
+						<ul class="nav nav-second-level collapse">
+							<li><a data-ui-sref="project">项目</a></li>
+							<li><a data-ui-sref="task">任务</a></li>
+						</ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+	        <div class="row border-bottom">
+	        <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+	        <div class="navbar-header">
+	            <a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
+	        </div>
+	            <ul class="nav navbar-top-links navbar-right">
+	                <li class="dropdown">
+	                    <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#" title="待办事项">
+	                        <i class="fa fa-envelope"></i>  <span class="label label-warning">16</span>
+	                    </a>
+	                    <ul class="dropdown-menu dropdown-messages">
+	                        <li>
+	                            <div class="dropdown-messages-box">
+	                                <div class="media-body">
+	                                    <small class="pull-right">46h ago</small>
+	                                    <strong>Mike Loreipsum</strong> started following <strong>Monica Smith</strong>. <br>
+	                                    <small class="text-muted">3 days ago at 7:58 pm - 10.06.2014</small>
+	                                </div>
+	                            </div>
+	                        </li>
+	                        <li class="divider"></li>
+	                        <li>
+	                            <div class="dropdown-messages-box">
+	                                <div class="media-body ">
+	                                    <small class="pull-right text-navy">5h ago</small>
+	                                    <strong>Chris Johnatan Overtunk</strong> started following <strong>Monica Smith</strong>. <br>
+	                                    <small class="text-muted">Yesterday 1:21 pm - 11.06.2014</small>
+	                                </div>
+	                            </div>
+	                        </li>
+	                        <li class="divider"></li>
+	                        <li>
+	                            <div class="dropdown-messages-box">
+	                                <div class="media-body ">
+	                                    <small class="pull-right">23h ago</small>
+	                                    <strong>Monica Smith</strong> love <strong>Kim Smith</strong>. <br>
+	                                    <small class="text-muted">2 days ago at 2:30 am - 11.06.2014</small>
+	                                </div>
+	                            </div>
+	                        </li>
+	                        <li class="divider"></li>
+	                        <li>
+	                            <div class="text-center link-block">
+	                                <a href="#">
+	                                    <i class="fa fa-envelope"></i> <strong>Read All Tasks</strong>
+	                                </a>
+	                            </div>
+	                        </li>
+	                    </ul>
+	                </li>
+	                <li class="dropdown">
+	                    <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#" title="告警事件">
+	                        <i class="fa fa-bell"></i>  <span class="label label-primary">8</span>
+	                    </a>
+	                    <ul class="dropdown-menu dropdown-alerts">
+	                        <li>
+	                            <a href="mailbox.html">
+	                                <div>
+	                                    <i class="fa fa-envelope fa-fw"></i> You have 16 messages
+	                                    <span class="pull-right text-muted small">4 minutes ago</span>
+	                                </div>
+	                            </a>
+	                        </li>
+	                        <li class="divider"></li>
+	                        <li>
+	                            <a href="profile.html">
+	                                <div>
+	                                    <i class="fa fa-twitter fa-fw"></i> 3 New Followers
+	                                    <span class="pull-right text-muted small">12 minutes ago</span>
+	                                </div>
+	                            </a>
+	                        </li>
+	                        <li class="divider"></li>
+	                        <li>
+	                            <a href="grid_options.html">
+	                                <div>
+	                                    <i class="fa fa-upload fa-fw"></i> Server Rebooted
+	                                    <span class="pull-right text-muted small">4 minutes ago</span>
+	                                </div>
+	                            </a>
+	                        </li>
+	                        <li class="divider"></li>
+	                        <li>
+	                            <div class="text-center link-block">
+	                                <a href="#">
+	                                    <strong>See All Alerts</strong>
+	                                    <i class="fa fa-angle-right"></i>
+	                                </a>
+	                            </div>
+	                        </li>
+	                    </ul>
+	                </li>
+	
+	
+	                <li>
+	                    <a href="#" data-ng-click="logout()">
+	                        <i class="fa fa-sign-out"></i> Log out
+	                    </a>
+	                </li>
+	                <li>
+	                    <a class="right-sidebar-toggle">
+	                        <i class="fa fa-tasks"></i>
+	                    </a>
+	                </li>
+	            </ul>
+	        </nav>
+	        </div>
+			<div class="gray-bg">
+				<div data-ui-view></div>
+			</div>
+	        <div class="row">
+	            <div class="col-lg-12">
+	                <div class="footer fixed">
+	                    <div class="pull-right">
+	                        Aphrodite.
+	                    </div>
+	                    <div>
+	                        <strong>Copyright</strong> 中国人民银行征信中心 &copy; 2015-2016
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+        </div>
+    </div>
+    
+    <!----------------- Settings ----------------------->
+    <div class="modal fade" id="settings" tabindex="-1" role="dialog" aria-labelledby="settingsLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated fadeInDown">
+				<div class="modal-header">
+		            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="settingsLabel">
+						Settings
+					</h4>
+				</div>
+				<div class="modal-body">
+					<br/><br/><br/><br/><br/><br/><br/><br/>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" data-dismiss="modal">完成</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!----------------- About ----------------------->
+    <div class="modal fade" id="about" tabindex="-1" role="dialog" aria-labelledby="aboutLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated flipInY">
+				<div class="modal-header" style="text-align: center;">
+		            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="aboutLabel">
+						About
+					</h4>
+				</div>
+				<div class="modal-body">
+					Aphrodite Monitor Platform.
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript" src="js/libs/jquery/jquery-2.1.1.min.js"></script>
+	<script type="text/javascript" src="js/libs/jquery-ui/jquery-ui.js"></script>
+	<script type="text/javascript" src="js/libs/bootstrap/bootstrap.min.js"></script>
+	<script type="text/javascript" src="js/libs/metisMenu/jquery.metisMenu.js"></script>
+	<script type="text/javascript" src="js/libs/slimscroll/jquery.slimscroll.min.js"></script>
+	<script type="text/javascript" src="js/libs/pace/pace.min.js"></script>
+	<script type="text/javascript" src="js/libs/toastr/toastr.min.js"></script>
+	<script type="text/javascript" src="js/main/inspinia.js"></script>
+	
+	<script type="text/javascript" src="js/libs/angular/angular.min.js"></script>
+	<script type="text/javascript" src="js/libs/oclazyload/ocLazyLoad.min.js"></script>
+	<script type="text/javascript" src="js/libs/angular/angular-ui-router.min.js"></script>
+	<script type="text/javascript" src="js/libs/bootstrap/ui-bootstrap-tpls-1.1.2.min.js"></script>
+	<script type="text/javascript" src="js/libs/angular/angular-idle.js"></script>
+	
+	<script type="text/javascript" src="js/main/app.js"></script>
+	<script type="text/javascript" src="js/main/config.js"></script>
+	<script type="text/javascript" src="js/main/controllers.js"></script>
+	<script type="text/javascript" src="js/main/directives.js"></script>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+	        setTimeout(function() {
+	            toastr.options = {
+	                closeButton: true,
+	                progressBar: true,
+	                showMethod: 'slideDown',
+	                timeOut: 4000
+	            };
+	            toastr.success('<strong>建议使用 Chrome/Firefox 浏览器</strong>', 'Welcome to Aphrodite');
+	
+	        }, 1300);
+	        
+	    });
+		
+	</script>
+  </body>
+</html>

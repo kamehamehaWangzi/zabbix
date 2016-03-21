@@ -1,0 +1,166 @@
+<div class="tab-pane fade in active" id="octets" data-ng-controller="NetworkPortController">		
+	 <div class="tab-pane animated fadeIn active">
+		<div class="panel-body">
+			<div class="row">				
+				<div class="panel-heading" style="">
+					<h3 class="panel-title">请选择端口：<select style="width: 300px; height:34px;margin-left:50px;" ng-model="item" ng-options="item as item for item in items" ng-change="change()"></select></h3>
+								
+				</div>
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>端口序号</th>
+							<th>端口描述</th>
+							<th>端口类型</th>
+							<th>端口名称</th>
+							<th>最后变化值</th>						
+						</tr>
+					</thead>
+					<tbody>
+						<tr data-ng-repeat="port in ports">						
+							<td>{{port.ifIndex}}</td>
+							<td>{{port.ifAlias}}</td>	
+							<td>{{port.ifType}}</td>
+							<td>{{port.ifName}}</td>
+							<td>{{port.ifLastChange}}</td>						
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>	
+	<div class="tab-pane animated fadeIn active">
+		<div class="panel-body">
+			<div class="row">				
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span>端口速率</h3>
+						</div>
+						<div class="input-prepend input-group">
+							<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+							<input type="text" class="form-control" style="width: 300px;" id="dateRangespeed" class="form-control" readonly="readonly"/>							
+						</div>					
+						<div class="panel-body">		    
+							<div id="speedChart" style="height:400px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="tab-pane animated fadeIn active">
+		<div class="panel-body">
+			<div class="row">
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> 端口物理状态</h3>
+						</div>
+						<div class="input-prepend input-group">
+							<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+							<input type="text" style="width: 300px;" id="dateRange1" class="form-control" readonly="readonly"/>
+						</div>
+						<div class="panel-body">
+							<div id="adminStatusChart" style="height:400px;"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+					<div class="panel panel-default">
+						<div class="panel-heading">
+							<h3 class="panel-title"><span class="glyphicon glyphicon-stats"></span> 端口协议状态</h3>
+						</div>
+						<div class="input-prepend input-group">
+							<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
+							<input type="text" style="width: 300px;" id="dateRange2" class="form-control" readonly="readonly"/>	
+						</div>
+						<div class="panel-body">
+							<div id="operStatusChart" style="height:400px;"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script type="text/javascript"> 
+  function NetworkPortController($scope, $http, $stateParams) {
+	$http.get('r/network/' + $stateParams.hostId).success(function(data) {
+		$scope.items = data;
+        $scope.item =$scope.items[0];
+        var params="ifIndex"+$scope.items[0]+",ifAlias"+$scope.items[0]+",ifType"+$scope.items[0]+",ifName"+$scope.items[0]+",ifLastChange"+$scope.items[0];
+        var hostid =$stateParams.hostId;	           
+		getData("ifHighSpeed"+$scope.item,		        
+		        'dateRangespeed',
+		        'speedChart',
+		        '端口速率');		      
+		getData2("ifAdminStatus"+$scope.item,		        
+		        'dateRange1',
+		        'adminStatusChart',
+		        'ifAdminStatus');			     
+		getData2("ifOperStatus"+$scope.item,		        
+		        'dateRange2',
+		        'operStatusChart',
+		        'ifOperStatus');
+		getValue(params,hostid);        
+		$scope.change=function(){			    
+		    var In ="ifHighSpeed"+$scope.item;		    
+		    var dateRangeId ='dateRangespeed';
+		    var graphDiv = 'speedChart';
+		    var title ='端口速率';		    
+		    getData(In,dateRangeId,graphDiv,title);
+		    In ="ifAdminStatus"+$scope.item;		    
+		    dateRangeId ='dateRange1';
+		    graphDiv = 'adminStatusChart';
+		    title ='ifAdminStatus';
+		    getData2(In,dateRangeId,graphDiv,title);
+		    In ="ifOperStatus"+$scope.item ;		    
+		    dateRangeId ='dateRange2';
+		    graphDiv = 'operStatusChart';
+		    title ='ifOperStatus';
+		    getData2(In,dateRangeId,graphDiv,title);
+		    params="ifIndex"+$scope.item+",ifAlias"+$scope.item+",ifType"+$scope.item+",ifName"+$scope.item+",ifLastChange"+$scope.item;
+            hostid =$stateParams.hostId;
+		    getValue(params,hostid);
+		}
+		function getValue(params,hostid){			
+			$http({
+	    		method: 'GET',
+	    		url   : 'r/network/port',
+	    		params: {'params':params}
+	    	}).success(function(data){
+	    		if(data != null){
+	    		  $scope.ports =data; 			
+	    		}
+	    	}).error(function(data){
+				console.log(data);
+			});
+		}		
+		function getData(In,dateRangeId,graphDiv,title){
+			var params = {
+				id: $stateParams.hostId,
+				graphDiv: graphDiv,
+				title: title,
+				key: [In],
+				graphType: 'line',
+				formatter: 'M',
+				scaler: 1024*1024,
+				dateRangeId: dateRangeId
+		};	
+		renderGraph(params);
+		}
+		function getData2(In,dateRangeId,graphDiv,title){
+			var params = {
+				id: $stateParams.hostId,
+				graphDiv: graphDiv,
+				title: title,
+				key: [In],
+				graphType: 'line',
+				dateRangeId: dateRangeId
+		};	
+		renderGraph(params);
+		}	   	
+    });            
+}
+</script>
