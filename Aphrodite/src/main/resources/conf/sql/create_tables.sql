@@ -1,3 +1,23 @@
+DROP TABLE IF EXISTS task;
+CREATE TABLE task (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  project varchar(255) DEFAULT NULL,
+  hosts varchar(255) DEFAULT NULL,
+  description varchar(255) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+DROP TABLE IF EXISTS `project`;
+CREATE TABLE project (
+  id int(10) unsigned NOT NULL AUTO_INCREMENT,
+  name varchar(255) NOT NULL,
+  hosts varchar(2000) DEFAULT NULL,
+  description varchar(2000) DEFAULT NULL,
+  PRIMARY KEY (id)
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8;
+
 drop table if exists host;
 CREATE TABLE
     host
