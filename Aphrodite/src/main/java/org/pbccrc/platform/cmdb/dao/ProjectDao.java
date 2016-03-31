@@ -29,5 +29,9 @@ public class ProjectDao extends AbstractMyBatisDao {
 	public List<ProjectVO> queryProjects() {
 		return this.getSqlSession().selectList("dao.ProjectDao.queryProjects");
 	}
+	
+	public void updateProject(ProjectVO vo){
+		this.getSqlSession().update("dao.ProjectDao.updateProject", vo);
+	}
 
 }

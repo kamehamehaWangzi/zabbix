@@ -2,6 +2,8 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="dao.ProjectDao">
+	
+<!-- 	结果集映射 -->
 	<resultMap type="org.pbccrc.platform.vo.ProjectVO" id="projectVO">
 		<id property="id" column="ID" />
 		<result property="hosts" column="HOSTS" />
@@ -9,6 +11,8 @@
 		<result property="description" column="DESCRIPTION" />
 	</resultMap>
 	
+<!-- 	DML语句定义 -->
+
 	<select id="queryAll" parameterType="org.pbccrc.platform.vo.ProjectVO" resultMap="projectVO">
 		select * from project
 		<where>
@@ -34,5 +38,22 @@
 		delete from project where id = #{id}
 	</delete>
 	
+	<update id="updateProject" parameterType="org.pbccrc.platform.vo.ProjectVO">
+		update project 
+		<set>
+			<if test="name != null ">
+				name = #{name},
+			</if>
+			<if test="hosts != null ">
+				hosts = #{hosts},
+			</if>
+			<if test="description != null">
+				description = #{description},
+			</if>
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
 	
 </mapper>

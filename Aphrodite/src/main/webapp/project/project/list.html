@@ -44,6 +44,9 @@
 									<span class="input-group-btn" style="padding-left: 5px;">
 										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delProject()">删除项目</button>
 									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="loadProjectInfo()">修改项目</button>
+									</span>
 								</div>
 							</div>
 						</div>
@@ -86,6 +89,7 @@
 			</div>
 		</div>
 	</div>
+<!-- 	project 新建页面 -->
 	<div class="modal fade" id="addProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content animated bounceInRight">
@@ -124,115 +128,45 @@
 			</div>
 		</div>
 	</div>
+<!-- 	project 修改页面 -->
+	<div class="modal fade" id="modifyProjectModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form" data-ng-submit="modifyProject()">
+					<div class="modal-header">
+			            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myModalLabel">
+							修改项目
+						</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">项目名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="modifyproject.name" placeholder="项目名称" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">选择主机</label>
+							<div class="col-sm-10">
+								<select id="hostss" class="multiselect" multiple="multiple" data-ng-model="modifyproject.hosts"></select>
+								<input type="text" class="form-control" data-ng-model="modifyproject.hosts">
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">项目描述</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="3" data-ng-model="modifyproject.description"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">确认修改</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
 </div>
-<script type="text/javascript">
-function ProjectListController($scope, $http, $state) {
-	
-	$scope.currentPage = 1;
-	$scope.pageSize = 10;
-	
-	$scope.search = function() {
-		$http({
-			method: 'GET',
-			url: 'r/project',
-			params: {'param': $scope.param, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
-		}).success(function(data){
-			$scope.items = data.result;
-			$scope.totalItems = data.totalCount;
-		}).error(function(data){
-			console.log(data);
-		});
-	}
-    
-    $scope.search();
-    
-    $scope.loadHost = function() {
-		$http({
-			method: 'GET',
-			url: 'r/project/getHost'
-		}).success(function(data) {
-			if(data) {
-				var temps = new Array();
-				$.each(data, function(index, item) {
-					obj = {
-					    label : item.name,
-					    value : item.id
-					};
-					temps.push(obj);
-				});
-				
-				$('#hosts').multiselect({
-					buttonClass: 'btn btn-sm btn-primary',
-					enableFiltering: true,
-			        includeSelectAllOption: true,
-			        buttonWidth: '100%'
-				});
-				
-				if(temps.length == 0) {
-					$("#hosts").multiselect('disable');
-				} else {
-					$("#hosts").multiselect('dataprovider', temps);
-				}
-			}
-		}).error(function(data){
-			console.log(data);
-		});
-	}
-	
-	$scope.toInfo = function(id, historyLocation) {
-		$state.go('project_detail.info', {id: id, historyLocation: historyLocation});
-	}
-	
-	$scope.addProject = function() {
-		
-		$http({
-			async: false,
-			method: 'POST',
-			url: 'r/project',
-			params: {'project': $scope.project}
-		}).success(function(data){
-			if(data == '200') {
-				$('#addProjectModal').modal('hide');
-				$scope.search();
-				$scope.project = {};
-			}
-		}).error(function(data){
-			console.log(data);
-		});
-	}
-	
-	$scope.delProject = function() {
-		$scope.ids = '';
-		$("input[name='selectId']:checked").each(function() {
-			$scope.ids += ',' + $(this).val();
-		});
-		
-		if($scope.ids != '') {
-			swal({
-	            title: "确定删除?",
-	            text: "确定删除该任务",
-	            type: "warning",
-	            showCancelButton: true,
-	            confirmButtonColor: "#DD6B55",
-	            cancelButtonText: "取消",
-	            confirmButtonText: "删除",
-	            closeOnConfirm: false
-	        }, function () {
-	        	$http({
-	    			method: 'DELETE',
-	    			url: 'r/project',
-	    			params: {'ids': $scope.ids}
-	    		}).success(function(data) {
-	    			if(data == '200') {
-	    				swal("Deleted!", "项目已删除.", "success");
-	    				$scope.search();
-	    			}
-	    		}).error(function(data){
-	    			console.log(data);
-	    		});
-	        });
-		}
-    }
-	
-}
-</script>
+

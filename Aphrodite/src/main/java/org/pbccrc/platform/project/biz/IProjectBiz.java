@@ -23,4 +23,6 @@ public interface IProjectBiz {
 	List<ProjectVO> queryProjects(ProjectVO vo, Pagination pagination);
 	
 	ProjectVO queryProjectById(String projectId);
+
+	void modifyProject(JSONObject projectInfo);
 }

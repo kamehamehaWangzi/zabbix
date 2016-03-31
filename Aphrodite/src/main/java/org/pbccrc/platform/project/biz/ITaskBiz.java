@@ -16,5 +16,9 @@ public interface ITaskBiz {
 	void deleteTask(String taskId);
 	
 	void deleteTaskByProject(String projectId);
+
+	void modifyTask(JSONObject taskInfo);
+
+	TaskVO queryTaskById(String id);
 	
 }

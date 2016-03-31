@@ -30,4 +30,8 @@ public class TaskDao extends AbstractMyBatisDao {
 		this.getSqlSession().delete("dao.TaskDao.deleteTaskByProject", projectId);
 	}
 
+	public void modifyTask(TaskVO vo) {
+		this.getSqlSession().update("dao.TaskDao.modifyTask",vo);
+	}
+
 }

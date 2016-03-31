@@ -91,4 +91,22 @@ public class ProjectBizImpl implements IProjectBiz{
 		}
 	}
 
+	/**
+	 * 将JSon对象封装成java对象，传给Dao层进行更新
+	 * zhp  2015.3.30
+	 */
+	@Override
+	public void modifyProject(JSONObject project) {
+		ProjectVO vo = new ProjectVO();
+		JSONArray hostArray = project.getJSONArray("hosts");
+		if(null != hostArray){
+			vo.setHosts(hostArray.toString());
+		}
+		vo.setId(Integer.parseInt(project.getString("id")));
+		vo.setName(project.getString("name"));
+		vo.setDescription(project.getString("description"));
+		
+		projectDao.updateProject(vo);
+	}
+
 }
