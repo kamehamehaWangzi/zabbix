@@ -1,17 +1,33 @@
 package org.pbccrc.platform.util;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
+import org.pbccrc.platform.api.zabbix.DefaultZabbixApi;
+import org.pbccrc.platform.api.zabbix.Request;
+import org.pbccrc.platform.api.zabbix.RequestBuilder;
+import org.pbccrc.platform.api.zabbix.ZabbixApi;
 
-public class Test {
+import com.alibaba.fastjson.JSONObject;
+
+public class Test extends Thread{
 
 	public static void main(String[] args) {
-		String hosts = "[\"1\",\"3\"]";
-		JSONArray jsonArray = JSON.parseArray(hosts); 
-		 Object[] objects = jsonArray.toArray();
-		 for (Object object : objects) {
-			 System.out.println(object);
-		 }
-		 
+		
+		ZabbixApi zabbixApi = new DefaultZabbixApi();
+		zabbixApi.init();
+		
+		String auth = zabbixApi.auth(Constant.ZABBIX_USERNAME, Constant.ZABBIX_PASSWORD);
+		
+		RequestBuilder requestBuilder = RequestBuilder.newBuilder().auth(auth)
+				.paramEntry("output", "extend")
+				.paramEntry("hostids", 10107)
+				.paramEntry("sortfield", "name")
+				.method("item.get");
+		
+		Request request = requestBuilder.build();
+		
+		JSONObject json = zabbixApi.call(request);
+		
+		System.out.println(json);
+		
 	}
+	
 }
