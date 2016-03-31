@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -62,6 +63,19 @@ public class TaskRest {
 		return Response.ok(pagination).build();
 	}
 	
+	/**
+	 * 获取待修改的任务信息
+	 * @param id
+	 * @return
+	 */
+	@Path("/info")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getTaskInfo(@QueryParam("taskId") String id){
+		TaskVO vo = taskBiz.queryTaskById(id);
+		return Response.ok(vo).build();
+	}
+	
 	
 	@Path("/getProject")
 	@GET
@@ -84,6 +98,18 @@ public class TaskRest {
 		JSONObject taskInfo = JSON.parseObject(task);
 		taskBiz.addTask(taskInfo);
 		
+		return Response.ok(200).build();
+	}
+	
+	/**
+	 * 提交并修改已有的任务信息
+	 * @param task
+	 * @return
+	 */
+	@PUT
+	public Response modifyTask(@QueryParam("task") String task){
+		JSONObject taskInfo = JSON.parseObject(task);
+		taskBiz.modifyTask(taskInfo);
 		return Response.ok(200).build();
 	}
 	

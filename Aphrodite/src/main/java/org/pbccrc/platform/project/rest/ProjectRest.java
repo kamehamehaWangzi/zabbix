@@ -1,17 +1,16 @@
 package org.pbccrc.platform.project.rest;
 
 import java.util.List;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import org.apache.log4j.Logger;
 import org.pbccrc.platform.model.Pagination;
 import org.pbccrc.platform.monitor.biz.IMachineBiz;
@@ -21,7 +20,6 @@ import org.pbccrc.platform.vo.HostVO;
 import org.pbccrc.platform.vo.ProjectVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
@@ -91,10 +89,31 @@ public class ProjectRest {
 		return Response.ok(200).build();
 	}
 	
-	@Path("/{id}/info")
+	/**
+	 * 项目修改的后台处理
+	 * @param project
+	 * @return
+	 */
+	@PUT				         
+	public Response modifyProject(@QueryParam("project") String project){
+		JSONObject projectInfo = JSON.parseObject(project);
+		projectBiz.modifyProject(projectInfo);
+		
+		log.debug(String.format("modify the project information, %s", project));
+		
+		return Response.ok(200).build();
+	}
+	
+	/**
+	 * 获取项目的信息
+	 * @param id
+	 * @return
+	 * zhp 2016.3.30
+	 */
+	@Path("/info")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getProjectDetail(@PathParam("id") String id) {
+	public Response getProjectDetail(@QueryParam("id") String id) {
 		ProjectVO project = projectBiz.queryProjectById(id);
 		
 		log.debug(String.format("getProjectDetail, %s", project));

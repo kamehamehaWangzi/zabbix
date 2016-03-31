@@ -22,7 +22,11 @@ public class TaskBizImpl implements ITaskBiz{
 		return taskDao.queryAll(vo, pagination);
 	}
 	
-
+	@Override
+	public TaskVO queryTaskById(String id) {
+		return taskDao.queryByTaskId(id);
+	}
+	
 	public void addTask(JSONObject task) {
 		
 		TaskVO vo = new TaskVO();
@@ -48,4 +52,23 @@ public class TaskBizImpl implements ITaskBiz{
 		taskDao.deleteTaskByProject(projectId);
 	}
 
+	/**
+	 * 将JSon对象封装成java对象，传给Dao层进行更新
+	 * zhp  2015.3.30
+	 */
+	@Override
+	public void modifyTask(JSONObject taskInfo) {
+		TaskVO vo = new TaskVO();
+		vo.setId(Integer.parseInt(taskInfo.getString("id")));
+		vo.setName(taskInfo.getString("name"));
+		vo.setProject(taskInfo.getString("project"));
+		vo.setDescription(taskInfo.getString("description"));
+		JSONArray hostArray = taskInfo.getJSONArray("hosts");
+		if(null != hostArray){
+			vo.setHosts(hostArray.toString());
+		}
+		
+		taskDao.modifyTask(vo);
+	}
+	
 }
