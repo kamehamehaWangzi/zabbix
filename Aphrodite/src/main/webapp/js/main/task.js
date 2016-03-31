@@ -29,34 +29,6 @@ function TaskListController($scope, $http, $state) {
 	//加载执行,展示任务列表
 	$scope.search();
 	
-	//根据项目Id($scope.task.project),加载Host(主机)信息
-	$scope.loadHost = function() {
-    	$http({
-			method: 'GET',
-			params: {'projectId': $scope.task.project},
-			url: 'r/task/getHost'
-		}).success(function(data) {
-			if(data) {
-				var temps = new Array();
-				$.each(data, function(index, item) {
-					obj = {
-					    label : item.name,
-					    value : item.id
-					};
-					temps.push(obj);
-				});
-				
-				if(temps.length == 0) {
-					$("#hosts").multiselect('disable');
-				} else {
-					$("#hosts").multiselect('dataprovider', temps);
-				}
-			}
-		}).error(function(data){
-			console.log(data);
-		});
-    }
-    
 	//加载项目信息
     $scope.loadProject = function() {
 		$http({
@@ -82,12 +54,62 @@ function TaskListController($scope, $http, $state) {
 			        includeSelectAllOption: true,
 			        buttonWidth: '100%'
 				});
-				$scope.loadHost();
+				$scope.loadHost('addModel','');
 			}
 		}).error(function(data){
 			console.log(data);
 		});
 	}
+    
+  //根据项目Id($scope.task.project),加载Host(主机)信息
+	$scope.loadHost = function(loadClass,preHostsId) {
+		console.log(loadClass);
+		
+		var proValue = '';
+		if(loadClass == 'addModel'){
+			proValue = $scope.task.project;
+		}else if(loadClass == 'modifyModel'){
+			proValue = $scope.modifyTask.project;
+			if(preHostsId=='' || preHostsId==null || preHostsId=='[null]'){
+				preHostsId = $scope.modifyTask.hosts;
+			}
+		}
+		
+    	$http({
+			method: 'GET',
+			params: {'projectId': proValue},
+			url: 'r/task/getHost'
+		}).success(function(data) {
+			if(data) {
+				var temps = new Array();
+				$.each(data, function(index, item) {
+					obj = {
+					    label : item.name,
+					    value : item.id
+					};
+					temps.push(obj);
+				});
+				
+				if(loadClass == 'addModel'){
+					if(temps.length == 0) {
+						$("#hosts").multiselect('disable');
+					} else {
+						$("#hosts").multiselect('dataprovider', temps);
+					}
+				}else if(loadClass == 'modifyModel'){
+					if(temps.length == 0) {
+						$("#hostss").multiselect('disable');
+					} else {
+						$("#hostss").multiselect('dataprovider', temps);
+					}
+				}
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+    	
+    }
+    
     
     //修改-加载要修改的任务信息
     $scope.loadTaskInfo = function(){
@@ -104,8 +126,8 @@ function TaskListController($scope, $http, $state) {
     	if($scope.id != ''){
 	    	
     		//暂存选中project信息，方便在select选中
-    		var tm = ''; 
-    		
+    		var preProjectId = ''; 
+    		var preHostsId = '';
     		//请求task信息
     		$http({
 	    		method:"GET",
@@ -113,7 +135,9 @@ function TaskListController($scope, $http, $state) {
 	    		params:{"taskId": $scope.id}
 	    	}).success(function(data){
 	    		$scope.modifyTask = data;
-	    		tm = $scope.modifyTask.project;
+	    		
+	    		preProjectId = $scope.modifyTask.project;
+	    		preHostsId = $scope.modifyTask.hosts;
 	    		
 	    		//修改页面“项目”下拉框，数据加载
 	    		$http({
@@ -133,8 +157,7 @@ function TaskListController($scope, $http, $state) {
 	    				$scope.projectss = temps;
 	    				//设置选中值
 	    				$.each(temps,function(index,item){
-	    					if(item.value==tm){
-	    						$scope.task.projects = item.value;
+	    					if(item.value==preProjectId){
 	    						$scope.modifyTask.project = item.value;
 	    					}
 	    				});
@@ -146,37 +169,9 @@ function TaskListController($scope, $http, $state) {
 	    					includeSelectAllOption: true,
 	    					buttonWidth: '100%'
 	    				});
-	    				if(temps.length == 0) {
-	    					$("#hostss").multiselect('disable');
-	    				} else {
-	    					$("#hostss").multiselect('dataprovider', temps);
-	    				}
 	    				
 	    				//根据项目信息，加载该项目的主机信息
-	    				$http({
-	    					method: 'GET',
-	    					params: {'projectId': $scope.task.projects},
-	    					url: 'r/task/getHost'
-	    				}).success(function(data) {
-	    					if(data) {
-	    						var temps = new Array();
-	    						$.each(data, function(index, item) {
-	    							obj = {
-	    									label : item.name,
-	    									value : item.id
-	    							};
-	    							temps.push(obj);
-	    						});
-	    						
-	    						if(temps.length == 0) {
-	    							$("#hostss").multiselect('disable');
-	    						} else {
-	    							$("#hostss").multiselect('dataprovider', temps);
-	    						}
-	    					}
-	    				}).error(function(data){
-	    					console.log(data);
-	    				});
+	    				$scope.loadHost('modifyModel',preHostsId);
 	    				
 	    			}
 	    		}).error(function(data){

@@ -110,7 +110,7 @@
 						<div class="form-group">
 							<label for="sn" class="col-sm-2 control-label">选择项目</label>
 							<div class="col-sm-10">
-							<select id="project" class="form-control" data-ng-change="loadHost()" 
+							<select id="project" class="form-control" data-ng-change="loadHost('addModel','')" 
 								data-ng-model="task.project" data-ng-options="x.value as x.label for x in projects"></select>
 							</div>
 						</div>
@@ -156,7 +156,7 @@
 						<div class="form-group">
 							<label for="sn" class="col-sm-2 control-label">选择项目</label>
 							<div class="col-sm-10">
-							<select id="projects" class="form-control"  
+							<select id="projects" class="form-control"  data-ng-change="loadHost('modifyModel','')" 
 								data-ng-model="modifyTask.project" data-ng-options="x.value as x.label for x in projectss"></select>
 							</div>
 						</div>
