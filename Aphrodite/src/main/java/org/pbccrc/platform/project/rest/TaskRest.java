@@ -42,10 +42,13 @@ public class TaskRest {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response listTask(@QueryParam("param") String param, @QueryParam("currentPage") int currentPage, @QueryParam("pageSize") int pageSize) {
+	public Response listTask(@QueryParam("param") String param, @QueryParam("projectId") String projectId, @QueryParam("currentPage") int currentPage, @QueryParam("pageSize") int pageSize) {
 		TaskVO vo = new TaskVO();
 		if(param != null && param.trim().length() > 0) {
 			vo.setName(param.trim());
+		}
+		if(projectId != null && projectId.trim().length() > 0) {
+			vo.setProject(projectId);
 		}
 		
 		Pagination pagination = new Pagination();
@@ -80,8 +83,8 @@ public class TaskRest {
 	@Path("/getProject")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response listProject() {
-		List<ProjectVO> hostList = projectBiz.queryAllProject();
+	public Response listProject(@QueryParam("projectId") String projectId) {
+		List<ProjectVO> hostList = projectBiz.queryAllProject(projectId);
 		return Response.ok(JSON.toJSONString(hostList)).build();
 	}
 	

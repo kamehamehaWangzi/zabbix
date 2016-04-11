@@ -57,9 +57,19 @@ public class ProjectBizImpl implements IProjectBiz{
 		return list;
 	}
 	
-	public List<ProjectVO> queryAllProject() {
+	public List<ProjectVO> queryAllProject(String projectId) {
 		
-		return projectDao.queryProjects();
+		List<ProjectVO> list = null;
+		
+		if (StringUtils.isNull(projectId)) {
+			list = projectDao.queryProjects();
+			return list;
+		}
+		
+		list = new ArrayList<ProjectVO>();
+		list.add(projectDao.queryByProjectId(projectId));
+		
+		return list;
 	}
 	
 	public List<ProjectVO> queryProjects(ProjectVO vo, Pagination pagination) {

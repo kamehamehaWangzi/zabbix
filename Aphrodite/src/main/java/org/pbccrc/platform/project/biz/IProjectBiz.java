@@ -14,7 +14,7 @@ public interface IProjectBiz {
 	
 	List<HostVO> queryAllHost(String projectId);
 	
-	List<ProjectVO> queryAllProject();
+	List<ProjectVO> queryAllProject(String projectId);
 	
 	void addProject(JSONObject project);
 	
