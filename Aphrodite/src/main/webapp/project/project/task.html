@@ -1,21 +1,6 @@
-<div data-ng-controller="TaskListController">
-	<div class="row wrapper border-bottom white-bg page-heading">
-		<div class="col-lg-12">
-			<h2><i class="fa fa-server"></i> 项目</h2>
-			<ol class="breadcrumb">
-				<li>
-					<a data-ui-sref="monitor">首页</a>
-				</li>
-				<li>
-					<a>项目与任务</a>
-				</li>
-				<li class="active">
-					<strong>任务</strong>
-				</li>
-			</ol>
-		</div>
-	</div>
-	<div class="wrapper wrapper-content animated fadeInRight">
+<div class="tab-pane animated fadeIn active" data-ng-controller="ProjectTaskController">
+	<div class="panel-body">
+		<div class="wrapper wrapper-content animated fadeInRight">
 		<div class="row">
 			<div class="col-lg-12">
 				<div class="ibox float-e-margins">
@@ -69,7 +54,7 @@
 										</td>
 										<td>{{(currentPage - 1) * pageSize + $index + 1}}</td>
 										<td>{{item.projectName}}</td>
-										<td>{{item.name}}</td>
+										<td><a href="#" data-ng-click="toInfo(item.id, item.name)">{{item.name}}</a></td>
 										<td>{{item.description}}</td>
 										<td></td>
 									</tr>
@@ -181,16 +166,11 @@
 			</div>
 		</div>
 	</div>
+	</div>
 </div>
+
 <script type="text/javascript">
-/**
- * 项目模块JS配置文件，主要完成该模块的加载数据，新增项目，删除项目和修改项目信息
- * @param $scope
- * @param $http
- * @param $state
- * zhp 2016.3.30
- */
-function TaskListController($scope, $http, $state) {
+function ProjectTaskController($scope, $http, $stateParams, $state) {
 	
 	$scope.currentPage = 1;
 	$scope.pageSize = 10;
@@ -202,7 +182,7 @@ function TaskListController($scope, $http, $state) {
 		$http({
 			method: 'GET',
 			url: 'r/task',
-			params: {'param': $scope.param, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
+			params: {'param': $scope.param, 'projectId': $stateParams.id, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
 		}).success(function(data){
 			$scope.items = data.result;
 			$scope.totalItems = data.totalCount;
@@ -218,7 +198,8 @@ function TaskListController($scope, $http, $state) {
     $scope.loadProject = function() {
 		$http({
 			method: 'GET',
-			url: 'r/task/getProject'
+			url: 'r/task/getProject',
+			params:{'projectId': $stateParams.id}
 		}).success(function(data) {
 			if(data) {
 				var temps = new Array();
@@ -245,8 +226,13 @@ function TaskListController($scope, $http, $state) {
 			console.log(data);
 		});
 	}
+	
+	 // 跳转到任务页面
+	$scope.toInfo = function(id, historyLocation) {
+		$state.go('taskData', {id: id, historyLocation: historyLocation});
+	}
     
-  //根据项目Id($scope.task.project),加载Host(主机)信息
+  	//根据项目Id($scope.task.project),加载Host(主机)信息
 	$scope.loadHost = function(loadClass,preHostsId) {
 		
 		console.log(loadClass);
@@ -453,4 +439,5 @@ function TaskListController($scope, $http, $state) {
     }
 	
 }
+
 </script>

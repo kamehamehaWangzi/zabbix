@@ -18,7 +18,7 @@ public class Test extends Thread{
 		
 		RequestBuilder requestBuilder = RequestBuilder.newBuilder().auth(auth)
 				.paramEntry("output", "extend")
-				.paramEntry("hostids", 10107)
+				.paramEntry("hostids", 10109)
 				.paramEntry("sortfield", "name")
 				.method("item.get");
 		

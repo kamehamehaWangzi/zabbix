@@ -125,3 +125,15 @@ CREATE TABLE `script_template` (
   `status` int(11) DEFAULT '0' COMMENT '模板状态(0-正常 1-作废）',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+-- ----------------------------
+-- Table structure for taskdata
+-- ----------------------------
+DROP TABLE IF EXISTS `taskdata`;
+CREATE TABLE `taskdata` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `taskId` int(11) DEFAULT NULL,
+  `startTime` varchar(255) DEFAULT NULL,
+  `endTime` varchar(255) DEFAULT NULL,
+  `path` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;

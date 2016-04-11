@@ -21,4 +21,6 @@ public interface ITaskBiz {
 
 	TaskVO queryTaskById(String id);
 	
+	List<TaskVO> getAllTasks(String taskId);
+	
 }
