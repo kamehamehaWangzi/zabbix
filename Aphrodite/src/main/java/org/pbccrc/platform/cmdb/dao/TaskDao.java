@@ -33,5 +33,9 @@ public class TaskDao extends AbstractMyBatisDao {
 	public void modifyTask(TaskVO vo) {
 		this.getSqlSession().update("dao.TaskDao.modifyTask",vo);
 	}
+	
+	public List<TaskVO> queryTasks() {
+		return this.getSqlSession().selectList("dao.TaskDao.queryTasks");
+	}
 
 }

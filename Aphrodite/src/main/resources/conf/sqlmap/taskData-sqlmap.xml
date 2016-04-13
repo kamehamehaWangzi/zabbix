@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.TaskDataDao">
+	
+<!-- 	结果集映射 -->
+	<resultMap type="org.pbccrc.platform.vo.TaskDataVO" id="taskDataVO">
+		<id property="id" column="ID" />
+		<result property="taskId" column="TASKID" />
+		<result property="startTime" column="STARTTIME" />
+		<result property="endTime" column="ENDTIME" />
+		<result property="path" column="PATH" />
+	</resultMap>
+	
+<!-- 	DML语句定义 -->
+	<select id="queryAll" parameterType="org.pbccrc.platform.vo.TaskDataVO" resultMap="taskDataVO">
+		select td.*, t.name as taskName from taskData td
+			left join task t on td.taskId = t.id
+		<where>
+			<if test="taskName != null">
+				and (t.name like concat(concat('%', #{taskName}), '%'))
+			</if>
+			<if test="taskId != null">
+				and t.id = #{taskId}
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insertTaskData" parameterType="org.pbccrc.platform.vo.TaskDataVO">
+		insert into taskData(taskId, startTime, endTime, path)values(#{taskId}, #{startTime}, #{endTime}, #{path})
+	</insert>
+	
+	<select id="queryByTaskDataId" parameterType="java.lang.String" resultMap="taskDataVO">
+		select * from taskData where id = #{id}
+	</select>
+	
+	<delete id="deleteTaskData" parameterType="java.lang.String">
+		delete from taskData where id = #{id}
+	</delete>
+	
+</mapper>
