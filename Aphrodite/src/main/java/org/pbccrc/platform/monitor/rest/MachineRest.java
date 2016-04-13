@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -77,6 +78,21 @@ public class MachineRest {
 		return Response.ok(pagination).build();
 	}
 	
+	/**
+	 * 修改主机功能，按照hostId加载主机信息
+	 * @param hostId
+	 * @return
+	 */
+	@Path("/{hostId}/loadInfo")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getMachineInfo(@PathParam("hostId")String hostId){
+		HostVO host = machineBiz.queryHostByHostid(hostId);
+		
+		log.debug(String.format("getMachineInfo, %s", host));
+		return Response.ok(host).build();
+	}
+	
 	@Path("/{id}/info")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -129,6 +145,14 @@ public class MachineRest {
 		JSONObject hostInfo = JSON.parseObject(host);
 		machineBiz.addHost(hostInfo);
 		
+		return Response.ok(200).build();
+	}
+	
+	@PUT
+	public Response modifyHost(@QueryParam("host") String host){
+		JSONObject hostInfo = JSON.parseObject(host);
+		machineBiz.modifyHost(hostInfo);
+		log.debug(String.format("modifyHost, %s", host));
 		return Response.ok(200).build();
 	}
 	

@@ -180,6 +180,61 @@ public class MachineBizImpl implements IMachineBiz {
 		return apiFactory.zabbix().call(request);
 	}
 	
+	public void modifyHost(JSONObject host){
+		HostVO vo = new HostVO();
+		vo.setZabbixHostid(Integer.parseInt(host.getString("zabbixHostid")));
+		
+		if(host.getJSONArray("groupids")!=null){
+			JSONArray groupArray = host.getJSONArray("groupids");
+			vo.setZabbix_groupids(groupArray);
+			vo.setGroups(groupArray.toString());
+		}else{
+			JSONArray groupArray = JSONArray.parseArray(host.getString("groups"));
+			vo.setZabbix_groupids(groupArray);
+			vo.setGroups(groupArray.toString());
+		}
+		
+		vo.setName(host.getString("name"));
+		vo.setType(host.getString("type"));
+		vo.setIp1(host.getString("ip"));
+		
+		String osVersion = host.getString("osVersion");
+		if(osVersion != null) {
+			if(osVersion.toLowerCase().indexOf("aix") != -1) {
+				vo.setOsType(Constant.OS_TYPE.Aix.getName());
+			} else if(osVersion.toLowerCase().indexOf("windows") != -1) {
+				vo.setOsType(Constant.OS_TYPE.Windows.getName());
+			} else {
+				vo.setOsType(Constant.OS_TYPE.Linux.getName());
+			}
+			vo.setIsMonitor(Integer.valueOf(1));
+		}
+		
+		vo.setOsVersion(host.getString("osVersion"));
+		vo.setSn(host.getString("sn"));
+		vo.setDescription(host.getString("description"));
+		
+		if(host.getJSONArray("templates")!=null){
+			JSONArray templateArray = host.getJSONArray("templates");
+			vo.setZabbix_templates(templateArray);
+			vo.setTeamplates(templateArray.toJSONString());
+		}else{
+			JSONArray templateArray = JSONArray.parseArray(host.getString("teamplates"));
+			vo.setZabbix_templates(templateArray);
+			vo.setTeamplates(templateArray.toJSONString());
+		}
+		
+
+		JSONObject result = modifyHostToZabbix(vo);
+		
+		if(result != null && !result.getJSONObject("result").isEmpty()) {
+			Integer zabbixHostId = Integer.parseInt(result.getJSONObject("result").getJSONArray("hostids").getString(0));
+			vo.setZabbixHostid(zabbixHostId);
+			
+			hostDao.updateHost(vo);
+		}
+		
+	}
 	public void addHost(JSONObject host) {
 		HostVO vo = new HostVO();
 		JSONArray groupArray = host.getJSONArray("groupids");
@@ -242,7 +297,6 @@ public class MachineBizImpl implements IMachineBiz {
 		inter.put("port", "10050");
 		interfaces.add(inter);
 		
-		
 		RequestBuilder requestBuilder = RequestBuilder.newBuilder()
 				.paramEntry("host", vo.getName())
 				.paramEntry("groups", groups)
@@ -257,6 +311,34 @@ public class MachineBizImpl implements IMachineBiz {
 		
 		log.debug(String.format("addHostToZabbix call zabbix host.create, request: %s", request.toString()));
 		
+		return apiFactory.zabbix().call(request);
+	}
+	
+	/**
+	 * 向zabbix发送主机修改信息
+	 * @param vo
+	 * @return
+	 */
+	public JSONObject modifyHostToZabbix(HostVO vo){
+		
+		JSONArray groups = vo.getZabbix_groupids();
+		
+		JSONObject params = new JSONObject();
+		params.put("hostid", vo.getZabbixHostid());
+		params.put("ip", vo.getIp1());
+		params.put("name", vo.getName());
+		
+		RequestBuilder requestBuilder = RequestBuilder.newBuilder()
+				.paramEntry("hostid", vo.getZabbixHostid())
+				.paramEntry("templates", JSONArray.parse(vo.getTeamplates()))
+				.paramEntry("groups", groups)
+				.method("host.update");
+//		if(vo.getZabbix_templates()!=null && !vo.getZabbix_templates().isEmpty()){
+//			requestBuilder.paramEntry("templates", vo.getZabbix_templates());
+//		}
+		Request request = requestBuilder.build();
+		log.debug(String.format("modifyHostToZabbix call zabbix host.update, request: %s", request.toString()));
+				
 		return apiFactory.zabbix().call(request);
 	}
 	

@@ -37,6 +37,8 @@ public interface IMachineBiz {
 	
 	void addHost(JSONObject host);
 	
+	void modifyHost(JSONObject host);
+	
 	void deleteHost(String hostId);
 	
 	JSONObject deleteHostFromZabbix(String hostIds);

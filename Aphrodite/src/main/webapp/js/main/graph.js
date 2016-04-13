@@ -102,7 +102,7 @@ function renderGraph(params) {
 		}
 	});
 	
-	
+	//设置时间拾取器的初始值，当前时间到之前一小时
 	if(params.dateRangeId && params.dateRangeId != '') {
 		var currentTime = new Date().getTime();
 		
