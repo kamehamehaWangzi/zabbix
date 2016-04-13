@@ -113,7 +113,18 @@ public class ProjectRest {
 	@Path("/info")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getProjectDetail(@QueryParam("id") String id) {
+	public Response getProjectInfo(@QueryParam("id") String id) {
+		ProjectVO project = projectBiz.queryProjectById(id);
+		
+		log.debug(String.format("getProjectInfo, %s", project));
+		
+		return Response.ok(project).build();
+	}
+	
+	@Path("/{id}/info")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getProjectDetail(@PathParam("id") String id) {
 		ProjectVO project = projectBiz.queryProjectById(id);
 		
 		log.debug(String.format("getProjectDetail, %s", project));
@@ -126,6 +137,8 @@ public class ProjectRest {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getProjectHostDetail(@PathParam("id") String id) {
 		ProjectVO project = projectBiz.queryProjectById(id);
+		
+		log.debug(String.format("getProjectDetail, %s", project));
 		
 		String hosts = project.getHosts();
 		

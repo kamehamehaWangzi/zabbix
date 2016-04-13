@@ -902,7 +902,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
                     return $ocLazyLoad.load([
                         {
                             serie: true,
-                            files: [ 'js/libs/bootstrap/moment.min.js', 'js/libs/bootstrap/daterangepicker.js', 'js/libs/echarts/echarts-all.js', 'js/main/graph.js' ]
+                            files: [ 'js/libs/bootstrap/bootstrap-multiselect.js', 'js/libs/sweetalert/sweetalert.min.js' , 'js/libs/icheck/icheck.min.js', 'js/libs/bootstrap/moment.min.js', 'js/libs/bootstrap/daterangepicker.js', 'js/libs/echarts/echarts-all.js', 'js/main/graph.js' ]
                         }
                     ]);
                 }
@@ -919,10 +919,19 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
 	    })
 	    
 	    .state('project_detail.host', {
-	    	url: '/info',
+	    	url: '/host',
 	    	views: {
 	            'project': {
 	                templateUrl: 'project/project/host.html'
+	            }
+	    	}
+	    })
+	    
+	    .state('project_detail.task', {
+	    	url: '/task',
+	    	views: {
+	            'project': {
+	                templateUrl: 'project/project/task.html'
 	            }
 	    	}
 	    })
@@ -936,6 +945,22 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
                         {
                             serie: true,
                             files: [ 'js/libs/bootstrap/bootstrap-multiselect.js', 'js/libs/sweetalert/sweetalert.min.js' , 'js/libs/icheck/icheck.min.js']
+                        }
+                    ]);
+                }
+            }
+		})
+		
+		 .state('taskData', {
+			url: '/taskData?id',
+			method: 'post',
+			templateUrl: 'project/taskData/list.html',
+			resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            serie: true,
+                            files: [ 'js/libs/bootstrap/bootstrap-multiselect.js', 'js/libs/sweetalert/sweetalert.min.js' , 'js/libs/icheck/icheck.min.js', 'js/libs/bootstrap/moment.min.js', 'js/libs/bootstrap/daterangepicker.js','js/main/graph.js']
                         }
                     ]);
                 }

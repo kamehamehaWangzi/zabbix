@@ -1,10 +1,12 @@
 package org.pbccrc.platform.project.biz.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.pbccrc.platform.cmdb.dao.TaskDao;
 import org.pbccrc.platform.model.Pagination;
 import org.pbccrc.platform.project.biz.ITaskBiz;
+import org.pbccrc.platform.util.StringUtils;
 import org.pbccrc.platform.vo.TaskVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,12 +65,21 @@ public class TaskBizImpl implements ITaskBiz{
 		vo.setName(taskInfo.getString("name"));
 		vo.setProject(taskInfo.getString("project"));
 		vo.setDescription(taskInfo.getString("description"));
-		JSONArray hostArray = taskInfo.getJSONArray("hosts");
-		if(null != hostArray){
-			vo.setHosts(hostArray.toString());
-		}
+		vo.setHosts(taskInfo.getString("hosts"));
 		
 		taskDao.modifyTask(vo);
 	}
 	
+	public List<TaskVO> getAllTasks(String taskId) {
+		List<TaskVO> list = null;
+		
+		if (StringUtils.isNull(taskId)) {
+			list = taskDao.queryTasks();
+		}
+		
+		list = new ArrayList<TaskVO>();
+		list.add(taskDao.queryByTaskId(taskId));
+		
+		return list;
+	}
 }
