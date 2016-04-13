@@ -20,11 +20,18 @@
 			<if test="name != null">
 				and (t.name like concat(concat('%', #{name}), '%'))
 			</if>
+			<if test="project != null">
+				and (t.project = #{project})
+			</if>
 		</where>
 	</select>
 	
 	<select id="queryByTaskId" parameterType="java.lang.String" resultMap="taskVO">
 		select * from task where id = #{id}
+	</select>
+	
+	<select id="queryTasks" resultMap="taskVO">
+		select * from task 
 	</select>
 	
 	<insert id="insertTask" parameterType="org.pbccrc.platform.vo.TaskVO">
