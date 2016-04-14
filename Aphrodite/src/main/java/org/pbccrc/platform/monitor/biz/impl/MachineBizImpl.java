@@ -214,12 +214,13 @@ public class MachineBizImpl implements IMachineBiz {
 		vo.setSn(host.getString("sn"));
 		vo.setDescription(host.getString("description"));
 		
-		if(host.getJSONArray("templates")!=null){
-			JSONArray templateArray = host.getJSONArray("templates");
+		
+		if(host.getJSONArray("templatesids")!=null){
+			JSONArray templateArray = host.getJSONArray("templatesids");
 			vo.setZabbix_templates(templateArray);
 			vo.setTemplates(templateArray.toJSONString());
 		}else{
-			JSONArray templateArray = JSONArray.parseArray(host.getString("teamplates"));
+			JSONArray templateArray = JSONArray.parseArray(host.getString("templates"));
 			vo.setZabbix_templates(templateArray);
 			vo.setTemplates(templateArray.toJSONString());
 		}

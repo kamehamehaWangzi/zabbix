@@ -79,7 +79,7 @@ public class MachineRest {
 	}
 	
 	/**
-	 * 修改主机功能，按照hostId加载主机信息
+	 * 鍔犺浇host涓绘満淇℃伅
 	 * @param hostId
 	 * @return
 	 */

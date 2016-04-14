@@ -75,15 +75,15 @@
 	</select>
 	
 	<insert id="insertHost" parameterType="org.pbccrc.platform.vo.HostVO">
-		insert into host(zabbix_hostid, groups, teamplates, name, type, os_type, os_version, ip1, sn, description, is_monitor)
-		values(#{zabbixHostid}, #{groups}, #{teamplates}, #{name}, #{type}, #{osType}, #{osVersion}, #{ip1}, #{sn}, #{description}, #{isMonitor})
+		insert into host(zabbix_hostid, groups, templates, name, type, os_type, os_version, ip1, sn, description, is_monitor)
+		values(#{zabbixHostid}, #{groups}, #{templates}, #{name}, #{type}, #{osType}, #{osVersion}, #{ip1}, #{sn}, #{description}, #{isMonitor})
 	</insert>
 	
 	<update id="updateHost" parameterType="org.pbccrc.platform.vo.HostVO">
 		update host
 		<set>
-			<if test="teamplates!=null ">
-				teamplates = #{teamplates},
+			<if test="templates!=null ">
+				templates = #{templates},
 			</if>
 			<if test="groups!=null ">
 				groups = #{groups},

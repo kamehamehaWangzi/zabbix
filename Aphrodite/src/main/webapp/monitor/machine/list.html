@@ -230,7 +230,7 @@
 						<div class="form-group">
 							<label for="sn" class="col-sm-2 control-label">监控模板</label>
 							<div class="col-sm-10">
-								<select id="modifyMultiselect" class="multiselect" multiple="multiple" data-ng-model="modifyHost.templates"></select>
+								<select id="modifyMultiselect" class="multiselect" multiple="multiple" data-ng-model="modifyHost.templatesids"></select>
 							</div>
 						</div>
 						<div class="form-group">
@@ -453,7 +453,7 @@ function MachineListController($scope, $http, $state) {
 			}).success(function(data){
 				$scope.modifyHost = data;
 				$scope.modifyHost.ip = data.ip1;
-				$scope.loadTemplate('modifyModal',data.teamplates);
+				$scope.loadTemplate('modifyModal',data.templates);
 				$scope.loadGroup('modifyModal',data.groups);
 			});
 			$("#modifyHostModal").modal("show");
