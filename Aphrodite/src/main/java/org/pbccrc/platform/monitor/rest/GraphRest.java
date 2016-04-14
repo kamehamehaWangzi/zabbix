@@ -40,14 +40,14 @@ public class GraphRest {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getGraphData(@QueryParam("id") String id, //Ö÷»úºÅ hostId
-			@QueryParam("key") String key, //²éÑ¯ÀàĞÍ Àı ['system.cpu.util[,user]', 'system.cpu.util[,nice]']
+	public Response getGraphData(@QueryParam("id") String id, //ä¸»æœºå· hostId
+			@QueryParam("key") String key, //æŸ¥è¯¢ç±»å‹ ä¾‹ ['system.cpu.util[,user]', 'system.cpu.util[,nice]']
 			@QueryParam("likeSearch") Boolean likeSearch, 
-			@QueryParam("graphType") String graphType, //Í¼±íÀàĞÍ
+			@QueryParam("graphType") String graphType, //å›¾è¡¨ç±»å‹
 			@QueryParam("scaler") Integer scaler, @QueryParam("startDate") String startDate, 
 			@QueryParam("endDate") String endDate, @QueryParam("defaultDateRange") Integer defaultDateRange) {
 		
-		JSONArray keys = JSONArray.parseArray(key); //²éÑ¯×Ö·û´®Í¨¹ıJSon×ª»»ÎªÊı×é
+		JSONArray keys = JSONArray.parseArray(key); //æŸ¥è¯¢å­—ç¬¦ä¸²é€šè¿‡JSonè½¬æ¢ä¸ºæ•°ç»„
 		JSONArray keyItems = new JSONArray();
 		
 		for(int i=0; i<keys.size(); i++) {
@@ -59,17 +59,17 @@ public class GraphRest {
 		
 		log.debug(String.format("keys: %s", keyItems));
 		
-		//ÉèÖÃ·´À¡½á¹ûµÄ±äÁ¿
+		//è®¾ç½®åé¦ˆç»“æœçš„å˜é‡
 		GraphModel graphData = new GraphModel();
-		List<String> legend = new ArrayList<String>(); //Ãû×Ö
-		List<String> xAxis = new ArrayList<String>(); //XÖá×ø±ê
-		List<Series> yAxis = new ArrayList<Series>(); //YÖávalueÖµ
+		List<String> legend = new ArrayList<String>(); //åå­—
+		List<String> xAxis = new ArrayList<String>(); //Xè½´åæ ‡
+		List<Series> yAxis = new ArrayList<Series>(); //Yè½´valueå€¼
 		
-		//Ñ­»·±éÀúµÃµ½µÄitem¼¯ºÏ£¬»ñÈ¡Ã¿¸öitemµÄÀúÊ·Êı¾İ
+		//å¾ªç¯éå†å¾—åˆ°çš„itemé›†åˆï¼Œè·å–æ¯ä¸ªitemçš„å†å²æ•°æ®
 		JSONObject historyX = null;
 		if(keyItems != null && !keyItems.isEmpty()) {
 			
-			//»ñÈ¡YÖáµÄÖµ
+			//è·å–Yè½´çš„å€¼
 			for(int i=0; i<keyItems.size(); i++) {
 				
 				JSONObject itemY = keyItems.getJSONObject(i);
@@ -80,12 +80,12 @@ public class GraphRest {
 				
 				log.debug(String.format("history: %s", historyY));
 				
-				//µÃµ½Êı¾İ½á¹û¼¯
+				//å¾—åˆ°æ•°æ®ç»“æœé›†
 				JSONArray resultY = historyY.getJSONArray("result");
 				
 				Series series = new Series();
 				
-				//½«result½á¹û¼¯ºÏÖĞµÄvalueÊı¾İ´æµ½valuesÁ´±íÖĞ
+				//å°†resultç»“æœé›†åˆä¸­çš„valueæ•°æ®å­˜åˆ°valuesé“¾è¡¨ä¸­
 				List<String> values = new ArrayList<String>();
 				for(int j=0; j<resultY.size(); j++) {
 					String value_key = resultY.getJSONObject(j).containsKey("value_avg") ? "value_avg" : "value";
@@ -100,7 +100,7 @@ public class GraphRest {
 				
 				String itemName = itemY.getString("name");
 				
-				//itemNameµÄ¸ñÊ½»¯×ª»»
+				//itemNameçš„æ ¼å¼åŒ–è½¬æ¢
 				if(itemName.indexOf("$") != -1) {
 					Pattern pattern = Pattern.compile("\\[.*\\]");
 					Matcher match = pattern.matcher(itemY.getString("key_"));
@@ -129,13 +129,13 @@ public class GraphRest {
 					series.setItemStyle(JSONObject.parseObject("{normal: {lineStyle: {type: 'solid'}}}"));
 				}
 				
-				//½«»ñÈ¡µ½µÄÖµ´æÈëµ½yAxisµÄseriesÖĞ£¬´ı´«µ½Ç°Ì¨ÏÔÊ¾
+				//å°†è·å–åˆ°çš„å€¼å­˜å…¥åˆ°yAxisçš„seriesä¸­ï¼Œå¾…ä¼ åˆ°å‰å°æ˜¾ç¤º
 				series.setData(values);
 				yAxis.add(series);
 			}
 			
 			
-			//»ñÈ¡XÖáµÄ×ø±êÖµ
+			//è·å–Xè½´çš„åæ ‡å€¼
 			JSONArray resultX = historyX.getJSONArray("result");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 			
