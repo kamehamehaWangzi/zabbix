@@ -217,11 +217,11 @@ public class MachineBizImpl implements IMachineBiz {
 		if(host.getJSONArray("templates")!=null){
 			JSONArray templateArray = host.getJSONArray("templates");
 			vo.setZabbix_templates(templateArray);
-			vo.setTeamplates(templateArray.toJSONString());
+			vo.setTemplates(templateArray.toJSONString());
 		}else{
 			JSONArray templateArray = JSONArray.parseArray(host.getString("teamplates"));
 			vo.setZabbix_templates(templateArray);
-			vo.setTeamplates(templateArray.toJSONString());
+			vo.setTemplates(templateArray.toJSONString());
 		}
 		
 
@@ -316,7 +316,7 @@ public class MachineBizImpl implements IMachineBiz {
 	}
 	
 	/**
-	 * Ïòzabbix·¢ËÍÖ÷»úÐÞ¸ÄÐÅÏ¢
+	 * ï¿½ï¿½zabbixï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Þ¸ï¿½ï¿½ï¿½Ï¢
 	 * @param vo
 	 * @return
 	 */
@@ -331,7 +331,7 @@ public class MachineBizImpl implements IMachineBiz {
 		
 		RequestBuilder requestBuilder = RequestBuilder.newBuilder()
 				.paramEntry("hostid", vo.getZabbixHostid())
-				.paramEntry("templates", JSONArray.parse(vo.getTeamplates()))
+				.paramEntry("templates", JSONArray.parse(vo.getTemplates()))
 				.paramEntry("groups", groups)
 				.method("host.update");
 //		if(vo.getZabbix_templates()!=null && !vo.getZabbix_templates().isEmpty()){
