@@ -46,7 +46,7 @@ public class HostVO {
 	/**主机状态*/
 	private Integer status;
 	/** 监控模板 */
-	private String teamplates;
+	private String templates;
 	/** zabbix-template(用于调用zabbix api) */
 	private JSONArray zabbix_templates;
 	
@@ -177,11 +177,11 @@ public class HostVO {
 	public void setStatus(Integer status) {
 		this.status = status;
 	}
-	public String getTeamplates() {
-		return teamplates;
+	public String getTemplates() {
+		return templates;
 	}
-	public void setTeamplates(String teamplates) {
-		this.teamplates = teamplates;
+	public void setTemplates(String templates) {
+		this.templates = templates;
 	}
 	public JSONArray getZabbix_templates() {
 		return zabbix_templates;

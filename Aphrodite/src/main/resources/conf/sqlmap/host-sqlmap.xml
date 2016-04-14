@@ -5,7 +5,7 @@
 	<resultMap type="org.pbccrc.platform.vo.HostVO" id="hostVO">
 		<id property="id" column="ID" />
 		<result property="groups" column="GROUPS" />
-		<result property="teamplates" column="TEAMPLATES" />
+		<result property="templates" column="TEMPLATES" />
 		<result property="zabbixHostid" column="ZABBIX_HOSTID" />
 		<result property="name" column="NAME" />
 		<result property="type" column="TYPE" />
