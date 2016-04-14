@@ -43,6 +43,10 @@ public class HostDao extends AbstractMyBatisDao {
 		this.getSqlSession().insert("dao.HostDao.insertHost", vo);
 	}
 	
+	public void updateHost(HostVO vo){
+		this.getSqlSession().update("dao.HostDao.updateHost", vo);
+	}
+	
 	public void deleteHost(String id) {
 		this.getSqlSession().delete("dao.HostDao.deleteHost", id);
 	}

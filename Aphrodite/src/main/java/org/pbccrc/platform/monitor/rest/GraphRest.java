@@ -40,11 +40,14 @@ public class GraphRest {
 	
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getGraphData(@QueryParam("id") String id, @QueryParam("key") String key, @QueryParam("likeSearch") Boolean likeSearch, 
-			@QueryParam("graphType") String graphType, @QueryParam("scaler") Integer scaler, @QueryParam("startDate") String startDate, 
+	public Response getGraphData(@QueryParam("id") String id, //主机号 hostId
+			@QueryParam("key") String key, //查询类型 例 ['system.cpu.util[,user]', 'system.cpu.util[,nice]']
+			@QueryParam("likeSearch") Boolean likeSearch, 
+			@QueryParam("graphType") String graphType, //图表类型
+			@QueryParam("scaler") Integer scaler, @QueryParam("startDate") String startDate, 
 			@QueryParam("endDate") String endDate, @QueryParam("defaultDateRange") Integer defaultDateRange) {
 		
-		JSONArray keys = JSONArray.parseArray(key);
+		JSONArray keys = JSONArray.parseArray(key); //查询字符串通过JSon转换为数组
 		JSONArray keyItems = new JSONArray();
 		
 		for(int i=0; i<keys.size(); i++) {
@@ -54,27 +57,35 @@ public class GraphRest {
 			}
 		}
 		
-		
 		log.debug(String.format("keys: %s", keyItems));
 		
+		//设置反馈结果的变量
 		GraphModel graphData = new GraphModel();
-		List<String> legend = new ArrayList<String>();
-		List<String> xAxis = new ArrayList<String>();
-		List<Series> yAxis = new ArrayList<Series>();
+		List<String> legend = new ArrayList<String>(); //名字
+		List<String> xAxis = new ArrayList<String>(); //X轴坐标
+		List<Series> yAxis = new ArrayList<Series>(); //Y轴value值
 		
+		//循环遍历得到的item集合，获取每个item的历史数据
 		JSONObject historyX = null;
 		if(keyItems != null && !keyItems.isEmpty()) {
+			
+			//获取Y轴的值
 			for(int i=0; i<keyItems.size(); i++) {
+				
 				JSONObject itemY = keyItems.getJSONObject(i);
 				Integer valueType = itemY.getInteger("value_type");
+				
 				JSONObject historyY = graphBiz.queryHistoryByItem(itemY.getString("itemid"), valueType, startDate, endDate, defaultDateRange);
 				historyX = historyY;
 				
 				log.debug(String.format("history: %s", historyY));
 				
+				//得到数据结果集
 				JSONArray resultY = historyY.getJSONArray("result");
 				
 				Series series = new Series();
+				
+				//将result结果集合中的value数据存到values链表中
 				List<String> values = new ArrayList<String>();
 				for(int j=0; j<resultY.size(); j++) {
 					String value_key = resultY.getJSONObject(j).containsKey("value_avg") ? "value_avg" : "value";
@@ -84,11 +95,12 @@ public class GraphRest {
 					} else {
 						value = String.valueOf(resultY.getJSONObject(j).get(value_key));
 					}
-						
 					values.add(value);
 				}
 				
 				String itemName = itemY.getString("name");
+				
+				//itemName的格式化转换
 				if(itemName.indexOf("$") != -1) {
 					Pattern pattern = Pattern.compile("\\[.*\\]");
 					Matcher match = pattern.matcher(itemY.getString("key_"));
@@ -100,14 +112,12 @@ public class GraphRest {
 						
 						if(matchIndex.find()) {
 							Integer index = Integer.parseInt(matchIndex.group().replaceAll("\\$", "").trim());
-							
 							itemName = itemName.replaceAll("\\$" + index, matchStr[index - 1]);
 						}
 					}
 				}
 				
 				legend.add(itemName);
-				
 				series.setName(itemName);
 				
 				// echarts's area == line
@@ -119,12 +129,13 @@ public class GraphRest {
 					series.setItemStyle(JSONObject.parseObject("{normal: {lineStyle: {type: 'solid'}}}"));
 				}
 				
+				//将获取到的值存入到yAxis的series中，待传到前台显示
 				series.setData(values);
-				
 				yAxis.add(series);
 			}
 			
 			
+			//获取X轴的坐标值
 			JSONArray resultX = historyX.getJSONArray("result");
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 			
@@ -134,6 +145,7 @@ public class GraphRest {
 				String clock = sdf.format(new Date(Long.parseLong(obj.getString("clock")) * 1000L));
 				xAxis.add(clock);
 			}
+			
 		}
 		
 		graphData.setLegend(legend);

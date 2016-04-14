@@ -79,6 +79,21 @@
 		values(#{zabbixHostid}, #{groups}, #{teamplates}, #{name}, #{type}, #{osType}, #{osVersion}, #{ip1}, #{sn}, #{description}, #{isMonitor})
 	</insert>
 	
+	<update id="updateHost" parameterType="org.pbccrc.platform.vo.HostVO">
+		update host
+		<set>
+			<if test="teamplates!=null ">
+				teamplates = #{teamplates},
+			</if>
+			<if test="groups!=null ">
+				groups = #{groups},
+			</if>
+		</set>
+		<where>
+			zabbix_hostid = #{zabbixHostid}
+		</where>
+	</update>
+	
 	<delete id="deleteHost" parameterType="java.lang.String">
 		delete from host where id = #{id}
 	</delete>

@@ -39,7 +39,10 @@
 										<button type="button" class="btn btn-sm btn-primary" data-ng-click="search()"> Go!</button>
 									</span>
 									<span class="input-group-btn" style="padding-left: 5px;">
-										<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addHostModal" data-ng-click="loadTemplate();loadGroup()">添加新主机</button>
+										<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addHostModal" data-ng-click="loadTemplate('addModal','');loadGroup('addModal','')">添加新主机</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="loadHostInfo()">修改主机信息</button>
 									</span>
 									<span class="input-group-btn" style="padding-left: 5px;">
 										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delHost()">删除主机</button>
@@ -90,6 +93,7 @@
 			</div>
 		</div>
 	</div>
+<!-- 	主机添加模块 -->
 	<div class="modal fade" id="addHostModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content animated bounceInRight">
@@ -166,6 +170,85 @@
 			</div>
 		</div>
 	</div>
+	
+<!-- 	主机修改模块 -->
+	<div class="modal fade" id="modifyHostModal" tabindex="-1" role="dialog" aria-labelledby="modifyModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form" data-ng-submit="modifyHostFun()">
+					<div class="modal-header">
+			            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="modifyModalLabel">
+							修改主机信息
+						</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">主机名称</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="modifyHost.name" placeholder="主机名称" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="ip" class="col-sm-2 control-label">IP</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="modifyHost.ip" placeholder="IP" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">群组</label>
+							<div class="col-sm-10">
+								<select id="modifyGroups" class="multiselect" multiple="multiple" data-ng-model="modifyHost.groupids"></select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="osVersion" class="col-sm-2 control-label">操作系统</label>
+							<div class="col-sm-10">
+								<select class="form-control" data-ng-model="modifyHost.osVersion">
+									<option value="CentOS6.5">CentOS6.5</option>
+									<option value="CentOS7.0">CentOS7.0</option>
+									<option value="Ubuntu">Ubuntu</option>
+									<option value="Windows">Windows</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="type" class="col-sm-2 control-label">机器类型</label>
+							<div class="col-sm-10">
+								<select class="form-control" name="type" data-ng-model="modifyHost.type">
+									<option value="physical">物理机</option>
+									<option value="virtual">虚拟机</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">SN</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="modifyHost.sn" placeholder="SN"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">监控模板</label>
+							<div class="col-sm-10">
+								<select id="modifyMultiselect" class="multiselect" multiple="multiple" data-ng-model="modifyHost.templates"></select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="3" data-ng-model="modifyHost.description"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">确认修改</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
 </div>
 <script type="text/javascript">
 function MachineListController($scope, $http, $state) {
@@ -188,7 +271,8 @@ function MachineListController($scope, $http, $state) {
     
     $scope.search();
     
-    $scope.loadGroup = function() {
+    //加载主机信息，传入参数
+    $scope.loadGroup = function(loadClass,selectedHosts) {
 		$http({
 			method: 'GET',
 			url: 'r/machine/groupAll'
@@ -202,16 +286,42 @@ function MachineListController($scope, $http, $state) {
 					};
 					temps.push(obj);
 				});
-				$('#groups').multiselect({
-					buttonClass: 'btn btn-sm btn-primary',
-					enableFiltering: true,
-			        includeSelectAllOption: true,
-			        buttonWidth: '100%'
-				});
-				if(temps.length == 0) {
-					$("#groups").multiselect('disable');
-				} else {
-					$("#groups").multiselect('dataprovider', temps);
+				
+				if(loadClass == "addModal"){
+					$('#groups').multiselect({
+						buttonClass: 'btn btn-sm btn-primary',
+						enableFiltering: true,
+				        includeSelectAllOption: true,
+				        buttonWidth: '100%'
+					});
+					if(temps.length == 0) {
+						$("#groups").multiselect('disable');
+					} else {
+						$("#groups").multiselect('dataprovider', temps);
+					}
+				}else if(loadClass=="modifyModal"){
+					$('#modifyGroups').multiselect({
+						buttonClass: 'btn btn-sm btn-primary',
+						enableFiltering: true,
+				        includeSelectAllOption: true,
+				        buttonWidth: '100%'
+					});
+					if(temps.length == 0) {
+						$("#modifyGroups").multiselect('disable');
+					}else if(loadClass="modifyModal"){
+						//设置选中值
+						var arrays = eval(selectedHosts);
+						for(var i = 0;i<arrays.length;i++){
+							var temp = arrays[i];
+							for(var j = 0;j<temps.length;j++){
+								if(temps[j].value == temp){
+									temps[j].selected = true;
+								}
+							}
+						}
+						
+						$("#modifyGroups").multiselect('dataprovider', temps);
+					}
 				}
 			}
 		}).error(function(data){
@@ -219,7 +329,7 @@ function MachineListController($scope, $http, $state) {
 		});
 	}
 	
-	$scope.loadTemplate = function() {
+	$scope.loadTemplate = function(loadClass,selectedTemplates) {
 		$http({
 			method: 'GET',
 			url: 'r/machine/template',
@@ -235,18 +345,43 @@ function MachineListController($scope, $http, $state) {
 					temps.push(obj);
 				});
 				
-				$('#multiselect').multiselect({
-					buttonClass: 'btn btn-sm btn-primary',
-					enableFiltering: true,
-			        includeSelectAllOption: true,
-			        buttonWidth: '100%'
-				});
+				if(loadClass=='addModal'){
+					$('#multiselect').multiselect({
+						buttonClass: 'btn btn-sm btn-primary',
+						enableFiltering: true,
+						includeSelectAllOption: true,
+						buttonWidth: '100%'
+					});
+					if(temps.length == 0) {
+						$("#multiselect").multiselect('disable');
+					} else {
+						$("#multiselect").multiselect('dataprovider', temps);
+					}
+				}else if(loadClass=="modifyModal"){
+					$('#modifyMultiselect').multiselect({
+						buttonClass: 'btn btn-sm btn-primary',
+						enableFiltering: true,
+				        includeSelectAllOption: true,
+				        buttonWidth: '100%'
+					});
+					if(temps.length == 0) {
+						$("#modifyMultiselect").multiselect('disable');
+					} else {
+						//设置选中项
+						var array = eval(selectedTemplates);
+						for(var i = 0 ; i<array.length; i++){
+							var temp = array[i];
+							for(var j = 0;j<temps.length;j++){
+								if(temp == temps[j].value){
+									temps[j].selected=true;
+								}
+							}
+						}
+						$("#modifyMultiselect").multiselect('dataprovider', temps);
+					}
+				} 
 				
-				if(temps.length == 0) {
-					$("#multiselect").multiselect('disable');
-				} else {
-					$("#multiselect").multiselect('dataprovider', temps);
-				}
+				
 			}
 		}).error(function(data){
 			console.log(data);
@@ -275,6 +410,58 @@ function MachineListController($scope, $http, $state) {
 			console.log(data);
 		});
 	}
+	
+	$scope.modifyHostFun = function(){
+		$http({
+			async : false,
+			method :'PUT',
+			url: 'r/machine',
+			params : {'host':$scope.modifyHost}
+		}).success(function(data){
+			if(data == '200'){
+				$("#modifyHostModal").modal('hide');
+				$scope.search();
+				$scope.modifyHost = {};
+			}
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+	
+	//加载主机信息
+	$scope.loadHostInfo = function() {
+		
+		$scope.id = '';
+		var count = 0;
+		
+		$("input[name='selectId']:checked").each(function(){
+			$scope.id = $(this).val();
+			count += 1;
+		});
+		
+		if(count>1){
+			swal("","请选择一个主机进行修改","warning");
+			return false;
+		}
+		
+		if($scope.id!=''){
+			//加载模板和组群信息
+			var preData;
+			$http({
+				async : false,
+				url : 'r/machine/'+$scope.id+'/loadInfo'
+			}).success(function(data){
+				$scope.modifyHost = data;
+				$scope.modifyHost.ip = data.ip1;
+				$scope.loadTemplate('modifyModal',data.teamplates);
+				$scope.loadGroup('modifyModal',data.groups);
+			});
+			$("#modifyHostModal").modal("show");
+		}else{
+			swal("","请选择要修改的主机","warning");
+		}
+		
+	} 
 	
 	$scope.delHost = function() {
 		$scope.ids = '';

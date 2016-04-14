@@ -16,7 +16,7 @@
 	
 	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
-		<property name="url" value="jdbc:mysql://192.168.15.182:3306/cmdb?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"></property>
+		<property name="url" value="jdbc:mysql://192.168.15.99:3306/cmdb?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"></property>
 		<property name="username" value="root"></property>
 		<property name="password" value="root"></property>
 		<property name="maxActive" value="20"></property>

@@ -23,7 +23,7 @@ function MachineMemoryController($scope, $http, $stateParams) {
 			id: $stateParams.hostId,
 			graphDiv: 'memoryChart',
 			title: 'Memory usage',
-			key: ['vm.memory.size[available]'],
+			key: ['vm.memory.size[total]','vm.memory.size[available]','vm.memory.size[used]'],
 			graphType: 'area',
 			formatter: 'G',
 			scaler: 1024*1024*1024,
