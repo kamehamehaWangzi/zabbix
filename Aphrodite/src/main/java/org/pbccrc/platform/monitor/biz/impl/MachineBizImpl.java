@@ -262,7 +262,7 @@ public class MachineBizImpl implements IMachineBiz {
 		vo.setDescription(host.getString("description"));
 		JSONArray templateArray = host.getJSONArray("templates");
 		vo.setZabbix_templates(templateArray);
-		vo.setTeamplates(templateArray.toJSONString());
+		vo.setTemplates(templateArray.toJSONString());
 		
 		
 		JSONObject result = addHostToZabbix(vo);

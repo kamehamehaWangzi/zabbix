@@ -236,7 +236,7 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 		}
     }
 	
-	// init startTime $ endTime
+	// init startTime & endTime
 	var currentTime = getCurrentTime();
 	var defStartDate = new Date(currentTime - (3600 * 1000)).Format("yyyy-MM-dd hh:mm");
 	var defEndDate = new Date(currentTime).Format("yyyy-MM-dd hh:mm");

@@ -24,7 +24,7 @@ CREATE TABLE
     (
         id INT(10) unsigned NOT NULL AUTO_INCREMENT,
         groups varchar(2000),
-        teamplates varchar(2000),
+        templates varchar(2000),
         zabbix_hostid bigint unsigned,
         name VARCHAR(64) COLLATE utf8_bin NOT NULL,
         type VARCHAR(32),
