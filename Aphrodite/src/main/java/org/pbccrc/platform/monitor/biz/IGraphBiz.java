@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 public interface IGraphBiz {
 	
 	/**
-	 * key 待查询的item, 根据key值反馈出对应的item
+	 * key 寰呮煡璇㈢殑item, 鏍规嵁key鍊煎弽棣堝嚭瀵瑰簲鐨刬tem
 	 * @param hostId
 	 * @param key
 	 * @param likeSearch
@@ -14,7 +14,7 @@ public interface IGraphBiz {
 	JSONObject queryItemsByHostKey(String hostId, String key, Boolean likeSearch);
 	
 	/**
-	 * 根据item的Id返回历史数据
+	 * 鏍规嵁item鐨処d杩斿洖鍘嗗彶鏁版嵁
 	 * @param itemId
 	 * @param type
 	 * @param startDate
