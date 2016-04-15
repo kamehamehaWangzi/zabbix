@@ -214,7 +214,6 @@ public class MachineBizImpl implements IMachineBiz {
 		vo.setSn(host.getString("sn"));
 		vo.setDescription(host.getString("description"));
 		
-		
 		if(host.getJSONArray("templatesids")!=null){
 			JSONArray templateArray = host.getJSONArray("templatesids");
 			vo.setZabbix_templates(templateArray);
@@ -298,7 +297,6 @@ public class MachineBizImpl implements IMachineBiz {
 		inter.put("port", "10050");
 		interfaces.add(inter);
 		
-		
 		RequestBuilder requestBuilder = RequestBuilder.newBuilder()
 				.paramEntry("host", vo.getName())
 				.paramEntry("groups", groups)
@@ -317,7 +315,6 @@ public class MachineBizImpl implements IMachineBiz {
 	}
 	
 	/**
-	 * ��zabbix���������޸���Ϣ
 	 * @param vo
 	 * @return
 	 */

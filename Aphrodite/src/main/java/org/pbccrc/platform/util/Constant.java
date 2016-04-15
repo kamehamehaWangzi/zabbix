@@ -7,7 +7,7 @@ public class Constant {
 
 	public static final String SESSION_USER_KEY = "CURRENT_USER";
 
-	public static final String ZABBIX_API_URL = "http://192.168.15.240/zabbix/api_jsonrpc.php";
+	public static final String ZABBIX_API_URL = "http://192.168.15.228/zabbix/api_jsonrpc.php";
 //	public static final String ZABBIX_API_URL = "http://10.128.142.243/zabbix/api_jsonrpc.php";
 	// public static final String ZABBIX_API_URL = "http://10.128.147.42/zabbix/api_jsonrpc.php";
 	public static final String ZABBIX_USERNAME = "Admin";
