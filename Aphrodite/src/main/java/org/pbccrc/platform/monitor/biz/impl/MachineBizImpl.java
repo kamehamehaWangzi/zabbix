@@ -227,7 +227,7 @@ public class MachineBizImpl implements IMachineBiz {
 
 		JSONObject result = modifyHostToZabbix(vo);
 		
-		if(result != null && !result.getJSONObject("result").isEmpty()) {
+		if(result != null && null != result.getJSONObject("result") &&!result.getJSONObject("result").isEmpty()) {
 			Integer zabbixHostId = Integer.parseInt(result.getJSONObject("result").getJSONArray("hostids").getString(0));
 			vo.setZabbixHostid(zabbixHostId);
 			
@@ -324,7 +324,7 @@ public class MachineBizImpl implements IMachineBiz {
 		
 		JSONObject params = new JSONObject();
 		params.put("hostid", vo.getZabbixHostid());
-		params.put("ip", vo.getIp1());
+//		params.put("ip", vo.getIp1());
 		params.put("name", vo.getName());
 		
 		RequestBuilder requestBuilder = RequestBuilder.newBuilder()
