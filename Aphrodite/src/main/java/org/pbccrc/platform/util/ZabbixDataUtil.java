@@ -79,8 +79,8 @@ public class ZabbixDataUtil {
 	 */
 	private static enum DISK_IO {
 		
-		VFS_DEV_READ("vfs.dev.read[,bytes]"), 
-		VFS_DEV_WRITE("vfs.dev.write[,bytes]");
+		VFS_DEV_READ("vfs.dev.read[,sps]"), 
+		VFS_DEV_WRITE("vfs.dev.write[,sps]");
 		
 		private String value;
 
@@ -119,8 +119,8 @@ public class ZabbixDataUtil {
 	 */
 	private static enum NET {
 		
-		NET_IN("net.if.in"), 
-		NET_OUT("net.if.out");
+		NET_IN("net.if.in[eth0]"), 
+		NET_OUT("net.if.out[eth0]");
 		
 		private String value;
 
@@ -142,8 +142,7 @@ public class ZabbixDataUtil {
 	private static enum MEMORY {
 		
 		MEMORY_TOTAL("vm.memory.size[total]"), 
-		MEMORY_AVAILABLE("vm.memory.size[available]"), 
-		MEMORY_USED("vm.memory.size[used]");
+		MEMORY_AVAILABLE("vm.memory.size[available]");
 		
 		private String value;
 
@@ -163,8 +162,8 @@ public class ZabbixDataUtil {
 	 */
 	private static enum SWAP {
 		
-		SWAP_IN("system.swap.in"), 
-		SWAP_OUT("system.swap.out");
+		SWAP_IN("system.swap.size[,free]"), 
+		SWAP_OUT("system.swap.size[,total]");
 		
 		private String value;
 
@@ -239,7 +238,6 @@ public class ZabbixDataUtil {
 						
 						if (MEMORY.MEMORY_TOTAL.getValue().equals(key) ||
 							MEMORY.MEMORY_AVAILABLE.getValue().equals(key) ||
-							MEMORY.MEMORY_USED.getValue().equals(key) ||
 							SWAP.SWAP_IN.getValue().equals(key) ||
 							SWAP.SWAP_OUT.getValue().equals(key) ) {
 							jsonArray.add(keyItem);
