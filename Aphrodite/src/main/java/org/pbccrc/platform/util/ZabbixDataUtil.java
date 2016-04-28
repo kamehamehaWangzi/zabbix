@@ -80,7 +80,9 @@ public class ZabbixDataUtil {
 	private static enum DISK_IO {
 		
 		VFS_DEV_READ("vfs.dev.read[,sps]"), 
-		VFS_DEV_WRITE("vfs.dev.write[,sps]");
+		VFS_DEV_WRITE("vfs.dev.write[,sps]"),
+		VFS_DEV_READ_OPS("vfs.dev.read[,ops]"),
+		VFS_DEV_WRITE_OPS("vfs.dev.read[,ops]");
 		
 		private String value;
 
