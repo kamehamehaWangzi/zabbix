@@ -936,7 +936,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
 	    	}
 	    })
 	    
-	     .state('task', {
+	    .state('task', {
 			url: '/task',
 			templateUrl: 'project/task/list.html',
 			resolve: {
@@ -951,7 +951,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
             }
 		})
 		
-		 .state('taskData', {
+		.state('taskData', {
 			url: '/taskData?id',
 			method: 'post',
 			templateUrl: 'project/taskData/list.html',
@@ -966,7 +966,13 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
                 }
             }
 		})
-    
+		
+		.state('detailMonitor',{
+			url: '/detailMonitor?taskId&startTime&endTime',
+			method: 'GET',
+			templateUrl: 'project/taskData/monitorData.html'
+		})
+	    
 }
 angular
     .module('aphrodite')

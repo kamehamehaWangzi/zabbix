@@ -59,7 +59,7 @@
 										<th>任务名</th>
 										<th>开始时间</th>
 										<th>结束时间</th>
-										<th></th>
+										<th>监控数据</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -71,7 +71,7 @@
 										<td>{{item.taskName}}</td>
 										<td>{{item.startTime}}</td>
 										<td>{{item.endTime}}</td>
-										<td></td>
+										<td><a href="#" data-ng-click="toMonitor(item.taskId,item.startTime,item.endTime)">查看</a></td>
 									</tr>
 									
 								</tbody>
@@ -236,6 +236,12 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 		}
     }
 	
+	 // 跳转到任务页面
+	$scope.toMonitor = function(taskDataId,startTime,endTime) {
+		console.log("taskId "+taskDataId+"   "+startTime+"  "+endTime);
+		$state.go('detailMonitor', {'taskId': taskDataId, 'startTime': startTime, 'endTime':endTime});
+	}
+	
 	// init startTime $ endTime
 	var currentTime = getCurrentTime();
 	var defStartDate = new Date(currentTime - (3600 * 1000)).Format("yyyy-MM-dd hh:mm");
@@ -262,5 +268,7 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 	function getCurrentTime(){
 		return new Date().getTime();
 	}
+	
+	
 }
 </script>

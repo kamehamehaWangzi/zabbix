@@ -5,6 +5,7 @@ import java.util.List;
 import org.pbccrc.platform.model.Pagination;
 import org.pbccrc.platform.vo.TaskDataVO;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
 public interface ITaskDataBiz {
@@ -14,4 +15,6 @@ public interface ITaskDataBiz {
 	void addTaskData(JSONObject taskData);
 	
 	void deleteTaskData(String taskDataId);
+	
+	public JSONArray getTaskDataMonitorData(String taskId,String startTime, String endTime);
 }

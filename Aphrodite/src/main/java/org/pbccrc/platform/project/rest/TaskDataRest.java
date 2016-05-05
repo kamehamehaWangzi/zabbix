@@ -12,15 +12,19 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.pbccrc.platform.model.GraphModel;
 import org.pbccrc.platform.model.Pagination;
+import org.pbccrc.platform.model.ZabbixDataModel;
 import org.pbccrc.platform.project.biz.ITaskBiz;
 import org.pbccrc.platform.project.biz.ITaskDataBiz;
+import org.pbccrc.platform.project.biz.impl.TaskBizImpl;
 import org.pbccrc.platform.vo.TaskDataVO;
 import org.pbccrc.platform.vo.TaskVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 
@@ -78,6 +82,49 @@ public class TaskDataRest {
 		taskDataBiz.addTaskData(taskDataInfo);
 		
 		return Response.ok(200).build();
+	}
+	
+	/**
+	 * 获取任务监控数据，在前台表格显示
+	 * */
+	@Path("/detailMonitor")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getMonitorData(@QueryParam("taskId")String taskId,
+			@QueryParam("startTime") String startTime,
+			@QueryParam("endTime")String endTime){
+		System.out.println("AAAAAAA");
+		log.debug(String.format(" Get the monitor data %s,%s,%s", taskId,startTime,endTime));
+		JSONArray resultArray = taskDataBiz.getTaskDataMonitorData(taskId,startTime,endTime);
+		return Response.ok(resultArray).build();
+	}
+	
+	/**
+	 * 获取显示图表的数据
+	 * */
+	@Path("/detailMonitorTrend")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getDetailMonitorTrend(@QueryParam("key") String key){
+		
+		//获取到的监控数据 ZabbixDataModel
+		//ZabbixDataModel 主机 时间 GraphModel(包含4大类监控数据)
+		ZabbixDataModel monitorData = new ZabbixDataModel();
+		
+		//转换类型
+		List<GraphModel> monitorDataList = monitorData.getGraphList();
+		
+		//通过循环获取指定类型
+		GraphModel resultGraph = null;
+		for(int i = 0; i < monitorDataList.size(); i++){
+			if(monitorDataList.get(i).getLegend().equals("")){
+				resultGraph = monitorDataList.get(i);
+				break;
+			}
+		}
+		
+		//导出结果		
+		return Response.ok(resultGraph).build();
 	}
 	
 	@DELETE

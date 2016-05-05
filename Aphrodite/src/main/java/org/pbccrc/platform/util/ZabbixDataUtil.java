@@ -193,7 +193,7 @@ public class ZabbixDataUtil {
 		map.put(TYPE_MEMORY, memorylist);
 		
 		return map;
-	} 
+	}
 	
 	// get zabbixData by parameter
 	public JSONArray getZabbixDataByType(String type, JSONArray keyItems){
@@ -404,6 +404,124 @@ public class ZabbixDataUtil {
 		
 		return list;
 	}
+	
+	/**
+	 * get zabbix data by the hostId,monitorType,startTime,endTime
+	 * @param hostId
+	 * @param startTime
+	 * @param endTime
+	 * @return
+	 * 2016.04.28
+	 */
+	public ZabbixDataModel getZabbixDataByHost(HostVO host,String monitorType, String startTime, String endTime){
+		
+		Integer defaultDateRange = 1;
+		Integer scaler = null;
+		String graphType = Constant.GRAPH_TYPE.area.getValue();
+		ZabbixDataModel zabbixData = new ZabbixDataModel();
+		
+		if(host != null && host.getId()!=null){
+			
+			zabbixData.setHostId(host.getId());
+			
+			//get the monitor item set of current host
+			JSONArray keyItems = getKeyItems(host.getZabbixHostid());
+			//according to monitor type choice the item information
+			keyItems = getZabbixDataByType(monitorType, keyItems);
+			
+			//init data
+			List<GraphModel> graphList = new ArrayList<GraphModel>();
+			GraphModel graphData = new GraphModel();
+			List<String> legend = new ArrayList<String>();
+			List<String> xAxis = new ArrayList<String>();
+			List<Series> yAxis = new ArrayList<Series>();
+			
+			JSONObject historyX = null;
+			
+			//get the monitor data for each item
+			if(keyItems != null && !keyItems.isEmpty()){
+				//get the Y value
+				for(int j=0; j<keyItems.size(); j++){
+					JSONObject itemY = keyItems.getJSONObject(j);
+					Integer valueType = itemY.getInteger("value_type");
+					
+					JSONObject historyY = graphBiz.queryHistoryByItem(itemY.getString("itemid"), valueType, startTime, endTime, defaultDateRange);
+					historyX = historyY;
+					
+					//get monitor data
+					JSONArray resultY = historyY.getJSONArray("result");
+					
+					Series series = new Series();
+					//将 result 结果集合中的value数据存到values链表中
+					List<String> values = new ArrayList<String>();
+					for(int m=0; m<resultY.size(); m++){
+						String value_key = resultY.getJSONObject(m).containsKey("value_ave")?"value_avg":"value";
+						String value = null;
+						if(scaler != null){
+							value = String.valueOf(resultY.getJSONObject(m).getDouble(value_key) / scaler);
+						}else{
+							value = String.valueOf(resultY.getJSONObject(m).get(value_key));
+						}
+						values.add(value);
+					}
+					
+					String itemName = itemY.getString("name");
+					
+					//itemName的格式化转换
+					if(itemName.indexOf("$")!=-1){
+						Pattern pattern = Pattern.compile("\\[.*\\]");
+						Matcher match = pattern.matcher(itemY.getString("key_"));
+						if(match.find()){
+							String[] matchStr = match.group().replaceAll("\\[|\\]", "").split(",");
+							Pattern patternIndex = Pattern.compile("\\$.d*");
+							Matcher matchIndex = patternIndex.matcher(itemName);
+							if(matchIndex.find()){
+								Integer index = Integer.parseInt(matchIndex.group().replaceAll("\\$", "").trim());
+								itemName = itemName.replaceAll("\\$" + index, matchStr[index - 1]);
+							}
+						}
+					}
+					
+					legend.add(itemName);
+					series.setName(itemName);
+					
+					// echars's area == line
+					if(Constant.GRAPH_TYPE.area.getValue().equals(graphType)) {
+						series.setType(Constant.GRAPH_TYPE.line.getValue());
+						series.setItemStyle(JSONObject.parseObject("{normal: {areaStyle: {type: 'default'}}}"));
+					} else {
+						series.setType(graphType);
+						series.setItemStyle(JSONObject.parseObject("{normal: {lineStyle: {type: 'solid'}}}"));
+					}
+					//将获取到的值存入到yAxis的series中，待传到前台显示
+					series.setData(values);
+					yAxis.add(series);
+				}
+				//获取X轴的坐标值
+				JSONArray resultX = historyX.getJSONArray("result");
+				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+				
+				for(int n=0; n<resultX.size(); n++) {
+					JSONObject obj = resultX.getJSONObject(n);
+					
+					String clock = sdf.format(new Date(Long.parseLong(obj.getString("clock")) * 1000L));
+					xAxis.add(clock);
+				}
+			}
+			
+			graphData.setLegend(legend);
+			graphData.setxAxis(xAxis);
+			graphData.setyAxis(yAxis);
+			
+			graphList.add(graphData);
+			
+			zabbixData.setGraphList(graphList);
+			
+		}
+		
+		return zabbixData;
+	}
+	
 	
 	// save to file
 	public void saveZabbixData(ZabbixDataModel zabbixDataModel, File file) throws Exception {
