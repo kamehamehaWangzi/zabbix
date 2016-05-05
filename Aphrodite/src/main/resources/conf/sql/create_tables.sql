@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS `taskdata`;
+CREATE TABLE `taskdata` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `taskId` int(11) DEFAULT NULL,
+  hosts varchar(255) DEFAULT NULL,
+  `startTime` varchar(255) DEFAULT NULL,
+  `endTime` varchar(255) DEFAULT NULL,
+  `path` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8;
+
+
 DROP TABLE IF EXISTS task;
 CREATE TABLE task (
   id int(10) unsigned NOT NULL AUTO_INCREMENT,

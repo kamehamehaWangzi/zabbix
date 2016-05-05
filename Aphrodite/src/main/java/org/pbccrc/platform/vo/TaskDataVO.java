@@ -6,6 +6,8 @@ public class TaskDataVO {
 	
 	private Integer taskId;
 	
+	private String hosts;
+	
 	private String startTime;
 	
 	private String endTime;
@@ -29,6 +31,14 @@ public class TaskDataVO {
 
 	public void setTaskId(Integer taskId) {
 		this.taskId = taskId;
+	}
+	
+	public String getHosts() {
+		return hosts;
+	}
+	
+	public void setHosts(String hosts) {
+		this.hosts = hosts;
 	}
 
 	public String getStartTime() {
