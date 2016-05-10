@@ -12,6 +12,9 @@ public class ZabbixDataModel implements Serializable{
 
 	private int hostId;
 	
+	private GraphModel graph; //按监控item类型进行的存储
+	
+	@Deprecated  //按照单个item进行存储，暂时废弃
 	private List<GraphModel> graphList;
 	
 	public int getTaskDataId() {
@@ -36,6 +39,14 @@ public class ZabbixDataModel implements Serializable{
 
 	public void setGraphList(List<GraphModel> graphList) {
 		this.graphList = graphList;
+	}
+
+	public GraphModel getGraph() {
+		return graph;
+	}
+
+	public void setGraph(GraphModel graph) {
+		this.graph = graph;
 	}
 	
 	

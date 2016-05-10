@@ -1,10 +1,13 @@
 package org.pbccrc.platform.model;
 
+import java.io.Serializable;
 import java.util.List;
 
 import com.alibaba.fastjson.JSONObject;
 
-public class Series {
+public class Series implements Serializable	{
+	
+	private static final long serialVersionUID = -3818617572812174976L;
 	
 	private String name;
 	private String type;

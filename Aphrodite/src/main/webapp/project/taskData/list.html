@@ -56,7 +56,7 @@
 									<tr>
 										<th>#</th>
 										<th>序号</th>
-										<th>任务名</th>
+										<th>任务用例</th>
 										<th>开始时间</th>
 										<th>结束时间</th>
 										<th>监控数据</th>
@@ -71,7 +71,10 @@
 										<td>{{item.taskName}}</td>
 										<td>{{item.startTime}}</td>
 										<td>{{item.endTime}}</td>
-										<td><a href="#" data-ng-click="toMonitor(item.taskId,item.startTime,item.endTime)">查看</a></td>
+										<td>
+											<a href="#" data-ng-click="toMonitor(item.id)">查看</a>
+											<a href="#" data-ng-click="persistent(item.id)">get</a>
+										</td>
 									</tr>
 									
 								</tbody>
@@ -102,7 +105,7 @@
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label for="sn" class="col-sm-2 control-label">选择任务</label>
+							<label for="sn" class="col-sm-2 control-label">选择任务用例</label>
 							<div class="col-sm-10">
 							<select id="task" class="form-control" data-ng-change="loadHost('addModel','')" 
 								data-ng-model="taskData.taskId" data-ng-options="x.value as x.label for x in tasks"></select>
@@ -237,10 +240,44 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
     }
 	
 	 // 跳转到任务页面
-	$scope.toMonitor = function(taskDataId,startTime,endTime) {
-		console.log("taskId "+taskDataId+"   "+startTime+"  "+endTime);
-		$state.go('detailMonitor', {'taskId': taskDataId, 'startTime': startTime, 'endTime':endTime});
+	$scope.toMonitor = function(task_id) {
+		console.log("task_id "+task_id);
+		$state.go('detailMonitor', {'task_id': task_id});
 	}
+	 
+	$scope.persistent = function(task_id){
+		 
+		 $http({
+			 url: 'r/taskData/obtainTaskMonitor2DB',
+			 method: 'GET',
+			 params: {
+				 'task_id':task_id
+			 }
+		 }).success(function(data){
+			 if(data==1){
+				 swal("监控数据持久化成功！");
+			 }else{
+				 swal("监控数据获取失败！");
+			 }
+		 })
+		 
+	 }
+	 
+	/*
+	$http({
+			method: 'GET',
+// 			url: 'r/taskData/detailMonitor',
+			url: 'r/taskData/obtainTaskMonitor2DB', 
+			params: {'task_id':$stateParams.task_id}
+// 			params:{'taskId': $stateParams.taskData.taskId, detailMonitor
+// 					'startTime'$stateParams.taskData.startTime,
+// 					'endTime':$stateParams.taskData.endTime}
+	}).success(function(data) {
+			console.log("This data is ");
+			console.log(data);
+			$scope.items = data;
+    });
+	*/
 	
 	// init startTime $ endTime
 	var currentTime = getCurrentTime();

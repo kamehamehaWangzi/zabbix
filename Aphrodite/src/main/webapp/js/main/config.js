@@ -968,7 +968,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
 		})
 		
 		.state('detailMonitor',{
-			url: '/detailMonitor?taskId&startTime&endTime',
+			url: '/detailMonitor?task_id',
 			method: 'GET',
 			templateUrl: 'project/taskData/monitorData.html'
 		})

@@ -24,13 +24,13 @@
 										<button type="button" class="btn btn-sm btn-primary" data-ng-click="search()"> Go!</button>
 									</span>
 									<span class="input-group-btn" style="padding-left: 5px;">
-										<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addTaskModal" data-ng-click="loadProject()">添加任务</button>
+										<button class="btn btn-sm btn-primary" type="button" data-toggle="modal" data-target="#addTaskModal" data-ng-click="loadProject()">添加任务用例</button>
 									</span>
 									<span class="input-group-btn" style="padding-left: 5px;">
-										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delTask()">删除任务</button>
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delTask()">删除任务用例</button>
 									</span>
 									<span class="input-group-btn" style="padding-left: 5px;">
-										<button class="btn btn-sm btn-primary" type="button" data-ng-click="loadTaskInfo()">修改任务</button>
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="loadTaskInfo()">修改任务用例</button>
 									</span>
 								</div>
 							</div>
@@ -42,7 +42,7 @@
 										<th>#</th>
 										<th>序号</th>
 										<th>所属项目</th>
-										<th>任务名</th>
+										<th>任务用例名称</th>
 										<th>描述</th>
 										<th></th>
 									</tr>
@@ -87,7 +87,7 @@
 					</div>
 					<div class="modal-body">
 						<div class="form-group">
-							<label for="name" class="col-sm-2 control-label">任务名称</label>
+							<label for="name" class="col-sm-2 control-label">任务用例名称</label>
 							<div class="col-sm-10">
 								<input type="text" class="form-control" data-ng-model="task.name" placeholder="任务名称" required/>
 							</div>
@@ -106,7 +106,7 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<label for="description" class="col-sm-2 control-label">任务描述</label>
+							<label for="description" class="col-sm-2 control-label">用例描述</label>
 							<div class="col-sm-10">
 								<textarea class="form-control" rows="3" data-ng-model="task.description"></textarea>
 							</div>
@@ -114,7 +114,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>
-						<button type="submit" class="btn btn-sm btn-primary">添加任务</button>
+						<button type="submit" class="btn btn-sm btn-primary">添加任务用例</button>
 					</div>
 				</form>
 			</div>

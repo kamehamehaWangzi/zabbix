@@ -18,6 +18,10 @@ public class TaskDataDao extends AbstractMyBatisDao {
 		this.getSqlSession().insert("dao.TaskDataDao.insertTaskData", vo);
 	}
 	
+	public int updateTaskData(TaskDataVO vo) {
+		return this.getSqlSession().update("dao.TaskDataDao.updateTaskData",vo);
+	}
+	
 	public void deleteTaskData(String id) {
 		this.getSqlSession().delete("dao.TaskDataDao.deleteTaskData", id);
 	}

@@ -1,5 +1,7 @@
 package org.pbccrc.platform.project.biz.impl;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pbccrc.platform.cmdb.dao.HostDao;
+import org.pbccrc.platform.cmdb.dao.MonitorDataDao;
 import org.pbccrc.platform.cmdb.dao.TaskDao;
 import org.pbccrc.platform.cmdb.dao.TaskDataDao;
 import org.pbccrc.platform.model.GraphModel;
@@ -16,6 +19,7 @@ import org.pbccrc.platform.model.ZabbixDataModel;
 import org.pbccrc.platform.project.biz.ITaskDataBiz;
 import org.pbccrc.platform.util.ZabbixDataUtil;
 import org.pbccrc.platform.vo.HostVO;
+import org.pbccrc.platform.vo.MonitorDataVO;
 import org.pbccrc.platform.vo.TaskDataVO;
 import org.pbccrc.platform.vo.TaskVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +36,9 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 	
 	@Autowired
 	TaskDao taskDao;
+	
+	@Autowired
+	MonitorDataDao monitorDataDao;
 	
 	@Autowired
 	HostDao hostDao;
@@ -56,78 +63,122 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		vo.setEndTime(taskData.getString("endTime"));
 //		vo.setPath(taskData.getString("path"));
 		
-//		taskDataDao.insertTaskData(vo);
+		taskDataDao.insertTaskData(vo);
 		
-		Map<String, List<ZabbixDataModel>> map = zabbixDataUtil.getZabbixDataMap(vo);
+	}
+	
+	
+	/**
+	 * （定时）获取任务的监控数据，保存到数据库和文件系统持久化
+	 * 2016.5.6 zhp
+	 * */
+	public int saveTaskDataMonitor2DB(String id){
 		
-//		map.put(TYPE_CPU, cpulist);
-//		map.put(TYPE_DISK, disklist);
-//		map.put(TYPE_NET, netlist);
-//		map.put(TYPE_MEMORY, memorylist);
+		int result = 0;
+		//根据id在taskData表中获取taskData
+		TaskDataVO taskVO = taskDataDao.queryByTaskDataId(id);
 		
-//		private int taskDataId;
-//		private int hostId;
-//		private List<GraphModel> graphList;
-//
-//		private List<String> legend;
-//		private List<String> xAxis;
-//		private List<Series> yAxis;
+		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU);
+//		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK);
+		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET);
+		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY);
 		
-		for (int i = 0; i < map.size(); i++) {
-//			map.get("TYPE_CPU").get(i).getHostId();
-//			map.get("TYPE_CPU").get(i).getTaskDataId();
-//			map.get("TYPE_CPU").get(i).getGraphList().get(0).
-		}
+		result = resultCPU  & resultNET & resultMEMORY ;
+		return result;
 	}
 	
 	/**
-	 * new 2016.4.29 zhp
-	 * @param taskData
+	 * 根据任务ID,读取监控数据文件，反馈监控数据
+	 * 2016.5.6 zhp
 	 */
-	public JSONArray getTaskDataMonitorData(String taskId,String startTime, String endTime){
-		
-		//根据 taskId 获取关联的 主机host
-		TaskVO task = taskDao.queryByTaskId(taskId);
-		JSONArray hostArray = JSONArray.parseArray(task.getHosts());
-		
+	public JSONArray showTaskMonitorData(String taskDataId){
+		//按照主机为单元展示结果
 		JSONArray hostResult = new JSONArray();
+		//根据id在taskData表中获取taskData
+		TaskDataVO taskVO = taskDataDao.queryByTaskDataId(taskDataId);
+		//根据 taskId 获取关联的 主机host
+		TaskVO task = taskDao.queryByTaskId(taskVO.getTaskId().toString());
 		
-		//循环 按照主机号，监控项，开始时间，截止时间查出监控信息
-		for(int i = 0; i<hostArray.size(); i++){
+		JSONArray hostArray = JSONArray.parseArray(task.getHosts());
+		String startTime = taskVO.getStartTime();
+		String endTime = taskVO.getEndTime();
+		
+		//循环获得主机数据
+		for(int i = 0;i<hostArray.size();i++){
 			
 			HostVO host = hostDao.queryById(hostArray.getString(i));
+			//查询监控数据
+			//根据taskDataId ,主机号, 获取监控数据文件 public List<MonitorDataVO> selectMonitorDataList(Map<String,String> paramMap)
+			Map<String,String> paramMap = new HashMap<String, String>();
+			paramMap.put("taskDataId", taskDataId);
+			paramMap.put("hostId", host.getId().toString());
+			List<MonitorDataVO> dataList= monitorDataDao.selectMonitorDataList(paramMap);
 			
-			Map<String, JSONObject> map = new HashMap<String, JSONObject>();
+			//封装单机host的监控结果
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("hostIP", host.getIp1());
+			map.put("hostId", host.getId().toString());
 			
-			ZabbixDataModel cpulist = zabbixDataUtil.getZabbixDataByHost(host, TYPE_CPU, startTime, endTime);
-			ZabbixDataModel disklist = zabbixDataUtil.getZabbixDataByHost(host, TYPE_DISK, startTime, endTime);
-			ZabbixDataModel netlist = zabbixDataUtil.getZabbixDataByHost(host, TYPE_NET, startTime, endTime);
-			ZabbixDataModel memorylist = zabbixDataUtil.getZabbixDataByHost(host, TYPE_MEMORY, startTime, endTime);
-			
-			JSONObject cpuJsonObject = getMaxMinData(cpulist.getGraphList());
-			JSONObject diskJsonObject = getMaxMinData(disklist.getGraphList());
-			JSONObject netJsonObject = getMaxMinData(netlist.getGraphList());
-			JSONObject memoryJsonObject = getMaxMinData(memorylist.getGraphList());
-			
-			JSONObject hostIP = new JSONObject();
-			hostIP.put("value", host.getIp1());
-			map.put("hostIP", hostIP);
-			map.put(TYPE_CPU, cpuJsonObject);
-			map.put(TYPE_DISK, diskJsonObject);
-			map.put(TYPE_NET, netJsonObject);
-			map.put(TYPE_MEMORY, memoryJsonObject);
-			
+			//根据监控类型封装到不同的对象中
+			for(MonitorDataVO monitor : dataList){
+				try {
+					File file = new File(monitor.getPath());
+					ZabbixDataModel tempList = zabbixDataUtil.loadZabbixData(file);
+					Map<String,String> tempObject = getMaxMinData(tempList.getGraph());
+					map.putAll(tempObject);;
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
 			hostResult.add(map);
 		}
-		
-		//各个主机监控信put into 结果集合resultMap，方便前台直接显示
 		return hostResult;
 	}
 	
-	public JSONObject getMaxMinData(List<GraphModel> graphModel){
-		JSONObject resultJsonObject = new JSONObject();
-		for(int j = 0;j<graphModel.size();j++){
-			List<Series> seriesTemp = graphModel.get(j).getyAxis();
+	/**
+	 * 获取监控文件，监控数据表的数据图形化
+	 * 2016.5.6 zhp
+	 * @return
+	 */
+	public GraphModel showDetaiGraph(String taskData_id,String hostId,String type){
+		
+		Map<String,String> paramMap = new HashMap<String,String>();
+		paramMap.put("taskDataId", taskData_id);
+		paramMap.put("itemName", type);
+		
+		GraphModel resultModel = new GraphModel();
+		
+		if(!hostId.equals("all")){
+			paramMap.put("hostId", hostId);
+		}
+			
+		List<MonitorDataVO> dataList= monitorDataDao.selectMonitorDataList(paramMap);
+		try {
+			resultModel = zabbixDataUtil.loadZabbixData(new File(dataList.get(0).getPath())).getGraph();
+			resultModel.getyAxis().get(0).setName(resultModel.getLegend().get(0));
+			for(int i=1; i<dataList.size();i++){
+				
+				GraphModel tempModel = zabbixDataUtil.loadZabbixData(new File(dataList.get(i).getPath())).getGraph();
+				resultModel.getLegend().addAll(tempModel.getLegend());//设置曲线主题
+				tempModel.getyAxis().get(0).setName(tempModel.getLegend().get(0));//设置曲线名称
+				resultModel.getyAxis().addAll(tempModel.getyAxis());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return resultModel;
+	}
+	
+	/**
+	 * 获取监控数据的罪值
+	 * @param graphModel
+	 * @return
+	 */
+	public Map<String,String> getMaxMinData(GraphModel graphModel){
+		Map<String,String> resultJsonObject = new HashMap<String,String>();
+		if(graphModel != null ){
+			List<Series> seriesTemp = graphModel.getyAxis();
 			for(Series e : seriesTemp){
 				if(e.getData()==null || e.getData().size()==0){
 					continue;

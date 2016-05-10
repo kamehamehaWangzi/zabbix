@@ -1,9 +1,12 @@
 package org.pbccrc.platform.model;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class GraphModel {
+public class GraphModel implements Serializable{
 	
+	
+	private static final long serialVersionUID = 3951197273291998661L;
 	private List<String> legend;
 	private List<String> xAxis;
 	private List<Series> yAxis;

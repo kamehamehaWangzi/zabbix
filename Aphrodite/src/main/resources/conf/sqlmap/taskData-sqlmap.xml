@@ -27,8 +27,15 @@
 	</select>
 	
 	<insert id="insertTaskData" parameterType="org.pbccrc.platform.vo.TaskDataVO">
-		insert into taskData(taskId, startTime, endTime, path)values(#{taskId}, #{startTime}, #{endTime}, #{path})
+		insert into taskData(taskId, hosts, startTime, endTime, path)values(#{taskId}, #{hosts}, #{startTime}, #{endTime}, #{path})
 	</insert>
+	
+	<update id="updateTaskData" parameterType="org.pbccrc.platform.vo.TaskDataVO">
+		update taskData set path = #{path} 
+		<where>
+				id = #{id}
+		</where>
+	</update>
 	
 	<select id="queryByTaskDataId" parameterType="java.lang.String" resultMap="taskDataVO">
 		select * from taskData where id = #{id}

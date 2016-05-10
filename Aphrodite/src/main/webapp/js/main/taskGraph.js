@@ -31,14 +31,14 @@ function DataGraph(params) {
 	params.endDate = params.endDate ? params.endDate : '';
 	params.defaultDateRange = params.defaultDateRange ? params.defaultDateRange : 1;
 	
-	
 	$.ajax({
 		url: 'r/taskData/detailMonitorTrend',
 		type: 'GET',
 		dataType: "json",
-		data: 'id=' + params.id + '&key=' + JSON.stringify(params.key) + '&likeSearch=' + params.likeSearch + '&graphType=' + params.graphType 
-			+ '&scaler=' + params.scaler + '&startDate=' + params.startDate + '&endDate=' + params.endDate + '&defaultDateRange=' + params.defaultDateRange,
+		data: 'taskData_id=' + params.taskId +'&hostId='+params.hostId+ '&key=' + params.key + '&likeSearch=' + params.likeSearch + '&graphType=' + params.graphType 
+			+ '&scaler=' + params.scaler + '&defaultDateRange=' + params.defaultDateRange,
 		success: function(data) {
+			console.log(data);
 			var myChart = echarts.init(document.getElementById(params.graphDiv), params.theme);
 			
 			var option = {

@@ -12,6 +12,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
+import org.junit.Assert;
+import org.junit.Test;
 import org.pbccrc.platform.model.GraphModel;
 import org.pbccrc.platform.model.Pagination;
 import org.pbccrc.platform.model.ZabbixDataModel;
@@ -79,9 +81,25 @@ public class TaskDataRest {
 	@POST
 	public Response addTaskData(@QueryParam("taskData") String taskData) {
 		JSONObject taskDataInfo = JSON.parseObject(taskData);
-		taskDataBiz.addTaskData(taskDataInfo);
+//		taskDataBiz.addTaskData(taskDataInfo);
 		
 		return Response.ok(200).build();
+	}
+	
+
+	/**
+	 * 临时函数
+	 * 触发，将任务数据存储到DB
+	 * @return
+	 */
+	@Path("/obtainTaskMonitor2DB")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public int obtainData2DB(@QueryParam("task_id")String id){
+		
+		int result = taskDataBiz.saveTaskDataMonitor2DB(id);
+		
+		return result;
 	}
 	
 	/**
@@ -90,12 +108,11 @@ public class TaskDataRest {
 	@Path("/detailMonitor")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getMonitorData(@QueryParam("taskId")String taskId,
-			@QueryParam("startTime") String startTime,
-			@QueryParam("endTime")String endTime){
-		System.out.println("AAAAAAA");
-		log.debug(String.format(" Get the monitor data %s,%s,%s", taskId,startTime,endTime));
-		JSONArray resultArray = taskDataBiz.getTaskDataMonitorData(taskId,startTime,endTime);
+	public Response getMonitorData(@QueryParam("task_id")String id){
+
+		JSONArray resultArray = taskDataBiz.showTaskMonitorData(id);
+		log.debug(String.format(" Get the monitor data id %s", id));
+		//查询显示表格
 		return Response.ok(resultArray).build();
 	}
 	
@@ -105,23 +122,17 @@ public class TaskDataRest {
 	@Path("/detailMonitorTrend")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response getDetailMonitorTrend(@QueryParam("key") String key){
+	public Response getDetailMonitorTrend(@QueryParam("taskData_id") String taskData_id,
+			@QueryParam("key") String key, //查询类型 例 ['system.cpu.util[,user]', 'system.cpu.util[,nice]']
+			@QueryParam("likeSearch") Boolean likeSearch, 
+			@QueryParam("graphType") String graphType, //图表类型
+			@QueryParam("hostId") String hostId,
+			@QueryParam("scaler") Integer scaler,
+			@QueryParam("defaultDateRange") Integer defaultDateRange){
 		
 		//获取到的监控数据 ZabbixDataModel
 		//ZabbixDataModel 主机 时间 GraphModel(包含4大类监控数据)
-		ZabbixDataModel monitorData = new ZabbixDataModel();
-		
-		//转换类型
-		List<GraphModel> monitorDataList = monitorData.getGraphList();
-		
-		//通过循环获取指定类型
-		GraphModel resultGraph = null;
-		for(int i = 0; i < monitorDataList.size(); i++){
-			if(monitorDataList.get(i).getLegend().equals("")){
-				resultGraph = monitorDataList.get(i);
-				break;
-			}
-		}
+		GraphModel resultGraph = taskDataBiz.showDetaiGraph(taskData_id,hostId,key);
 		
 		//导出结果		
 		return Response.ok(resultGraph).build();

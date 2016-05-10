@@ -10,11 +10,11 @@
 					<th colspan='2'>内存使用情况</th>
 				</tr>
 				<tr>
-					<td>User%</td>
-					<td>Sys%</td>
-					<td>Wait%</td>
-					<td>Idle%</td>
-					<td>CPU%</td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">User%</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_system_time')">Sys%</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_iowait_time')">Wait%</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_idle_time')">Idle%</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">CPU%</a></td>
 					<td>Disk Read KB/s</td>
 					<td>Disk Write KB/s</td>
 					<td>IO/sec</td>
@@ -24,19 +24,19 @@
 					<td>Memfree MB</td>
 				</tr>
 				<tr data-ng-repeat="item in items">
-					<td>{{item.hostIP.value}}</td>
-					<td><a href="#" data-ng-click="getGraph()">{{item.CPU.CPU_user_time}}</a></td>
-					<td>{{item.CPU.CPU_system_time}}</td>
-					<td>{{item.CPU.CPU_iowait_time}}</td>
-					<td>{{item.CPU.CPU_idle_time}}</td>
+					<td>{{item.hostIP}}</td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_user_time')">{{item.CPU_user_time}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_system_time')">{{item.CPU_system_time}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_iowait_time')">{{item.CPU_iowait_time}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_idle_time')">{{item.CPU_idle_time}}</a></td>
 					<td>item.DISK.Free_disk_space_on_\</td>
 					<td>item.DISK.Free_disk_space_on_\</td>
 					<td>{{IO}}</td>
 					<td>3</td>
 					<td>3</td>
 					<td>3</td>
-					<td>{{item.MEMORY.Total_swap_space}}</td>
-					<td>{{item.MEMORY.Available_memory}}</td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'Total_swap_space')">{{item.Total_swap_space}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'Available_memory')">{{item.Available_memory}}</a></td>
 				</tr>
 			</tbody>
 		</table>
@@ -66,27 +66,27 @@
 <script type="text/javascript" src="js/main/taskGraph.js"></script>
 <script type="text/javascript">
 function MachineInfoController($scope, $http, $stateParams) {
-	console.log($stateParams.taskId+"  "+$stateParams.startTime+"  "+$stateParams.endTime);
+	console.log($stateParams.task_id);
 	$http({
 			method: 'GET',
-			url: 'r/taskData/detailMonitor', 
-			params:{'taskId': $stateParams.taskId,
-					'startTime':$stateParams.startTime,
-					'endTime':$stateParams.endTime}}
-		).success(function(data) {
+			url: 'r/taskData/detailMonitor',
+			params: {'task_id':$stateParams.task_id}
+	}).success(function(data) {
 			console.log("This data is ");
 			console.log(data);
 			$scope.items = data;
     });
 	
 	
-	$scope.getGraph = function(){
+	$scope.getGraph = function(hostId,type){
+		console.log($stateParams.task_id);
 		//显示图表数据
 		var params = {
-				taskId: $stateParams.taskId,
+				taskId: $stateParams.task_id,
 				graphDiv: 'workChart',
-				title: 'Network',
-				key: ['net.if.in', 'net.if.out'],
+				title: type,
+				key: type,
+				hostId: hostId,
 				graphType: 'line',
 				formatter: 'kbps',
 				scaler: 1024,
