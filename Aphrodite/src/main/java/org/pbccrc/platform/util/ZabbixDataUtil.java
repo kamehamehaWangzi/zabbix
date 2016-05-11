@@ -10,9 +10,7 @@ import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -60,6 +58,9 @@ public class ZabbixDataUtil {
 	@Autowired
 	ApiFactory apiFactory;
 	
+	@Autowired
+	DiskIOUtil diskIOUtil;
+	
 	public static final String TYPE_CPU = "CPU";
 	public static final String TYPE_DISK = "DISK";
 	public static final String TYPE_NET = "NET";
@@ -82,27 +83,6 @@ public class ZabbixDataUtil {
 		}
 
 		private CPU(String value) {
-			this.value = value;
-		}
-	}
-	
-	/**
-	 * 磁盘读写
-	 */
-	private static enum DISK_IO {
-		
-		VFS_DEV_READ("vfs.dev.read[,sps]"), 
-		VFS_DEV_WRITE("vfs.dev.write[,sps]"),
-		VFS_DEV_READ_OPS("vfs.dev.read[,ops]"),
-		VFS_DEV_WRITE_OPS("vfs.dev.read[,ops]");
-		
-		private String value;
-
-		public String getValue() {
-			return this.value;
-		}
-
-		private DISK_IO(String value) {
 			this.value = value;
 		}
 	}
@@ -190,9 +170,45 @@ public class ZabbixDataUtil {
 		}
 	}
 	
+	// TODO
+	private List<String> getDiskIOKeyList(){
+		
+		List<String> keyList = new ArrayList<String>();
+		keyList.add("io.util[*]");
+		keyList.add("io.await[*]");
+		keyList.add("io.svctm[*]");
+		
+		return keyList;
+	}
+	
+	/**
+	 * 磁盘读写
+	 */
+	private List<String> getDiskIOItemList(Integer zabbixHostId) {
+		
+		List<String> itemList = new ArrayList<String>();
+		
+		List<String> diskList = diskIOUtil.getDiskInfoByItem(zabbixHostId);
+		
+		List<String> keyList = getDiskIOKeyList();
+		
+		for (int i = 0; i < diskList.size(); i++) {
+			
+			String disk = diskList.get(i);
+			
+			for (int j = 0; j < keyList.size(); j++) {
+				
+				String key = keyList.get(j);
+				
+				itemList.add(key.replace("*", disk));
+			}
+		}
+		
+		return itemList;
+	}
 	
 	// get zabbixData by parameter, 使用中，用于对item的分类 2016.05.10
-	public JSONArray getZabbixDataByType(String type, JSONArray keyItems){
+	public JSONArray getZabbixDataByType(Integer zabbixHostId, String type, JSONArray keyItems){
 		
 		JSONArray jsonArray = new JSONArray();
 		
@@ -216,12 +232,19 @@ public class ZabbixDataUtil {
 						
 					case TYPE_DISK:
 						
-						if (DISK_IO.VFS_DEV_READ.getValue().equals(key) ||
-							DISK_IO.VFS_DEV_WRITE.getValue().equals(key) ||
-							DISK_SIZE.DISK_SIZE_FREE.getValue().equals(key) ||
+						List<String> itemList = getDiskIOItemList(zabbixHostId);
+						
+						if (DISK_SIZE.DISK_SIZE_FREE.getValue().equals(key) ||
 							DISK_SIZE.DISK_SIZE_TOTAL.getValue().equals(key) ) {
 							jsonArray.add(keyItem);
 						}
+						
+						for (int j = 0; j < itemList.size(); j++) {
+							if (itemList.get(j).equals(key) ) {
+								jsonArray.add(keyItem);
+							}
+						}
+						
 						break;
 			
 					case TYPE_NET:
@@ -275,10 +298,11 @@ public class ZabbixDataUtil {
 	 * get zabbixData 按照任务ID和监控类型(CPU,DISK……)进行监控数据的持久化
 	 * @param vo
 	 * @param type
+	 * @param path
 	 * @return
 	 * 2015.05.09 修改持久化过程中添加，监控itemName作为存储字段
 	 */
-	public int obtainZabbixData(TaskDataVO vo, String type){
+	public int obtainZabbixData(TaskDataVO vo, String type, String path){
 		
 		int result = 0;
 		
@@ -298,8 +322,7 @@ public class ZabbixDataUtil {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		String path = prop.getProperty("monitorDataSavePath");
-		String basePath = path+"//task_"+vo.getTaskId()+"//";    											//需要做参数化，还需要确认文件是否存在
+		String basePath = path + vo.getTaskId() + "\\";    											//需要做参数化，还需要确认文件是否存在
 		File baseFile = new File(basePath);
 		if(!baseFile.exists()){
 			try{
@@ -318,7 +341,7 @@ public class ZabbixDataUtil {
 				// 获取当前host 监控的所有的keyItems
 				JSONArray keyItems = getKeyItems(host.getZabbixHostid());
 				// 根据监控类型type获取监控item
-				keyItems = getZabbixDataByType(type, keyItems);
+				keyItems = getZabbixDataByType(host.getZabbixHostid(), type, keyItems);
 				zabbixData.setHostId(host.getId());
 
 				JSONObject historyX = null;
@@ -365,7 +388,7 @@ public class ZabbixDataUtil {
 								Matcher matchIndex = patternIndex.matcher(itemName);
 								if (matchIndex.find()) {
 									Integer index = Integer.parseInt(matchIndex.group().replaceAll("\\$", "").trim());
-									itemName = itemName.replaceAll("\\$" + index, matchStr[index - 1]);
+									itemName = itemName.replaceAll("\\$" + index, matchStr[index - 1]).replace("/", "");
 								}
 							}
 						}
@@ -416,123 +439,6 @@ public class ZabbixDataUtil {
 		}
 		
 		return result;
-	}
-	
-	/**
-	 * get zabbix data by the hostId,monitorType,startTime,endTime
-	 * @param hostId
-	 * @param startTime
-	 * @param endTime
-	 * @return
-	 * 2016.04.28
-	 */
-	public ZabbixDataModel getZabbixDataByHost(HostVO host,String monitorType, String startTime, String endTime){
-		
-		Integer defaultDateRange = 1;
-		Integer scaler = null;
-		String graphType = Constant.GRAPH_TYPE.area.getValue();
-		ZabbixDataModel zabbixData = new ZabbixDataModel();
-		
-		if(host != null && host.getId()!=null){
-			
-			zabbixData.setHostId(host.getId());
-			
-			//get the monitor item set of current host
-			JSONArray keyItems = getKeyItems(host.getZabbixHostid());
-			//according to monitor type choice the item information
-			keyItems = getZabbixDataByType(monitorType, keyItems);
-			
-			//init data
-			List<GraphModel> graphList = new ArrayList<GraphModel>();
-			GraphModel graphData = new GraphModel();
-			List<String> legend = new ArrayList<String>();
-			List<String> xAxis = new ArrayList<String>();
-			List<Series> yAxis = new ArrayList<Series>();
-			
-			JSONObject historyX = null;
-			
-			//get the monitor data for each item
-			if(keyItems != null && !keyItems.isEmpty()){
-				//get the Y value
-				for(int j=0; j<keyItems.size(); j++){
-					JSONObject itemY = keyItems.getJSONObject(j);
-					Integer valueType = itemY.getInteger("value_type");
-					
-					JSONObject historyY = graphBiz.queryHistoryByItem(itemY.getString("itemid"), valueType, startTime, endTime, defaultDateRange);
-					historyX = historyY;
-					
-					//get monitor data
-					JSONArray resultY = historyY.getJSONArray("result");
-					
-					Series series = new Series();
-					//将 result 结果集合中的value数据存到values链表中
-					List<String> values = new ArrayList<String>();
-					for(int m=0; m<resultY.size(); m++){
-						String value_key = resultY.getJSONObject(m).containsKey("value_ave")?"value_avg":"value";
-						String value = null;
-						if(scaler != null){
-							value = String.valueOf(resultY.getJSONObject(m).getDouble(value_key) / scaler);
-						}else{
-							value = String.valueOf(resultY.getJSONObject(m).get(value_key));
-						}
-						values.add(value);
-					}
-					
-					String itemName = itemY.getString("name");
-					
-					//itemName的格式化转换
-					if(itemName.indexOf("$")!=-1){
-						Pattern pattern = Pattern.compile("\\[.*\\]");
-						Matcher match = pattern.matcher(itemY.getString("key_"));
-						if(match.find()){
-							String[] matchStr = match.group().replaceAll("\\[|\\]", "").split(",");
-							Pattern patternIndex = Pattern.compile("\\$.d*");
-							Matcher matchIndex = patternIndex.matcher(itemName);
-							if(matchIndex.find()){
-								Integer index = Integer.parseInt(matchIndex.group().replaceAll("\\$", "").trim());
-								itemName = itemName.replaceAll("\\$" + index, matchStr[index - 1]);
-							}
-						}
-					}
-					
-					legend.add(itemName);
-					series.setName(itemName);
-					
-					// echars's area == line
-					if(Constant.GRAPH_TYPE.area.getValue().equals(graphType)) {
-						series.setType(Constant.GRAPH_TYPE.line.getValue());
-						series.setItemStyle(JSONObject.parseObject("{normal: {areaStyle: {type: 'default'}}}"));
-					} else {
-						series.setType(graphType);
-						series.setItemStyle(JSONObject.parseObject("{normal: {lineStyle: {type: 'solid'}}}"));
-					}
-					//将获取到的值存入到yAxis的series中，待传到前台显示
-					series.setData(values);
-					yAxis.add(series);
-				}
-				//获取X轴的坐标值
-				JSONArray resultX = historyX.getJSONArray("result");
-				SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-				
-				for(int n=0; n<resultX.size(); n++) {
-					JSONObject obj = resultX.getJSONObject(n);
-					
-					String clock = sdf.format(new Date(Long.parseLong(obj.getString("clock")) * 1000L));
-					xAxis.add(clock);
-				}
-			}
-			
-			graphData.setLegend(legend);
-			graphData.setxAxis(xAxis);
-			graphData.setyAxis(yAxis);
-			
-			graphList.add(graphData);
-			
-			zabbixData.setGraphList(graphList);
-			
-		}
-		
-		return zabbixData;
 	}
 	
 	

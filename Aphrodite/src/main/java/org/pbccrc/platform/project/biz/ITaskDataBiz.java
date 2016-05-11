@@ -20,7 +20,7 @@ public interface ITaskDataBiz {
 	/**
 	 * 监控步骤1：持久化监控数据，根据监控数据id，将监控数据存入文件系统和数据库
 	 * */
-	public int saveTaskDataMonitor2DB(String id);
+	public int saveTaskDataMonitor2DB(String id, String path);
 	
 	/**
 	 * 监控步骤2：表格展示监控数据

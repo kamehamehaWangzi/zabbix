@@ -1,9 +1,6 @@
 package org.pbccrc.platform.project.biz.impl;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,18 +69,18 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 	 * （定时）获取任务的监控数据，保存到数据库和文件系统持久化
 	 * 2016.5.6 zhp
 	 * */
-	public int saveTaskDataMonitor2DB(String id){
+	public int saveTaskDataMonitor2DB(String id, String path){
 		
 		int result = 0;
 		//根据id在taskData表中获取taskData
 		TaskDataVO taskVO = taskDataDao.queryByTaskDataId(id);
 		
-		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU);
-//		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK);
-		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET);
-		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY);
+		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU, path);
+		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path);
+		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET, path);
+		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY, path);
 		
-		result = resultCPU  & resultNET & resultMEMORY ;
+		result = resultCPU & resultDISK & resultNET & resultMEMORY ;
 		return result;
 	}
 	
@@ -100,8 +97,9 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		TaskVO task = taskDao.queryByTaskId(taskVO.getTaskId().toString());
 		
 		JSONArray hostArray = JSONArray.parseArray(task.getHosts());
-		String startTime = taskVO.getStartTime();
-		String endTime = taskVO.getEndTime();
+		// TODO
+//		String startTime = taskVO.getStartTime();
+//		String endTime = taskVO.getEndTime();
 		
 		//循环获得主机数据
 		for(int i = 0;i<hostArray.size();i++){

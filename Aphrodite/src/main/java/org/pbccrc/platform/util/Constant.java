@@ -7,11 +7,12 @@ public class Constant {
 
 	public static final String SESSION_USER_KEY = "CURRENT_USER";
 
-	public static final String ZABBIX_API_URL = "http://192.168.62.111/zabbix/api_jsonrpc.php";
+	public static final String ZABBIX_API_URL = "http://192.168.15.239/zabbix/api_jsonrpc.php";
 //	public static final String ZABBIX_API_URL = "http://10.128.142.243/zabbix/api_jsonrpc.php";
 	// public static final String ZABBIX_API_URL = "http://10.128.147.42/zabbix/api_jsonrpc.php";
 	public static final String ZABBIX_USERNAME = "Admin";
 	public static final String ZABBIX_PASSWORD = "zabbix";
+	public static final String ZABBIX_MONITOR_DATA_PATH = "/monitorData/task/";
 
 	public static final String SALTSTACK_API_URL = "https://10.128.142.239:8000/";
 	public static final String SALTSTACK_USERNAME = "admin";

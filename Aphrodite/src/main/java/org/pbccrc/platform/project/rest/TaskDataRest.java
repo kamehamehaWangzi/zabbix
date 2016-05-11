@@ -2,24 +2,23 @@ package org.pbccrc.platform.project.rest;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
-import org.junit.Assert;
-import org.junit.Test;
 import org.pbccrc.platform.model.GraphModel;
 import org.pbccrc.platform.model.Pagination;
-import org.pbccrc.platform.model.ZabbixDataModel;
 import org.pbccrc.platform.project.biz.ITaskBiz;
 import org.pbccrc.platform.project.biz.ITaskDataBiz;
-import org.pbccrc.platform.project.biz.impl.TaskBizImpl;
+import org.pbccrc.platform.util.Constant;
 import org.pbccrc.platform.vo.TaskDataVO;
 import org.pbccrc.platform.vo.TaskVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +80,7 @@ public class TaskDataRest {
 	@POST
 	public Response addTaskData(@QueryParam("taskData") String taskData) {
 		JSONObject taskDataInfo = JSON.parseObject(taskData);
-//		taskDataBiz.addTaskData(taskDataInfo);
+		taskDataBiz.addTaskData(taskDataInfo);
 		
 		return Response.ok(200).build();
 	}
@@ -95,11 +94,11 @@ public class TaskDataRest {
 	@Path("/obtainTaskMonitor2DB")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public int obtainData2DB(@QueryParam("task_id")String id){
+	public int obtainData2DB(@QueryParam("task_id")String id, @Context HttpServletRequest request){
 		
-		int result = taskDataBiz.saveTaskDataMonitor2DB(id);
+		String path = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_PATH);
 		
-		return result;
+		return taskDataBiz.saveTaskDataMonitor2DB(id, path);
 	}
 	
 	/**

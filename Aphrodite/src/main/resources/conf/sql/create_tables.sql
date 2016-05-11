@@ -1,3 +1,15 @@
+DROP TABLE IF EXISTS `monitordata`;
+CREATE TABLE `monitordata` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `taskdataid` int(10) NOT NULL DEFAULT '0' COMMENT '外键，对应时间段任务的id',
+  `hostid` varchar(20) NOT NULL DEFAULT '' COMMENT '对应主机ID',
+  `monitorType` varchar(10) NOT NULL DEFAULT '0' COMMENT '1-cpu; 2-disk; 3-net; 4-memory',
+  `itemName` varchar(20) NOT NULL DEFAULT '' COMMENT '对应键值对',
+  `path` varchar(255) DEFAULT NULL COMMENT '数据存放地址',
+  PRIMARY KEY (`Id`),
+  KEY `taskdataid` (`taskdataid`,`hostid`,`monitorType`)
+) ENGINE=InnoDB AUTO_INCREMENT=340 DEFAULT CHARSET=utf8;
+
 DROP TABLE IF EXISTS `taskdata`;
 CREATE TABLE `taskdata` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -5,7 +17,6 @@ CREATE TABLE `taskdata` (
   hosts varchar(255) DEFAULT NULL,
   `startTime` varchar(255) DEFAULT NULL,
   `endTime` varchar(255) DEFAULT NULL,
-  `path` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=60 DEFAULT CHARSET=utf8;
 
@@ -137,15 +148,3 @@ CREATE TABLE `script_template` (
   `status` int(11) DEFAULT '0' COMMENT '模板状态(0-正常 1-作废）',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
--- ----------------------------
--- Table structure for taskdata
--- ----------------------------
-DROP TABLE IF EXISTS `taskdata`;
-CREATE TABLE `taskdata` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `taskId` int(11) DEFAULT NULL,
-  `startTime` varchar(255) DEFAULT NULL,
-  `endTime` varchar(255) DEFAULT NULL,
-  `path` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
