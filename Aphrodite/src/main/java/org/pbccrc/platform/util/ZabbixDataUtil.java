@@ -3,15 +3,12 @@ package org.pbccrc.platform.util;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -315,13 +312,6 @@ public class ZabbixDataUtil {
 		//获取任务涉及到的主机
 		JSONArray hosts = JSON.parseArray(task.getHosts());
 		//监控数据文件持久化的根地址
-		InputStream in = this.getClass().getClassLoader().getResourceAsStream("conf/configure.properties");
-		Properties prop = new Properties();
-		try {
-			prop.load(in);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		String basePath = path + vo.getTaskId() + "\\";    											//需要做参数化，还需要确认文件是否存在
 		File baseFile = new File(basePath);
 		if(!baseFile.exists()){
