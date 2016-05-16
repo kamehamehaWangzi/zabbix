@@ -19,6 +19,7 @@ public interface ITaskDataBiz {
 	
 	/**
 	 * 监控步骤1：持久化监控数据，根据监控数据id，将监控数据存入文件系统和数据库
+	 * 修改 2016.05.13，添加source字段区分是浏览器请求、quartz请求，方便后台的request
 	 * */
 	public int saveTaskDataMonitor2DB(String id, String path);
 	

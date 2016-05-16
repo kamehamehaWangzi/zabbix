@@ -13,8 +13,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.pbccrc.platform.api.ApiFactory;
+import org.pbccrc.platform.api.zabbix.DefaultZabbixApi;
 import org.pbccrc.platform.api.zabbix.Request;
 import org.pbccrc.platform.api.zabbix.RequestBuilder;
+import org.pbccrc.platform.api.zabbix.ZabbixApi;
 import org.pbccrc.platform.cmdb.dao.HostDao;
 import org.pbccrc.platform.cmdb.dao.MonitorDataDao;
 import org.pbccrc.platform.cmdb.dao.TaskDao;
@@ -274,13 +276,20 @@ public class ZabbixDataUtil {
 	// getKeyItems by zabbix hostID
 	public JSONArray getKeyItems(Integer zabbixHostId){
 		
-		Request request = RequestBuilder.newBuilder()
+		ZabbixApi zabbixApi = new DefaultZabbixApi();
+		zabbixApi.init();
+		
+		String auth = zabbixApi.auth(Constant.ZABBIX_USERNAME, Constant.ZABBIX_PASSWORD);
+		
+		Request request = RequestBuilder.newBuilder().auth(auth)
 				.paramEntry("output", "extend")
 				.paramEntry("hostids", zabbixHostId)
 				.paramEntry("sortfield", "name")
 				.method("item.get")
 				.build();
-		JSONObject returnObj = apiFactory.zabbix().call(request);
+		
+//		JSONObject returnObj = apiFactory.zabbix().call(request);
+		JSONObject returnObj = zabbixApi.call(request);
 		
 		JSONArray keyItems = new JSONArray();
 		if(returnObj != null && !returnObj.isEmpty() && !returnObj.getJSONArray("result").isEmpty()) {

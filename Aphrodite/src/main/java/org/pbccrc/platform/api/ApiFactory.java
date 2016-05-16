@@ -58,6 +58,20 @@ public class ApiFactory {
 		return zabbixApi;
 	}
 	
+	/**
+	 * 重载定时器，加载的时候找不到request
+	 * @param locaJava
+	 * @return 20160513
+	 */
+	public ZabbixApi zabbix(String locaJava){
+		log.debug("ZABBIX_AUTH class...");
+		String auth = null;
+		auth = zabbixApi.auth(Constant.ZABBIX_USERNAME, Constant.ZABBIX_PASSWORD);
+		zabbixApi.setAuth(auth);
+		log.debug(String.format("ZABBIX_AUTH saved to session, '%s'", auth));
+		return zabbixApi;
+	}
+	
 	public SaltstackApi saltstack() {
 		saltstackApi.init();
 		

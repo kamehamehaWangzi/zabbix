@@ -23,7 +23,7 @@ public class Test extends Thread{
 //		inter.put("main", 1);
 //		inter.put("useip", 1);
 //		inter.put("dns", "");
-		inter.put("ip", "192.168.15.44");
+		inter.put("ip", "192.168.62.111");
 //		inter.put("port", "10050");
 		interfaces.add(inter);
 		

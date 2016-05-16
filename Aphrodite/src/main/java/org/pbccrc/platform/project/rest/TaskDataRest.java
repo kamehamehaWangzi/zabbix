@@ -97,7 +97,6 @@ public class TaskDataRest {
 	public int obtainData2DB(@QueryParam("task_id")String id, @Context HttpServletRequest request){
 		
 		String path = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_PATH);
-		
 		return taskDataBiz.saveTaskDataMonitor2DB(id, path);
 	}
 	

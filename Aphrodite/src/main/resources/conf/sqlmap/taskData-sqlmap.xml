@@ -41,6 +41,13 @@
 		select * from taskData where id = #{id}
 	</select>
 	
+	<select id="queryTaskDataByEndTime" parameterType="java.lang.String" resultMap="taskDataVO">
+		select * from taskData 
+		<if test="_parameter != null and _parameter != '' ">
+			<![CDATA[ where endTime <= #{_parameter} ]]>
+		</if>
+	</select>
+	
 	<delete id="deleteTaskData" parameterType="java.lang.String">
 		delete from taskData where id = #{id}
 	</delete>
