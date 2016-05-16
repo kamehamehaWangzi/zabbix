@@ -1,27 +1,30 @@
+<style type="text/css">
+	table td{white-space: nowrap;}
+</style>
 <div class="tab-pane animated fadeIn active" data-ng-controller="MachineInfoController">
 	<div class="panel-body" style="overflow:auto;">
-		<table class="table table-striped">
+		<table class="table table-striped table-bordered">
 			<tbody>
 				<tr>
 					<th rowspan='2' style="vertical-align:middle;">服务器地址</th>
-					<th colspan='5'>CPU使用情况</th>
+					<th colspan='4'>CPU使用情况</th>
 					<th colspan='3'>磁盘使用情况</th>
 					<th colspan='2'>网络使用情况</th>
 					<th colspan='2'>内存使用情况</th>
 				</tr>
 				<tr>
-					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">User%</a></td>
-					<td><a href="#" data-ng-click="getGraph('all','CPU_system_time')">Sys%</a></td>
-					<td><a href="#" data-ng-click="getGraph('all','CPU_iowait_time')">Wait%</a></td>
-					<td><a href="#" data-ng-click="getGraph('all','CPU_idle_time')">Idle%</a></td>
-					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">CPU%</a></td>
-					<td>Disk Read KB/s</td>
-					<td>Disk Write KB/s</td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">用户进程</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_system_time')">系统进程</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_iowait_time')">I/O等待</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_idle_time')">空闲状态</a></td>
+<!-- 					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">CPU%</a></td> -->
+					<td><a href="#" data-ng-click="getGraph('all','Free_disk_space_on_')">Disk Read KB/s</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','Free_disk_space_on_')">Disk Write KB/s</a></td>
 					<td>IO/sec</td>
-					<td>en0-reads KB/s</td>
-					<td>en0-writes KB/s</td>
-					<td>swaptotal MB</td>
-					<td>Memfree MB</td>
+					<td><a href="#" data-ng-click="getGraph('all','Incoming_network_traffic_on_eno16777736')">en0-reads KB/s</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','Outgoing_network_traffic_on_eno16777736')">en0-writes KB/s</a></td>
+					<td><a href="#" data-ng-click="getMemoryGraph('all','Total_swap_space')">swaptotal MB</a></td>
+					<td><a href="#" data-ng-click="getMemoryGraph('all','Available_memory')">Memfree MB</a></td>
 				</tr>
 				<tr data-ng-repeat="item in items">
 					<td>{{item.hostIP}}</td>
@@ -29,14 +32,13 @@
 					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_system_time')">{{item.CPU_system_time}}</a></td>
 					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_iowait_time')">{{item.CPU_iowait_time}}</a></td>
 					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_idle_time')">{{item.CPU_idle_time}}</a></td>
-					<td>item.DISK.Free_disk_space_on_\</td>
-					<td>item.DISK.Free_disk_space_on_\</td>
-					<td>{{IO}}</td>
-					<td>3</td>
-					<td>3</td>
-					<td>3</td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'Total_swap_space')">{{item.Total_swap_space}}</a></td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'Available_memory')">{{item.Available_memory}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'Free_disk_space_on_')">{{item.Free_disk_space_on_}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'Free_disk_space_on_')">{{item.Free_disk_space_on_}}</a></td>
+					<td>---</td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'Incoming_network_traffic_on_eno16777736')">{{item.Incoming_network_traffic_on_eno16777736}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'Outgoing_network_traffic_on_eno16777736')">{{item.Outgoing_network_traffic_on_eno16777736}}</a></td>
+					<td><a href="#" data-ng-click="getMemoryGraph(item.hostId,'Total_swap_space')">{{item.Total_swap_space}}</a></td>
+					<td><a href="#" data-ng-click="getMemoryGraph(item.hostId,'Available_memory')">{{item.Available_memory}}</a></td>
 				</tr>
 			</tbody>
 		</table>
@@ -91,6 +93,24 @@ function MachineInfoController($scope, $http, $stateParams) {
 				formatter: 'kbps',
 				scaler: 1024,
 				dateRangeId: 'dateRange'
+		};
+		
+		DataGraph(params);
+	}
+	
+	$scope.getMemoryGraph = function(hostId,type){
+		console.log($stateParams.task_id);
+		//显示图表数据
+		var params = {
+				taskId: $stateParams.task_id,
+				graphDiv: 'workChart',
+				title: type,
+				key: type,
+				hostId: hostId,
+				graphType: 'area',
+				formatter: 'G',
+				scaler: 1024*1024*1024,
+				dateRangeId: 'dateRangeMemory'
 		};
 		
 		DataGraph(params);

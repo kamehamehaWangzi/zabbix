@@ -112,8 +112,8 @@ public class ZabbixDataUtil {
 	 */
 	private static enum NET {
 		
-		NET_IN("net.if.in[eth0]"), 
-		NET_OUT("net.if.out[eth0]");
+		NET_IN("net.if.in[eno16777736]"), 
+		NET_OUT("net.if.out[eno16777736]");
 		
 		private String value;
 
@@ -308,13 +308,12 @@ public class ZabbixDataUtil {
 	 * @return
 	 * 2015.05.09 修改持久化过程中添加，监控itemName作为存储字段
 	 */
-	public int obtainZabbixData(TaskDataVO vo, String type, String path){
+	public int obtainZabbixData(TaskDataVO vo, String type, String path, Integer scaler){
 		
 		int result = 0;
 		
 		// defalut param
 		Integer defaultDateRange = 1;
-		Integer scaler = null;
 		String graphType = Constant.GRAPH_TYPE.area.getValue();
 		
 		TaskVO task = taskDao.queryByTaskId(vo.getTaskId().toString());

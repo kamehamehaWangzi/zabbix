@@ -75,10 +75,10 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		//根据id在taskData表中获取taskData
 		TaskDataVO taskVO = taskDataDao.queryByTaskDataId(id);
 		
-		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU, path);
-		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path);
-		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET, path);
-		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY, path);
+		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU, path,null);
+		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path,1024*1024*1024);
+		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET, path,1024);
+		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY, path,1024*1024*1024);
 		
 		result = resultCPU & resultDISK & resultNET & resultMEMORY ;
 		return result;
@@ -183,7 +183,7 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 				}
 				float max = Float.parseFloat(e.getData().get(0));
 				float min = Float.parseFloat(e.getData().get(0));
-				float avg = 0.0f;
+				float avg = Float.parseFloat(e.getData().get(0));
 				for(int k = 1; k<e.getData().size(); k++){
 					float currentOne = Float.parseFloat(e.getData().get(k));
 					max = currentOne>max?currentOne:max;
@@ -192,7 +192,7 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 				}
 				avg = avg / e.getData().size();
 				System.out.println(avg);
-				resultJsonObject.put(e.getName().replace(' ', '_'), max+"/"+min+"/"+avg);
+				resultJsonObject.put(e.getName().replace(' ', '_'), (float)(Math.round(max*10))/10 +"/"+(float)(Math.round(min*10))/10+"/"+(float)(Math.round(avg*10))/10);
 			}
 		}
 		return resultJsonObject;
