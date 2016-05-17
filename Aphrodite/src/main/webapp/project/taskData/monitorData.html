@@ -1,6 +1,31 @@
 <style type="text/css">
 	table td{white-space: nowrap;}
 </style>
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-server"></i> 执行任务</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>项目与任务</a>
+				</li>
+				<li>
+					<a data-ui-sref="project">项目</a>
+				</li>
+				<li>
+					<a data-ui-sref="project_detail.task">执行用例</a>
+				</li>
+				<li class="active">
+					<strong>执行任务</strong>
+				</li>
+				<li class="active">
+					<strong>{{historyLocation}}</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
 <div class="tab-pane animated fadeIn active" data-ng-controller="MachineInfoController">
 	<div class="panel-body" style="overflow:auto;">
 		<table class="table table-striped table-bordered">
@@ -13,10 +38,10 @@
 					<th colspan='2'>内存使用情况</th>
 				</tr>
 				<tr>
-					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">用户进程</a></td>
-					<td><a href="#" data-ng-click="getGraph('all','CPU_system_time')">系统进程</a></td>
-					<td><a href="#" data-ng-click="getGraph('all','CPU_iowait_time')">I/O等待</a></td>
-					<td><a href="#" data-ng-click="getGraph('all','CPU_idle_time')">空闲状态</a></td>
+					<td><a href="#" data-ng-click="getCPUGraph('all','CPU_user_time')">用户进程</a></td>
+					<td><a href="#" data-ng-click="getCPUGraph('all','CPU_system_time')">系统进程</a></td>
+					<td><a href="#" data-ng-click="getCPUGraph('all','CPU_iowait_time')">I/O等待</a></td>
+					<td><a href="#" data-ng-click="getCPUGraph('all','CPU_idle_time')">空闲状态</a></td>
 <!-- 					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">CPU%</a></td> -->
 					<td><a href="#" data-ng-click="getGraph('all','Free_disk_space_on_')">Disk Read KB/s</a></td>
 					<td><a href="#" data-ng-click="getGraph('all','Free_disk_space_on_')">Disk Write KB/s</a></td>
@@ -28,10 +53,10 @@
 				</tr>
 				<tr data-ng-repeat="item in items">
 					<td>{{item.hostIP}}</td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_user_time')">{{item.CPU_user_time}}</a></td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_system_time')">{{item.CPU_system_time}}</a></td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_iowait_time')">{{item.CPU_iowait_time}}</a></td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_idle_time')">{{item.CPU_idle_time}}</a></td>
+					<td><a href="#" data-ng-click="getCPUGraph(item.hostId,'CPU_user_time')">{{item.CPU_user_time}}</a></td>
+					<td><a href="#" data-ng-click="getCPUGraph(item.hostId,'CPU_system_time')">{{item.CPU_system_time}}</a></td>
+					<td><a href="#" data-ng-click="getCPUGraph(item.hostId,'CPU_iowait_time')">{{item.CPU_iowait_time}}</a></td>
+					<td><a href="#" data-ng-click="getCPUGraph(item.hostId,'CPU_idle_time')">{{item.CPU_idle_time}}</a></td>
 					<td><a href="#" data-ng-click="getGraph(item.hostId,'Free_disk_space_on_')">{{item.Free_disk_space_on_}}</a></td>
 					<td><a href="#" data-ng-click="getGraph(item.hostId,'Free_disk_space_on_')">{{item.Free_disk_space_on_}}</a></td>
 					<td>---</td>
@@ -91,6 +116,24 @@ function MachineInfoController($scope, $http, $stateParams) {
 				hostId: hostId,
 				graphType: 'line',
 				formatter: 'kbps',
+				scaler: 1024,
+				dateRangeId: 'dateRange'
+		};
+		
+		DataGraph(params);
+	}
+	
+	$scope.getCPUGraph = function(hostId,type){
+		console.log($stateParams.task_id);
+		//显示图表数据
+		var params = {
+				taskId: $stateParams.task_id,
+				graphDiv: 'workChart',
+				title: type,
+				key: type,
+				hostId: hostId,
+				graphType: 'line',
+				formatter: '%',
 				scaler: 1024,
 				dateRangeId: 'dateRange'
 		};

@@ -928,7 +928,7 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
 	    })
 	    
 	    .state('project_detail.task', {
-	    	url: '/task',
+	    	url: '/task?projectId',
 	    	views: {
 	            'project': {
 	                templateUrl: 'project/project/task.html'
@@ -936,20 +936,20 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
 	    	}
 	    })
 	    
-	    .state('task', {
-			url: '/task',
-			templateUrl: 'project/task/list.html',
-			resolve: {
-                loadPlugin: function ($ocLazyLoad) {
-                    return $ocLazyLoad.load([
-                        {
-                            serie: true,
-                            files: [ 'js/libs/bootstrap/bootstrap-multiselect.js', 'js/libs/sweetalert/sweetalert.min.js' , 'js/libs/icheck/icheck.min.js']
-                        }
-                    ]);
-                }
-            }
-		})
+//	    .state('task', {
+//			url: '/task',
+//			templateUrl: 'project/task/list.html',
+//			resolve: {
+//                loadPlugin: function ($ocLazyLoad) {
+//                    return $ocLazyLoad.load([
+//                        {
+//                            serie: true,
+//                            files: [ 'js/libs/bootstrap/bootstrap-multiselect.js', 'js/libs/sweetalert/sweetalert.min.js' , 'js/libs/icheck/icheck.min.js']
+//                        }
+//                    ]);
+//                }
+//            }
+//		})
 		
 		.state('taskData', {
 			url: '/taskData?id',

@@ -80,7 +80,11 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET, path,1024);
 		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY, path,1024*1024*1024);
 		
-		result = resultCPU & resultDISK & resultNET & resultMEMORY ;
+		result = resultCPU &  resultDISK & resultNET & resultMEMORY ;
+		
+		//将任务状态置为“已获取”为1
+		taskVO.setPath("1");
+		result = taskDataDao.updateTaskData(taskVO);
 		return result;
 	}
 	
