@@ -87,17 +87,24 @@ public class TaskDataRest {
 	
 
 	/**
-	 * 临时函数
 	 * 触发，将任务数据存储到DB
 	 * @return
 	 */
 	@Path("/obtainTaskMonitor2DB")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public int obtainData2DB(@QueryParam("task_id")String id, @Context HttpServletRequest request){
-		
+	public int obtainData2DB(@QueryParam("task_id")String task_id, @Context HttpServletRequest request){
+		int result = 0;
 		String path = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_PATH);
-		return taskDataBiz.saveTaskDataMonitor2DB(id, path);
+		if(task_id != null){
+			result = taskDataBiz.saveTaskDataMonitor2DB(task_id, path);
+		}else{
+			System.out.println("All");
+			//设置批量持久化监控数据
+			result = taskDataBiz.saveAllTaskDataMonitor2DB(path);
+		}
+		return result;
+		
 	}
 	
 	/**

@@ -1,6 +1,8 @@
 package org.pbccrc.platform.project.biz.impl;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +87,37 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		//将任务状态置为“已获取”为1
 		taskVO.setPath("1");
 		result = taskDataDao.updateTaskData(taskVO);
+		return result;
+	}
+	
+	public int saveAllTaskDataMonitor2DB(String path){
+		
+		int result = 0;
+		//获取所有的已经执行完毕的任务Id
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		String endTime = sf.format(new Date());
+		List<TaskDataVO> taskDataIdList = taskDataDao.queryTaskDataByTime(endTime);
+		
+		if(taskDataIdList!=null && taskDataIdList.size()>0){
+			//循环遍历所有任务
+			for(TaskDataVO task : taskDataIdList){
+				
+				System.out.println(task.getTaskId());
+				int resultCPU = zabbixDataUtil.obtainZabbixData(task, TYPE_CPU, path,null);
+				int resultDISK = zabbixDataUtil.obtainZabbixData(task, TYPE_DISK, path,1024*1024*1024);
+				int resultNET = zabbixDataUtil.obtainZabbixData(task, TYPE_NET, path,1024);
+				int resultMEMORY = zabbixDataUtil.obtainZabbixData(task, TYPE_MEMORY, path,1024*1024*1024);
+				
+				result = resultCPU &  resultDISK & resultNET & resultMEMORY ;
+				
+				//将任务状态置为“已获取”为1
+				if(result==1){
+					task.setPath("1");
+					result = taskDataDao.updateTaskData(task);
+				}
+			}
+		}
+		
 		return result;
 	}
 	

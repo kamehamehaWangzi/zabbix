@@ -24,6 +24,13 @@ public interface ITaskDataBiz {
 	public int saveTaskDataMonitor2DB(String id, String path);
 	
 	/**
+	 * 根据当前时间持久化所有已经执行完毕的任务监控数据
+	 * @param path
+	 * @return
+	 */
+	public int saveAllTaskDataMonitor2DB(String path);
+	
+	/**
 	 * 监控步骤2：表格展示监控数据
 	 * @param taskDataId
 	 * @return
@@ -38,4 +45,6 @@ public interface ITaskDataBiz {
 	 * @return
 	 */
 	public GraphModel showDetaiGraph(String taskData_id,String hostId,String type);
+
+	
 }
