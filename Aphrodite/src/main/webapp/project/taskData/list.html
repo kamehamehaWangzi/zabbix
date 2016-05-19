@@ -50,6 +50,9 @@
 									<span class="input-group-btn" style="padding-left: 5px;">
 										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delTaskData()">删除任务</button>
 									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="collectAllEndTask()">一键获取</button>
+									</span>
 								</div>
 							</div>
 						</div>
@@ -180,6 +183,18 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 		});
 		
 	}
+    
+    //一键收集已经结束的任务数据
+    $scope.collectAllEndTask = function(){
+    	swal("收集业务已开始…………");
+    	$http({
+    		async: true,
+    		method:'GET',
+    		url: 'r/taskData/obtainTaskMonitor2DB',
+    	}).success(function(data){
+    		swal(data);
+    	});
+    }
 	
 	//提交表单，新增新项目，传入参数$scope.taskData
 	$scope.addTaskData = function() {

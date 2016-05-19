@@ -100,7 +100,7 @@ public class TaskDataRest {
 			result = taskDataBiz.saveTaskDataMonitor2DB(task_id, path);
 		}else{
 			System.out.println("All");
-			//设置批量持久化监控数据
+			//设置批量持久化监控数据,已经结束的，尚未收集数据的任务
 			result = taskDataBiz.saveAllTaskDataMonitor2DB(path);
 		}
 		return result;

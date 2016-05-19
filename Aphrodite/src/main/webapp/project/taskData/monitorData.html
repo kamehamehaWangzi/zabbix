@@ -46,8 +46,8 @@
 					<td><a href="#" data-ng-click="getGraph('all','Free_disk_space_on_')">Disk Read KB/s</a></td>
 					<td><a href="#" data-ng-click="getGraph('all','Free_disk_space_on_')">Disk Write KB/s</a></td>
 					<td>IO/sec</td>
-					<td><a href="#" data-ng-click="getGraph('all','Incoming_network_traffic_on_eno16777736')">en0-reads KB/s</a></td>
-					<td><a href="#" data-ng-click="getGraph('all','Outgoing_network_traffic_on_eno16777736')">en0-writes KB/s</a></td>
+					<td><a href="#" data-ng-click="getNetGraph('all','Incoming_network_traffic_on_eno16777736')">en0-reads KB/s</a></td>
+					<td><a href="#" data-ng-click="getNetGraph('all','Outgoing_network_traffic_on_eno16777736')">en0-writes KB/s</a></td>
 					<td><a href="#" data-ng-click="getMemoryGraph('all','Total_swap_space')">swaptotal MB</a></td>
 					<td><a href="#" data-ng-click="getMemoryGraph('all','Available_memory')">Memfree MB</a></td>
 				</tr>
@@ -60,8 +60,8 @@
 					<td><a href="#" data-ng-click="getGraph(item.hostId,'Free_disk_space_on_')">{{item.Free_disk_space_on_}}</a></td>
 					<td><a href="#" data-ng-click="getGraph(item.hostId,'Free_disk_space_on_')">{{item.Free_disk_space_on_}}</a></td>
 					<td>---</td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'Incoming_network_traffic_on_eno16777736')">{{item.Incoming_network_traffic_on_eno16777736}}</a></td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'Outgoing_network_traffic_on_eno16777736')">{{item.Outgoing_network_traffic_on_eno16777736}}</a></td>
+					<td><a href="#" data-ng-click="getNetGraph(item.hostId,'Incoming_network_traffic_on_eno16777736')">{{item.Incoming_network_traffic_on_eno16777736}}</a></td>
+					<td><a href="#" data-ng-click="getNetGraph(item.hostId,'Outgoing_network_traffic_on_eno16777736')">{{item.Outgoing_network_traffic_on_eno16777736}}</a></td>
 					<td><a href="#" data-ng-click="getMemoryGraph(item.hostId,'Total_swap_space')">{{item.Total_swap_space}}</a></td>
 					<td><a href="#" data-ng-click="getMemoryGraph(item.hostId,'Available_memory')">{{item.Available_memory}}</a></td>
 				</tr>
@@ -153,6 +153,24 @@ function MachineInfoController($scope, $http, $stateParams) {
 				graphType: 'area',
 				formatter: 'G',
 				scaler: 1024*1024*1024,
+				dateRangeId: 'dateRangeMemory'
+		};
+		
+		DataGraph(params);
+	}
+	
+	$scope.getNetGraph = function(hostId,type){
+		console.log($stateParams.task_id);
+		//显示图表数据
+		var params = {
+				taskId: $stateParams.task_id,
+				graphDiv: 'workChart',
+				title: type,
+				key: type,
+				hostId: hostId,
+				graphType: 'line',
+				formatter: 'kbps',
+				scaler: 1024,
 				dateRangeId: 'dateRangeMemory'
 		};
 		
