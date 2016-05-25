@@ -18,7 +18,7 @@ import ch.ethz.ssh2.Session;
 import ch.ethz.ssh2.StreamGobbler;
 
 @Service
-public class DiskIOUtil {
+public class ZabbixOperator {
 	
 	private final String DISK_NAME = "{#DISK_NAME}";
 	
@@ -29,7 +29,7 @@ public class DiskIOUtil {
 	
 	/**
 	 * connect to server by ssh
-	 * excute command read disk info
+	 * execute command read disk info
 	 * */
 	public List<String> getDiskInfoBySSH(String host, String user, String password) {
 		
@@ -106,6 +106,30 @@ public class DiskIOUtil {
 		}
 		
 		return diskList;
+	}
+	
+	/** get net info from zabbix item */
+	public List<String> getNetInfoByItem(Integer zabbixHostId) {
+		
+		JSONArray keyItems = zabbixDataUtil.getKeyItems(zabbixHostId);
+		
+		List<String> netList = new ArrayList<String>();
+		
+		String searchkey = "net.if.out";
+		
+		for(int i = 0; i < keyItems.size(); i++) {
+			
+			JSONObject keyItem = keyItems.getJSONObject(i);
+			
+			String key = keyItem.getString("key_");
+			
+			if(key.contains(searchkey)) {
+				String net = key.substring(key.indexOf("[") + 1, key.length() - 1);
+				netList.add(net);
+			}
+		}
+		
+		return netList;
 	}
 
 }

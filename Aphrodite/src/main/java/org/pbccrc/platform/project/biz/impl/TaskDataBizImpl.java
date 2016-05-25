@@ -17,6 +17,7 @@ import org.pbccrc.platform.model.Series;
 import org.pbccrc.platform.model.ZabbixDataModel;
 import org.pbccrc.platform.project.biz.ITaskDataBiz;
 import org.pbccrc.platform.util.ZabbixDataUtil;
+import org.pbccrc.platform.util.ZabbixOperator;
 import org.pbccrc.platform.vo.HostVO;
 import org.pbccrc.platform.vo.MonitorDataVO;
 import org.pbccrc.platform.vo.TaskDataVO;
@@ -45,8 +46,12 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 	@Autowired
 	private ZabbixDataUtil zabbixDataUtil;
 	
+	@Autowired
+	private ZabbixOperator zabbixOperator;
+	
 	public static final String TYPE_CPU = "CPU";
 	public static final String TYPE_DISK = "DISK";
+	public static final String TYPE_DISK_CNT = "DISK_CNT";
 	public static final String TYPE_NET = "NET";
 	public static final String TYPE_MEMORY = "MEMORY";
 
@@ -77,19 +82,21 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		//根据id在taskData表中获取taskData
 		TaskDataVO taskVO = taskDataDao.queryByTaskDataId(id);
 		
-		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU, path,null);
-		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path,1024*1024*1024);
-		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET, path,1024);
-		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY, path,1024*1024*1024);
+		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU, path, null);
+		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path, 1024);
+		int resultDISKCnt = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK_CNT, path, null);
+		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET, path, 1024);
+		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY, path, 1024*1024*1024);
 		
-		result = resultCPU &  resultDISK & resultNET & resultMEMORY ;
-		
+		result = resultCPU & resultDISK & resultDISKCnt & resultNET & resultMEMORY ;
+
 		//将任务状态置为“已获取”为1
 		taskVO.setPath("1");
 		result = taskDataDao.updateTaskData(taskVO);
+		
 		return result;
 	}
-	
+
 	public int saveAllTaskDataMonitor2DB(String path){
 		
 		int result = 0;
@@ -120,6 +127,8 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		
 		return result;
 	}
+
+
 	
 	/**
 	 * 根据任务ID,读取监控数据文件，反馈监控数据
@@ -154,6 +163,12 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 			map.put("hostIP", host.getIp1());
 			map.put("hostId", host.getId().toString());
 			
+			List<String> netList = zabbixOperator.getNetInfoByItem(host.getZabbixHostid());
+			map.put("netParam", netList.get(0));
+			
+			List<String> diskList = zabbixOperator.getDiskInfoByItem(host.getZabbixHostid());
+			map.put("diskParam", diskList.get(0));
+			
 			//根据监控类型封装到不同的对象中
 			for(MonitorDataVO monitor : dataList){
 				try {
@@ -177,17 +192,17 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 	 */
 	public GraphModel showDetaiGraph(String taskData_id,String hostId,String type){
 		
+		GraphModel resultModel = new GraphModel();
+		
 		Map<String,String> paramMap = new HashMap<String,String>();
 		paramMap.put("taskDataId", taskData_id);
 		paramMap.put("itemName", type);
-		
-		GraphModel resultModel = new GraphModel();
 		
 		if(!hostId.equals("all")){
 			paramMap.put("hostId", hostId);
 		}
 			
-		List<MonitorDataVO> dataList= monitorDataDao.selectMonitorDataList(paramMap);
+		List<MonitorDataVO> dataList = monitorDataDao.selectMonitorDataList(paramMap);
 		try {
 			resultModel = zabbixDataUtil.loadZabbixData(new File(dataList.get(0).getPath())).getGraph();
 			resultModel.getyAxis().get(0).setName(resultModel.getLegend().get(0));

@@ -31,7 +31,7 @@
 				and monitorType = #{monitorType}
 			</if>
 			<if test="itemName!=null">
-				and itemName = #{itemName}
+				and itemName like CONCAT('%', #{itemName}, '%') 
 			</if>
 		</where>
 	</select>

@@ -38,30 +38,34 @@
 					<th colspan='2'>内存使用情况</th>
 				</tr>
 				<tr>
-					<td><a href="#" data-ng-click="getCPUGraph('all','CPU_user_time')">用户进程</a></td>
-					<td><a href="#" data-ng-click="getCPUGraph('all','CPU_system_time')">系统进程</a></td>
-					<td><a href="#" data-ng-click="getCPUGraph('all','CPU_iowait_time')">I/O等待</a></td>
-					<td><a href="#" data-ng-click="getCPUGraph('all','CPU_idle_time')">空闲状态</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">用户进程</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_system_time')">系统进程</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_iowait_time')">I/O等待</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','CPU_idle_time')">空闲状态</a></td>
 <!-- 					<td><a href="#" data-ng-click="getGraph('all','CPU_user_time')">CPU%</a></td> -->
-					<td><a href="#" data-ng-click="getGraph('all','Free_disk_space_on_')">Disk Read KB/s</a></td>
-					<td><a href="#" data-ng-click="getGraph('all','Free_disk_space_on_')">Disk Write KB/s</a></td>
-					<td>IO/sec</td>
-					<td><a href="#" data-ng-click="getNetGraph('all','Incoming_network_traffic_on_eno16777736')">en0-reads KB/s</a></td>
-					<td><a href="#" data-ng-click="getNetGraph('all','Outgoing_network_traffic_on_eno16777736')">en0-writes KB/s</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','IO_dev_read_on_')">Disk Read KB/s</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','IO_dev_write_on_')">Disk Write KB/s</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','IO_rps_on_')">Disk Read r/s</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','IO_wps_on_')">Disk Write w/s</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','Incoming_network_traffic_on_')">en0-reads KB/s</a></td>
+					<td><a href="#" data-ng-click="getGraph('all','Outgoing_network_traffic_on_')">en0-writes KB/s</a></td>
 					<td><a href="#" data-ng-click="getMemoryGraph('all','Total_swap_space')">swaptotal MB</a></td>
 					<td><a href="#" data-ng-click="getMemoryGraph('all','Available_memory')">Memfree MB</a></td>
 				</tr>
 				<tr data-ng-repeat="item in items">
 					<td>{{item.hostIP}}</td>
-					<td><a href="#" data-ng-click="getCPUGraph(item.hostId,'CPU_user_time')">{{item.CPU_user_time}}</a></td>
-					<td><a href="#" data-ng-click="getCPUGraph(item.hostId,'CPU_system_time')">{{item.CPU_system_time}}</a></td>
-					<td><a href="#" data-ng-click="getCPUGraph(item.hostId,'CPU_iowait_time')">{{item.CPU_iowait_time}}</a></td>
-					<td><a href="#" data-ng-click="getCPUGraph(item.hostId,'CPU_idle_time')">{{item.CPU_idle_time}}</a></td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'Free_disk_space_on_')">{{item.Free_disk_space_on_}}</a></td>
-					<td><a href="#" data-ng-click="getGraph(item.hostId,'Free_disk_space_on_')">{{item.Free_disk_space_on_}}</a></td>
-					<td>---</td>
-					<td><a href="#" data-ng-click="getNetGraph(item.hostId,'Incoming_network_traffic_on_eno16777736')">{{item.Incoming_network_traffic_on_eno16777736}}</a></td>
-					<td><a href="#" data-ng-click="getNetGraph(item.hostId,'Outgoing_network_traffic_on_eno16777736')">{{item.Outgoing_network_traffic_on_eno16777736}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_user_time')">{{item.CPU_user_time}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_system_time')">{{item.CPU_system_time}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_iowait_time')">{{item.CPU_iowait_time}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'CPU_idle_time')">{{item.CPU_idle_time}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'IO_dev_read_on_' + item.diskParam)">{{item['IO_dev_read_on_' + item.diskParam]}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'IO_dev_write_on_' + item.diskParam)">{{item['IO_dev_write_on_' + item.diskParam]}}</a></td>
+					
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'IO_rps_on_' + item.diskParam)">{{item['IO_rps_on_' + item.diskParam]}}</a></td>
+					<td><a href="#" data-ng-click="getGraph(item.hostId,'IO_wps_on_' + item.diskParam)">{{item['IO_wps_on_' + item.diskParam]}}</a></td>
+					
+					<td><a href="#" data-ng-click="getNetGraph(item.hostId,'Incoming_network_traffic_on_' + item.netParam)">{{item['Incoming_network_traffic_on_' + item.netParam]}}</a></td>
+					<td><a href="#" data-ng-click="getNetGraph(item.hostId,'Outgoing_network_traffic_on_' + item.netParam)">{{item['Outgoing_network_traffic_on_' + item.netParam]}}</a></td>
 					<td><a href="#" data-ng-click="getMemoryGraph(item.hostId,'Total_swap_space')">{{item.Total_swap_space}}</a></td>
 					<td><a href="#" data-ng-click="getMemoryGraph(item.hostId,'Available_memory')">{{item.Available_memory}}</a></td>
 				</tr>
@@ -80,7 +84,7 @@
 					<span class="add-on input-group-addon"><i class="glyphicon glyphicon-calendar fa fa-calendar"></i></span>
 					<input type="text" style="width: 300px;" id="dateRange" class="form-control" readonly="readonly"/>
 				</div>
-				<div class="panel-body" data-ng-controller="MachineNetworkController">
+				<div class="panel-body" data-ng-controller="MachineInfoController">
 					<div id="workChart" style="height:400px;"></div>
 				</div>
 			</div>

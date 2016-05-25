@@ -58,12 +58,16 @@ public class ZabbixDataUtil {
 	ApiFactory apiFactory;
 	
 	@Autowired
-	DiskIOUtil diskIOUtil;
+	ZabbixOperator zabbixOperator;
 	
 	public static final String TYPE_CPU = "CPU";
 	public static final String TYPE_DISK = "DISK";
+	public static final String TYPE_DISK_CNT = "DISK_CNT";
 	public static final String TYPE_NET = "NET";
 	public static final String TYPE_MEMORY = "MEMORY";
+	
+	public static final int DISK_CNT = 1;
+	public static final int DISK_SIZE = 2;
 	
 	/**
 	 * CPU 
@@ -86,45 +90,6 @@ public class ZabbixDataUtil {
 		}
 	}
 	
-	/**
-	 * 磁盘大小 
-	 */
-	private static enum DISK_SIZE {
-		
-		DISK_SIZE_FREE("vfs.fs.size[/,free]"), 
-		DISK_SIZE_TOTAL("vfs.fs.size[/,total]");
-		
-		private String value;
-
-		public String getValue() {
-			return this.value;
-		}
-
-		private DISK_SIZE(String value) {
-			this.value = value;
-		}
-	}
-	
-	/**
-	 * 网卡
-	 * in : 网卡入口流量
-	 * out: 网卡出口流量 
-	 */
-	private static enum NET {
-		
-		NET_IN("net.if.in[eno16777736]"), 
-		NET_OUT("net.if.out[eno16777736]");
-		
-		private String value;
-
-		public String getValue() {
-			return this.value;
-		}
-
-		private NET(String value) {
-			this.value = value;
-		}
-	}
 	
 	/**
 	 * 内存
@@ -169,31 +134,79 @@ public class ZabbixDataUtil {
 		}
 	}
 	
-	// TODO
-	private List<String> getDiskIOKeyList(){
-		
+	/** 磁盘读写
+	 *  type : 1:次数 2：大小
+	 *  */
+	private List<String> getDiskIOKeyList(int type) {
+
 		List<String> keyList = new ArrayList<String>();
-		keyList.add("io.util[*]");
-		keyList.add("io.await[*]");
-		keyList.add("io.svctm[*]");
+		
+		if (DISK_CNT == type) {
+			keyList.add("io.rps[*]");
+			keyList.add("io.wps[*]");
+		} else if (DISK_SIZE == type) {
+			keyList.add("vfs.dev.read[*,sps]");
+			keyList.add("vfs.dev.write[*,sps]");
+		} else {
+			// TODO
+			// to be extended
+		}
 		
 		return keyList;
 	}
 	
 	/**
-	 * 磁盘读写
+	 * 网卡
+	 * in : 网卡入口流量
+	 * out: 网卡出口流量 
 	 */
-	private List<String> getDiskIOItemList(Integer zabbixHostId) {
+	private List<String> getNetKeyList(){
+		
+		List<String> keyList = new ArrayList<String>();
+		keyList.add("net.if.in[*]");
+		keyList.add("net.if.out[*]");
+		
+		return keyList;
+	}
+	
+	/** 磁盘读写 */
+	private List<String> getDiskIOItemList(Integer zabbixHostId, int type) {
 		
 		List<String> itemList = new ArrayList<String>();
 		
-		List<String> diskList = diskIOUtil.getDiskInfoByItem(zabbixHostId);
+		List<String> diskList = zabbixOperator.getDiskInfoByItem(zabbixHostId);
 		
-		List<String> keyList = getDiskIOKeyList();
+		List<String> keyList = getDiskIOKeyList(type);
 		
 		for (int i = 0; i < diskList.size(); i++) {
 			
 			String disk = diskList.get(i);
+			
+			for (int j = 0; j < keyList.size(); j++) {
+				
+				String key = keyList.get(j);
+				
+				itemList.add(key.replace("*", disk));
+			}
+		}
+		
+		return itemList;
+	}
+	
+	/**
+	 * 网卡
+	 */
+	private List<String> getNetItemList(Integer zabbixHostId) {
+		
+		List<String> itemList = new ArrayList<String>();
+		
+		List<String> netList = zabbixOperator.getNetInfoByItem(zabbixHostId);
+		
+		List<String> keyList = getNetKeyList();
+		
+		for (int i = 0; i < netList.size(); i++) {
+			
+			String disk = netList.get(i);
 			
 			for (int j = 0; j < keyList.size(); j++) {
 				
@@ -231,15 +244,22 @@ public class ZabbixDataUtil {
 						
 					case TYPE_DISK:
 						
-						List<String> itemList = getDiskIOItemList(zabbixHostId);
+						List<String> diskIOList = getDiskIOItemList(zabbixHostId, DISK_SIZE);
 						
-						if (DISK_SIZE.DISK_SIZE_FREE.getValue().equals(key) ||
-							DISK_SIZE.DISK_SIZE_TOTAL.getValue().equals(key) ) {
-							jsonArray.add(keyItem);
+						for (int j = 0; j < diskIOList.size(); j++) {
+							if (diskIOList.get(j).equals(key) ) {
+								jsonArray.add(keyItem);
+							}
 						}
 						
-						for (int j = 0; j < itemList.size(); j++) {
-							if (itemList.get(j).equals(key) ) {
+						break;
+						
+					case TYPE_DISK_CNT:
+						
+						List<String> diskIOCntList = getDiskIOItemList(zabbixHostId, DISK_CNT);
+						
+						for (int j = 0; j < diskIOCntList.size(); j++) {
+							if (diskIOCntList.get(j).equals(key) ) {
 								jsonArray.add(keyItem);
 							}
 						}
@@ -248,10 +268,14 @@ public class ZabbixDataUtil {
 			
 					case TYPE_NET:
 						
-						if (NET.NET_IN.getValue().equals(key) ||
-							NET.NET_OUT.getValue().equals(key) ) {
-							jsonArray.add(keyItem);
+						List<String> netList = getNetItemList(zabbixHostId);
+						
+						for (int j = 0; j < netList.size(); j++) {
+							if (netList.get(j).equals(key) ) {
+								jsonArray.add(keyItem);
+							}
 						}
+						
 						break;
 			
 					case TYPE_MEMORY:
