@@ -159,15 +159,15 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 			List<MonitorDataVO> dataList= monitorDataDao.selectMonitorDataList(paramMap);
 			
 			//封装单机host的监控结果
-			Map<String, String> map = new HashMap<String, String>();
+			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("hostIP", host.getIp1());
 			map.put("hostId", host.getId().toString());
 			
 			List<String> netList = zabbixOperator.getNetInfoByItem(host.getZabbixHostid());
-			map.put("netParam", netList.get(0));
+			map.put("netParam", netList);
 			
 			List<String> diskList = zabbixOperator.getDiskInfoByItem(host.getZabbixHostid());
-			map.put("diskParam", diskList.get(0));
+			map.put("diskParam", diskList);
 			
 			//根据监控类型封装到不同的对象中
 			for(MonitorDataVO monitor : dataList){
@@ -243,7 +243,7 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 					avg += currentOne;
 				}
 				avg = avg / e.getData().size();
-				System.out.println(avg);
+//				System.out.println(avg);
 				resultJsonObject.put(e.getName().replace(' ', '_'), (float)(Math.round(max*10))/10 +"/"+(float)(Math.round(min*10))/10+"/"+(float)(Math.round(avg*10))/10);
 			}
 		}
