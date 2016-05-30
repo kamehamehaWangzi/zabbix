@@ -44,7 +44,7 @@ public class ProduceMonitorTableRest {
 		String filePath = monitorDataBiz.loadHostMonitorData(id);
 		
 		JSONObject result = new JSONObject();
-//		result.put("filePath", filePath);
+		result.put("filePath", "A");
 		return Response.ok(result).build();
 	}
 }
