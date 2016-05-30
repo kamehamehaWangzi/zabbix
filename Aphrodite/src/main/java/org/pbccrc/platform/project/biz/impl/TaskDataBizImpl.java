@@ -166,8 +166,8 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 			List<String> netList = zabbixOperator.getNetInfoByItem(host.getZabbixHostid());
 			map.put("netParam", netList.get(0));
 			
-			List<String> diskList = zabbixOperator.getDiskInfoByItem(host.getZabbixHostid());
-			map.put("diskParam", diskList.get(0));
+//			List<String> diskList = zabbixOperator.getDiskInfoByItem(host.getZabbixHostid());
+//			map.put("diskParam", diskList.get(0));
 			
 			//根据监控类型封装到不同的对象中
 			for(MonitorDataVO monitor : dataList){
