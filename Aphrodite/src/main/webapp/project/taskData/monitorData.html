@@ -280,8 +280,10 @@ function MachineInfoController($scope, $http, $stateParams) {
 				'task_id':$stateParams.task_id
 			}
 		}).success(function(data){
-			swal(data);
-			console.log(data);
+			var downLink = document.createElement("a");
+			document.body.appendChild(downLink);
+			downLink.href=data.filePath;
+			downLink.click();
 		});
 	}
 	

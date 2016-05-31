@@ -13,6 +13,7 @@ public class Constant {
 	public static final String ZABBIX_USERNAME = "Admin";
 	public static final String ZABBIX_PASSWORD = "zabbix";
 	public static final String ZABBIX_MONITOR_DATA_PATH = "/monitorData/task/";
+	public static final String ZABBIX_MONITOR_DATA_DOWNLOAD_PATH = "/download/task/";//监控数据下载目录
 
 	public static final String SALTSTACK_API_URL = "https://10.128.142.239:8000/";
 	public static final String SALTSTACK_USERNAME = "admin";

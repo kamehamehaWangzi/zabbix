@@ -11,10 +11,11 @@ import org.pbccrc.platform.project.biz.IMonitorDataBiz;
 import org.pbccrc.platform.project.biz.ITaskBiz;
 import org.pbccrc.platform.project.biz.ITaskDataBiz;
 import org.pbccrc.platform.project.biz.impl.MonitorDataBizImpl;
+import org.pbccrc.platform.util.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import com.alibaba.fastjson.JSONObject;
-
+import org.pbccrc.platform.util.Constant;
 
 @Path("/produceTable")
 @Produces(MediaType.APPLICATION_JSON)
@@ -42,9 +43,9 @@ public class ProduceMonitorTableRest {
 		
 		//返回文件下载地址
 		String filePath = monitorDataBiz.loadHostMonitorData(id);
-		
+		String bathPath = Constant.ZABBIX_MONITOR_DATA_DOWNLOAD_PATH;
 		JSONObject result = new JSONObject();
-		result.put("filePath", "A");
+		result.put("filePath", "/Aphrodite"+bathPath+filePath);
 		return Response.ok(result).build();
 	}
 }
