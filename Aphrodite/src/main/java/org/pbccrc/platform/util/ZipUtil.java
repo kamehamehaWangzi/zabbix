@@ -5,7 +5,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
 /**
@@ -150,5 +154,68 @@ public class ZipUtil {
 			}
 		}
 		
+	}
+	
+	//******************************************************
+	
+	public static void unZipFiles(String zipFilePath, String descDir){
+		File zipFile = new File(zipFilePath);
+		File pathFile = new File(descDir);
+		
+		if(!pathFile.exists()){
+			pathFile.mkdirs();
+		}
+		
+		ZipFile zip = null;
+		InputStream in = null;
+		OutputStream out = null;
+		
+		try {
+			zip = new ZipFile(zipFile);
+			for(Enumeration<? extends ZipEntry> entries = zip.entries();entries.hasMoreElements();){
+				ZipEntry entry = entries.nextElement();
+				String zipEntryName = entry.getName();
+				in = zip.getInputStream(entry);
+				
+				String outPath = (descDir+"/"+zipEntryName).replaceAll("\\*", "/");
+				//判断路径是否存在，不存在则创建文件路径
+				File file = new File(outPath.substring(0, outPath.lastIndexOf('/')));
+				
+				if(!file.exists()){
+					file.mkdirs();
+				}
+				//判断文件全路径是否为文件夹，如果是在上面已经创建，不需要解压
+				if(new File(outPath).isDirectory()){
+					continue;
+				}
+				out = new FileOutputStream(outPath);
+				byte[] byte1 = new byte[4*1024];
+				int len;
+				while((len=in.read(byte1))>0){
+					out.write(byte1, 0, len);
+				}
+				in.close();
+				out.close();
+			}
+			System.out.println("********************解压完毕*******************");
+		} catch (IOException e) {
+			pathFile.delete();
+			System.out.println("*********************解压失败******************");
+			e.printStackTrace();
+		} finally{
+			try{
+				if(zip!=null){
+					zip.close();
+				}
+				if(in!=null){
+					in.close();
+				}
+				if(out!=null){
+					out.close();
+				}
+			}catch(IOException e){
+				e.printStackTrace();
+			}
+		}
 	}
 }

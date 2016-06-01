@@ -10,12 +10,10 @@ import org.apache.log4j.Logger;
 import org.pbccrc.platform.project.biz.IMonitorDataBiz;
 import org.pbccrc.platform.project.biz.ITaskBiz;
 import org.pbccrc.platform.project.biz.ITaskDataBiz;
-import org.pbccrc.platform.project.biz.impl.MonitorDataBizImpl;
 import org.pbccrc.platform.util.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import com.alibaba.fastjson.JSONObject;
-import org.pbccrc.platform.util.Constant;
 
 @Path("/produceTable")
 @Produces(MediaType.APPLICATION_JSON)
@@ -38,12 +36,22 @@ public class ProduceMonitorTableRest {
 	@Path("/getHostListReport")
 	@GET
 	public Response getHostListReport(@QueryParam("task_id")String id){
-		System.out.println("A");
 		log.debug(String.format(" Get the monitor data id %s", id));
-		
 		//返回文件下载地址
 		String filePath = monitorDataBiz.loadHostMonitorData(id);
 		String bathPath = Constant.ZABBIX_MONITOR_DATA_DOWNLOAD_PATH;
+		JSONObject result = new JSONObject();
+		result.put("filePath", "/Aphrodite"+bathPath+filePath);
+		return Response.ok(result).build();
+	}
+	
+	@Path("/getItemListReport")
+	@GET
+	public Response getItemListReport(@QueryParam("task_id")String id){
+		log.debug(String.format(" Get the Item monitror data by taskDataId %s", id));	
+		String filePath = monitorDataBiz.loadItemMonitorData(id);
+		String bathPath = Constant.ZABBIX_MONITOR_DATA_DOWNLOAD_PATH;
+		
 		JSONObject result = new JSONObject();
 		result.put("filePath", "/Aphrodite"+bathPath+filePath);
 		return Response.ok(result).build();
