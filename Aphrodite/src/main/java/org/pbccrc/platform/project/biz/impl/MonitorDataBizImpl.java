@@ -225,30 +225,32 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					CategoryDataset defaultcategorydataset = new DefaultCategoryDataset();
 					
 					List<String> legend = dataModel.getLegend();
-					legend = new ArrayList<String>();
-					legend.add("192.168.62.110");
-					legend.add("192.168.62.111");
-					legend.add("192.168.62.112");
 					
 					String[] legendStr = legend.toArray(new String[legend.size()]);
 					List<String> xaxis = dataModel.getxAxis();
 					String[] xaxisStr = xaxis.toArray(new String[xaxis.size()]);
 					List<Series> yaxis = dataModel.getyAxis();
-					double[][] data = new double[yaxis.size()][yaxis.get(0).getData().size()];
+					int length = yaxis.get(0).getData().size();
+					double[][] data = new double[yaxis.size()][length];
 					for (int yindex = 0; yindex < yaxis.size(); yindex++) {
-						for (int dataIndex = 0; dataIndex < yaxis.get(yindex).getData().size(); dataIndex++) {
+						length = length<yaxis.get(yindex).getData().size()?length:yaxis.get(yindex).getData().size();
+						for (int dataIndex = 0; dataIndex < length; dataIndex++) {
 							data[yindex][dataIndex] = Double.parseDouble(yaxis.get(yindex).getData().get(dataIndex));
 						}
 					}
 					
 					// 监控时间轴，最好不要以秒为单位，因为X可能出现相同的X值，报错……
 					for (int t = 1; t < xaxisStr.length; t++) {
-						xaxisStr[t] = xaxisStr[t] + (t - 1);
+						xaxisStr[t] = xaxisStr[t] + (t-1)%10;
 					}
+					for (int t=1; t<legendStr.length; t++){
+						legendStr[t] = legendStr[t] + (t-1)%10;
+					}
+					
 					// 2.4生成图片
 					defaultcategorydataset = DatasetUtilities.createCategoryDataset(legendStr, xaxisStr, data);
 
-					String range = xaxisStr!=null&&xaxisStr.length>0 ? xaxisStr[0]+" - "+xaxisStr[xaxisStr.length-1] : "-";
+					String range = xaxisStr!=null && xaxisStr.length>0 ? xaxisStr[0]+" - "+xaxisStr[xaxisStr.length-1] : "-";
 					JFreeChart jfreechart = ChartFactory.createLineChart(
 							itemName,
 							range , "Value", defaultcategorydataset,

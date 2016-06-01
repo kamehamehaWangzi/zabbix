@@ -288,8 +288,7 @@ function MachineInfoController($scope, $http, $stateParams) {
 	}
 	
 	$scope.outItems = function(){
-// 		swal("OUT Items "+$stateParams.task_id);
-// 		swal("正在下载，请稍等…… ");
+		swal("正在下载，请稍等…… ");
 		$http({
 			url : 'r/produceTable/getItemListReport',
 			method: 'GET',
