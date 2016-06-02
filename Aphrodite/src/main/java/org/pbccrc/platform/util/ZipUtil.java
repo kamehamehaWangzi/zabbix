@@ -20,37 +20,6 @@ import java.util.zip.ZipOutputStream;
  */
 public class ZipUtil {
 
-	/*
-	public static String zipFile(String sourcePath, String zipPath) throws IOException{
-		
-		String resultPath = "";
-		
-		File file = new File(sourcePath);
-		File zipFile = new File(zipPath);
-		
-		InputStream input ;
-		ZipOutputStream zipOutput = new ZipOutputStream(new FileOutputStream(zipFile));
-		zipOutput.setComment("AXZ");
-		
-		if(file.isDirectory()){
-			File[] files = file.listFiles();
-			for(int i = 0 ;i<files.length; i++){
-				input = new FileInputStream(files[i]);
-				zipOutput.putNextEntry(new ZipEntry(files[i].getName()));
-				int len = 0;
-				byte[] bytes = new byte[1024];
-				while((len=input.read(bytes))!=-1){
-					zipOutput.write(bytes, 0, len);
-				}
-				input.close();
-			}
-		}
-		zipOutput.close();
-		
-		return resultPath;
-	}
-	*/
-	
 	/**
 	 * @description 压缩文件操作
 	 * @param filePath 要压缩的文件路径

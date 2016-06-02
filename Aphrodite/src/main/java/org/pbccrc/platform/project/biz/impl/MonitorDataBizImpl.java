@@ -181,7 +181,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 		File zipSourceFile = new File(basePath);
 		String zipEndFilePath = zipSourceFile.getParentFile().getAbsolutePath()+"//taskData_" + taskDataId+".zip";
 		ZipUtil.zipFile(basePath, zipEndFilePath);
-		return "taskData_" + taskDataId+".zip";
+		return "taskData_host_" + taskDataId+".zip";
 	}
 
 	@Override
