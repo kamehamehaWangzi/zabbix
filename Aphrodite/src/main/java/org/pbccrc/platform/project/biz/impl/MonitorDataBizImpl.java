@@ -139,7 +139,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					}
 					//监控时间轴，最好不要以秒为单位，因为X可能出现相同的X值，报错……
 					for(int t = 1; t<xaxisStr.length ;t++){
-							xaxisStr[t] = xaxisStr[t]+(t-1);
+						xaxisStr[t] = xaxisStr[t]+(t-1)%10;
 					}
 					defaultcategorydataset = DatasetUtilities.createCategoryDataset(legendStr, xaxisStr, data);
 
@@ -174,6 +174,14 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					// x轴转向45度
 					plot.setBackgroundPaint(Color.WHITE);
 					plot.getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
+					for(int x = 0;x<xaxisStr.length;x++){
+						if(x%10 == 0){
+							plot.getDomainAxis().setTickLabelPaint(xaxisStr[x],Color.black);
+						}else{
+							plot.getDomainAxis().setTickLabelPaint(xaxisStr[x],Color.white);
+						}
+					}
+					
 					// 渲染 曲线上有点的效果
 					LineAndShapeRenderer lsr = new LineAndShapeRenderer();
 					// 设置消除字体的锯齿渲染(解决中文问题)
@@ -198,11 +206,11 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 		}
 		// 压缩downfile，生成downfile.zip，返回地址链接给前端
 		File zipSourceFile = new File(basePath);
-		String zipEndFilePath = zipSourceFile.getParentFile().getAbsolutePath()+"//taskData_" + taskDataId+".zip";
+		String zipEndFilePath = zipSourceFile.getParentFile().getAbsolutePath()+"//taskData_host_" + taskDataId+".zip";
 		ZipUtil.zipFile(basePath, zipEndFilePath);
 		return "taskData_host_" + taskDataId+".zip";
 	}
-	
+
 	@Override
 	public String loadItemMonitorData(String taskDataId) {
 
@@ -301,6 +309,15 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					// x轴转向45度
 					plot.setBackgroundPaint(Color.WHITE);
 					plot.getDomainAxis().setCategoryLabelPositions(CategoryLabelPositions.DOWN_45);
+
+					for(int x = 0;x<xaxisStr.length;x++){
+						if(x%10 == 0){
+							plot.getDomainAxis().setTickLabelPaint(xaxisStr[x],Color.black);
+						}else{
+							plot.getDomainAxis().setTickLabelPaint(xaxisStr[x],Color.white);
+						}
+					}
+					
 					// 渲染 曲线上有点的效果
 					LineAndShapeRenderer lsr = new LineAndShapeRenderer();
 					// 设置消除字体的锯齿渲染(解决中文问题)
@@ -314,7 +331,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 							file.mkdirs();
 						}
 						ChartUtilities.saveChartAsPNG(new File(filePath+itemName
-						+".png"), jfreechart, 1200, 800);
+						+".png"), jfreechart, 1000, 800);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
