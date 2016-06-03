@@ -1,18 +1,22 @@
 package org.pbccrc.platform.project.rest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+
 import org.apache.log4j.Logger;
 import org.pbccrc.platform.project.biz.IMonitorDataBiz;
 import org.pbccrc.platform.project.biz.ITaskBiz;
 import org.pbccrc.platform.project.biz.ITaskDataBiz;
-import org.pbccrc.platform.project.biz.impl.MonitorDataBizImpl;
+import org.pbccrc.platform.util.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+
 import com.alibaba.fastjson.JSONObject;
 
 
@@ -45,6 +49,21 @@ public class ProduceMonitorTableRest {
 		
 		JSONObject result = new JSONObject();
 		result.put("filePath", "A");
+		return Response.ok(result).build();
+	}
+	
+	@Path("/export2Excel")
+	@GET
+	public Response export2Excel(@QueryParam("task_id")String id, @Context HttpServletRequest request){
+		
+		log.debug(String.format(" Get the monitor data id %s", id));
+		
+		String path = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_EXPORT_PATH);
+		
+		String exportPath = monitorDataBiz.export2Excel(id, path);
+		JSONObject result = new JSONObject();
+		result.put("path", exportPath);
+		
 		return Response.ok(result).build();
 	}
 }

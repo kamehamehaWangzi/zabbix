@@ -52,7 +52,7 @@ table td {
 		</div>
 	</div>
 	<div class="panel-body" style="overflow:auto;">
-		<table class="table table-striped table-bordered">
+		<table class="table table-striped table-bordered" id="datas">
 			<tbody>
 				<tr>
 					<th rowspan='2' style="vertical-align:middle;">服务器地址</th>
@@ -270,6 +270,16 @@ function MachineInfoController($scope, $http, $stateParams) {
 	
 	$scope.outExcel = function(){
 		swal("OUT Excel "+$stateParams.task_id);
+		$http({
+			url:'r/produceTable/export2Excel',
+			method:'GET',
+			params:{
+				'task_id':$stateParams.task_id
+			}
+		}).success(function(data){
+			swal(data);
+			console.log(data);
+		});
 	}
 	$scope.outHosts = function(){
 		swal("OUT outHosts "+$stateParams.task_id);

@@ -9,4 +9,7 @@ public interface IMonitorDataBiz {
 	 */
 	String loadHostMonitorData(String taskDataId);
 	
+	/** 导出excel */
+	String export2Excel(String taskDataId, String path);
+	
 }

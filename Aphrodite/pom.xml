@@ -292,6 +292,13 @@
 	      <artifactId>jfreechart</artifactId>
 	      <version>1.0.9</version>
 	    </dependency>
+
+		<!-- poi -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.5-FINAL</version>
+		</dependency>  
 		
 	</dependencies>
 
