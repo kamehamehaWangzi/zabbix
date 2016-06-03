@@ -36,4 +36,13 @@
 		</where>
 	</select>
 	
+	<select id="queryItemNameByTaskDataId" parameterType="java.lang.String" resultType="java.lang.String">
+		select distinct(itemName) from monitordata
+		<if test="_parameter != '' and _parameter != null">
+			<where>
+				taskdataid = #{_parameter}
+			</where>
+		</if>
+	</select>
+	
 </mapper>

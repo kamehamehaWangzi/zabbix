@@ -13,7 +13,6 @@ import java.io.OutputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import org.pbccrc.platform.script.rest.ScriptRest;
 
 public class FileUtils {
 	private static final Logger log = Logger.getLogger(FileUtils.class);

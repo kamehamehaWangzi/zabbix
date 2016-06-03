@@ -269,7 +269,6 @@ function MachineInfoController($scope, $http, $stateParams) {
 	}
 	
 	$scope.outExcel = function(){
-		swal("OUT Excel "+$stateParams.task_id);
 		$http({
 			url:'r/produceTable/export2Excel',
 			method:'GET',
@@ -282,7 +281,7 @@ function MachineInfoController($scope, $http, $stateParams) {
 		});
 	}
 	$scope.outHosts = function(){
-		swal("OUT outHosts "+$stateParams.task_id);
+		swal("正在下载，请稍等…… ");
 		$http({
 			url:'r/produceTable/getHostListReport',
 			method:'GET',
@@ -290,13 +289,28 @@ function MachineInfoController($scope, $http, $stateParams) {
 				'task_id':$stateParams.task_id
 			}
 		}).success(function(data){
-			swal(data);
-			console.log(data);
+			var downLink = document.createElement("a");
+			document.body.appendChild(downLink);
+			downLink.href=data.filePath;
+			downLink.click();
 		});
 	}
 	
 	$scope.outItems = function(){
-		swal("OUT Items "+$stateParams.task_id);
+		swal("正在下载，请稍等…… ");
+		$http({
+			url : 'r/produceTable/getItemListReport',
+			method: 'GET',
+			params:{
+				'task_id':$stateParams.task_id
+			}
+		}).success(function(data){
+			console.log(data);
+			var downLink = document.createElement("a");
+			document.body.appendChild(downLink);
+			downLink.href=data.filePath;
+			downLink.click();
+		});
 	}
 	
 }
