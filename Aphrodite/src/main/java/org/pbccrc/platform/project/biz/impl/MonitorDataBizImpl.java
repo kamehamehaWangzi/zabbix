@@ -210,7 +210,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 		ZipUtil.zipFile(basePath, zipEndFilePath);
 		return "taskData_host_" + taskDataId+".zip";
 	}
-	
+
 	@Override
 	public String loadItemMonitorData(String taskDataId) {
 
@@ -271,7 +271,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 						xaxisStr[t] = xaxisStr[t] + (t-1)%10;
 					}
 					for (int t=1; t<legendStr.length; t++){
-						legendStr[t] = legendStr[t] + (t-1)%10;
+						legendStr[t] = legendStr[t] +"_"+ (t-1)%10;
 					}
 					
 					// 2.4生成图片
