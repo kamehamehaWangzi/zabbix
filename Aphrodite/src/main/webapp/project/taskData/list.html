@@ -191,8 +191,15 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
     		async: true,
     		method:'GET',
     		url: 'r/taskData/obtainTaskMonitor2DB',
+    		params:{
+    			id : $scope.items[0].taskId
+    		}
     	}).success(function(data){
-    		swal(data);
+    		if(data==1){
+	    		swal("收集业务成功！");
+    		}
+    		//加载执行,展示项目列表
+    	    $scope.search();
     	});
     }
 	

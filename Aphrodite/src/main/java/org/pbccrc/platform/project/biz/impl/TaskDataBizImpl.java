@@ -97,13 +97,18 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		return result;
 	}
 
-	public int saveAllTaskDataMonitor2DB(String path){
+	public int saveAllTaskDataMonitor2DB(String taskId,String path){
 		
 		int result = 0;
 		//获取所有的已经执行完毕的任务Id
 		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 		String endTime = sf.format(new Date());
-		List<TaskDataVO> taskDataIdList = taskDataDao.queryTaskDataByTime(endTime);
+		
+		Map<String,String> paramMap = new HashMap<String,String>();
+		paramMap.put("taskId", taskId);
+		paramMap.put("endTime", endTime);
+		
+		List<TaskDataVO> taskDataIdList = taskDataDao.queryTaskDataByTime(paramMap);
 		
 		if(taskDataIdList!=null && taskDataIdList.size()>0){
 			//循环遍历所有任务

@@ -93,15 +93,15 @@ public class TaskDataRest {
 	@Path("/obtainTaskMonitor2DB")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public int obtainData2DB(@QueryParam("task_id")String task_id, @Context HttpServletRequest request){
+	public int obtainData2DB(@QueryParam("task_id")String task_id,@QueryParam("id")String id, @Context HttpServletRequest request){
 		int result = 0;
 		String path = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_PATH);
 		if(task_id != null){
 			result = taskDataBiz.saveTaskDataMonitor2DB(task_id, path);
-		}else{
+		}else if(id!=null){
 			System.out.println("All");
 			//设置批量持久化监控数据,已经结束的，尚未收集数据的任务
-			result = taskDataBiz.saveAllTaskDataMonitor2DB(path);
+			result = taskDataBiz.saveAllTaskDataMonitor2DB(id,path);
 		}
 		return result;
 		

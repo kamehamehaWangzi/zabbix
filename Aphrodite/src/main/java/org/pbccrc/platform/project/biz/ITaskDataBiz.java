@@ -28,7 +28,7 @@ public interface ITaskDataBiz {
 	 * @param path
 	 * @return
 	 */
-	public int saveAllTaskDataMonitor2DB(String path);
+	public int saveAllTaskDataMonitor2DB(String taskId,String path);
 	
 	/**
 	 * 监控步骤2：表格展示监控数据

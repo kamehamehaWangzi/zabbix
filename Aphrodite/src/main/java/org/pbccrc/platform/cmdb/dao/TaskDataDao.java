@@ -1,6 +1,7 @@
 package org.pbccrc.platform.cmdb.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.RowBounds;
 import org.pbccrc.platform.model.Pagination;
@@ -30,7 +31,7 @@ public class TaskDataDao extends AbstractMyBatisDao {
 		return this.getSqlSession().selectOne("dao.TaskDataDao.queryByTaskDataId", id);
 	}
 	
-	public List<TaskDataVO> queryTaskDataByTime(String endTime){
-		return this.getSqlSession().selectList("dao.TaskDataDao.queryTaskDataByEndTime",endTime);
+	public List<TaskDataVO> queryTaskDataByTime(Map<String,String> paramMap){
+		return this.getSqlSession().selectList("dao.TaskDataDao.queryTaskDataByEndTime",paramMap);
 	}
 }

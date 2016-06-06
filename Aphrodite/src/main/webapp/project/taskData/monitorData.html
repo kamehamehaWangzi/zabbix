@@ -269,6 +269,7 @@ function MachineInfoController($scope, $http, $stateParams) {
 	}
 	
 	$scope.outExcel = function(){
+		swal("正在下载，请稍等…… ");
 		$http({
 			url:'r/produceTable/export2Excel',
 			method:'GET',
@@ -307,7 +308,6 @@ function MachineInfoController($scope, $http, $stateParams) {
 				'task_id':$stateParams.task_id
 			}
 		}).success(function(data){
-			console.log(data);
 			var downLink = document.createElement("a");
 			document.body.appendChild(downLink);
 			downLink.href=data.filePath;

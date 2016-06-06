@@ -2,7 +2,9 @@ package org.pbccrc.platform.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pbccrc.platform.cmdb.dao.TaskDataDao;
 import org.pbccrc.platform.project.biz.ITaskDataBiz;
@@ -28,7 +30,9 @@ public class CollectMonitorDataByQuartz {
 		String endTime = sf.format(new Date());
 		List<TaskDataVO> resultList = null;
 		try{
-			resultList = taskDataDao.queryTaskDataByTime(endTime);
+			Map paramMap = new HashMap<String,String>();
+			paramMap.put("endTime", endTime);
+			resultList = taskDataDao.queryTaskDataByTime(paramMap);
 		//对每个任务进行持久化
 		for(TaskDataVO e : resultList){
 			System.out.println(e.toString());

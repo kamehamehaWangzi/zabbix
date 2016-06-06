@@ -139,11 +139,12 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					}
 					//监控时间轴，最好不要以秒为单位，因为X可能出现相同的X值，报错……
 					for(int t = 1; t<xaxisStr.length ;t++){
-						xaxisStr[t] = xaxisStr[t]+(t-1)%10;
+						xaxisStr[t] = xaxisStr[t]+"_"+(t-1)%10;
 					}
 					defaultcategorydataset = DatasetUtilities.createCategoryDataset(legendStr, xaxisStr, data);
 
-					String range = xaxisStr!=null&&xaxisStr.length>0 ? xaxisStr[0]+" - "+xaxisStr[xaxisStr.length-1] : "-";
+					String range = xaxis!=null&&xaxis.size()>0 ? xaxis.get(0) + " - " + xaxis.get(xaxis.size()-1) : " - ";
+					
 					JFreeChart jfreechart = ChartFactory.createLineChart(
 							vo.getMonitorType() + " -> " + vo.getItemName(),range , "Value", defaultcategorydataset,
 							PlotOrientation.VERTICAL, true, true, false);
@@ -180,6 +181,10 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 						}else{
 							plot.getDomainAxis().setTickLabelPaint(xaxisStr[x],Color.white);
 						}
+					}
+					//将最后一个标，设置为显示
+					if(xaxisStr.length>0){
+						plot.getDomainAxis().setTickLabelPaint(xaxisStr[xaxisStr.length-1],Color.black);
 					}
 					
 					// 渲染 曲线上有点的效果
@@ -268,7 +273,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					
 					// 监控时间轴，最好不要以秒为单位，因为X可能出现相同的X值，报错……
 					for (int t = 1; t < xaxisStr.length; t++) {
-						xaxisStr[t] = xaxisStr[t] + (t-1)%10;
+						xaxisStr[t] = xaxisStr[t] +"_"+ (t-1)%10;
 					}
 					for (int t=1; t<legendStr.length; t++){
 						legendStr[t] = legendStr[t] +"_"+ (t-1)%10;
@@ -277,7 +282,8 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					// 2.4生成图片
 					defaultcategorydataset = DatasetUtilities.createCategoryDataset(legendStr, xaxisStr, data);
 
-					String range = xaxisStr!=null && xaxisStr.length>0 ? xaxisStr[0]+" - "+xaxisStr[xaxisStr.length-1] : "-";
+					String range = xaxis!=null&&xaxis.size()>0 ? xaxis.get(0) + " - " + xaxis.get(xaxis.size()-1) : " - ";
+					
 					JFreeChart jfreechart = ChartFactory.createLineChart(
 							itemName,
 							range , "Value", defaultcategorydataset,
@@ -316,6 +322,10 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 						}else{
 							plot.getDomainAxis().setTickLabelPaint(xaxisStr[x],Color.white);
 						}
+					}
+					//将最后一个标，设置为显示
+					if(xaxisStr.length>0){
+						plot.getDomainAxis().setTickLabelPaint(xaxisStr[xaxisStr.length-1],Color.black);
 					}
 					
 					// 渲染 曲线上有点的效果
@@ -587,7 +597,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					e.printStackTrace();
 				}
 			}
-			exportPath = basePath + System.currentTimeMillis() + ".xlsx";
+			exportPath = basePath + System.currentTimeMillis() + ".xls";
 			os = new FileOutputStream(exportPath);
 			workbook.write(os);
 		} catch (Exception e) {
