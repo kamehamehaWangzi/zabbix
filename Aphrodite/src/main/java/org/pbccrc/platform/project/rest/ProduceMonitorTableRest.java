@@ -1,9 +1,11 @@
 package org.pbccrc.platform.project.rest;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
@@ -54,6 +56,16 @@ public class ProduceMonitorTableRest {
 		
 		JSONObject result = new JSONObject();
 		result.put("filePath", "/Aphrodite"+bathPath+filePath);
+		return Response.ok(result).build();
+	}
+	
+	@Path("/export2Excel")
+	@GET
+	public Response export2Excel(@QueryParam("task_id")String id){
+		String bathPath = Constant.ZABBIX_MONITOR_DATA_EXPORT_PATH;
+		String filePath = monitorDataBiz.export2Excel(id);
+		JSONObject result = new JSONObject();
+		result.put("filePath", "/Aphrodite" + bathPath + filePath);
 		return Response.ok(result).build();
 	}
 }

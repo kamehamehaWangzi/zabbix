@@ -17,6 +17,6 @@ public interface IMonitorDataBiz {
 	String loadItemMonitorData(String taskDataId);
 	
 	/** 导出excel */
-	String export2Excel(String taskDataId, String path);
+	String export2Excel(String taskDataId);
 	
 }

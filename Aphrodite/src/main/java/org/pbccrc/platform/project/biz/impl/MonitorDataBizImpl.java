@@ -350,7 +350,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public String export2Excel(String taskDataId, String path){
+	public String export2Excel(String taskDataId){
 		
 		String exportPath = "";
 		
@@ -575,9 +575,11 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 		
 		// IO operation
 		OutputStream os = null;
+		// 生成一个待压缩的文件夹downfile，待返回链接供前端下载
+		String basePath = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_EXPORT_PATH);
+		basePath = basePath + "\\taskData_hosts_ " + taskDataId;
 		try {
-			path = path + "\\" + taskDataId + "\\";    											
-			File file = new File(path);
+			File file = new File(basePath);
 			if(!file.exists()){
 				try{
 					file.mkdirs();
@@ -585,7 +587,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					e.printStackTrace();
 				}
 			}
-			exportPath = path + System.currentTimeMillis() + ".xlsx";
+			exportPath = basePath + System.currentTimeMillis() + ".xlsx";
 			os = new FileOutputStream(exportPath);
 			workbook.write(os);
 		} catch (Exception e) {
@@ -598,7 +600,11 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 			}
 		}
 		
-		return exportPath;
+		// 3对文件打包zip 压缩downfile，生成downfile.zip，返回地址链接给前端
+		File zipSourceFile = new File(exportPath);
+		String zipEndFilePath = zipSourceFile.getParentFile().getAbsolutePath()+"//taskData_excel_" + taskDataId+".zip";
+		ZipUtil.zipFile(exportPath, zipEndFilePath);
+		return "taskData_excel_" + taskDataId+".zip";
 	}
 
 }
