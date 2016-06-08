@@ -34,4 +34,5 @@ public class TaskDataDao extends AbstractMyBatisDao {
 	public List<TaskDataVO> queryTaskDataByTime(Map<String,String> paramMap){
 		return this.getSqlSession().selectList("dao.TaskDataDao.queryTaskDataByEndTime",paramMap);
 	}
+	
 }

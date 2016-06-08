@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -85,7 +86,52 @@ public class TaskDataRest {
 		return Response.ok(200).build();
 	}
 	
-
+	/**
+	 * 即时任务修改开始时间
+	 * @param taskDataId
+	 * @return
+	 * zhp 2016.06.08
+	 */
+	@Path("/setStart")
+	@PUT
+	public Response setTaskDataStartTime(@QueryParam("taskDataId")String taskDataId){
+		
+		//修改数据库记录
+		int result = taskDataBiz.modifyTaskDataTime(taskDataId, 0);
+		
+		JSONObject resultJson = new JSONObject();
+		resultJson.put("result", "开始时间设定成功！"+taskDataId +" result = "+result);
+		return Response.ok(resultJson).build();
+	}
+	
+	/**
+	 * 即时任务修改结束时间
+	 * @param taskDataId
+	 * @return
+	 * zhp 2016.06.08
+	 */
+	@Path("/setEnd")
+	@PUT
+	public Response setTaskDataEndTime(@QueryParam("taskDataId")String taskDataId, @Context HttpServletRequest request){
+		
+		JSONObject resultJson = new JSONObject();
+		
+		//修改数据库记录
+		int modifyResult = taskDataBiz.modifyTaskDataTime(taskDataId, 1);
+		
+//		//即时收集数据
+//		if(modifyResult==1){
+//			String path = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_PATH);
+//			int collectResult = taskDataBiz.saveTaskDataMonitor2DB(taskDataId, path);
+//			resultJson.put("result", collectResult);
+//		}else{
+//			resultJson.put("result", "0");
+//		}
+		resultJson.put("result", modifyResult);
+		return Response.ok(resultJson).build();
+	}
+	
+	
 	/**
 	 * 触发，将任务数据存储到DB
 	 * @return

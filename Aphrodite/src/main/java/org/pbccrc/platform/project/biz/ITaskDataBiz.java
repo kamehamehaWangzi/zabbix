@@ -45,6 +45,13 @@ public interface ITaskDataBiz {
 	 * @return
 	 */
 	public GraphModel showDetaiGraph(String taskData_id,String hostId,String type);
-
+	
+	/**
+	 * 设置即时任务的时间，并触发事件
+	 * @param taskDataId
+	 * @param startOrEnd 0:startTime; 1:endTime
+	 * @return
+	 */
+	public int modifyTaskDataTime(String taskDataId, int startOrEnd);
 	
 }

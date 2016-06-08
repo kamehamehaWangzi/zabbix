@@ -83,12 +83,13 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		TaskDataVO taskVO = taskDataDao.queryByTaskDataId(id);
 		
 		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU, path, null);
-		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path, 1024);
-		int resultDISKCnt = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK_CNT, path, null);
+//		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path, 1024);
+//		int resultDISKCnt = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK_CNT, path, null);
 		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET, path, 1024);
 		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY, path, 1024*1024*1024);
 		
-		result = resultCPU & resultDISK & resultDISKCnt & resultNET & resultMEMORY ;
+		result = resultCPU //& resultDISK & resultDISKCnt 
+				& resultNET & resultMEMORY ;
 
 		//将任务状态置为“已获取”为1
 		taskVO.setPath("1");
@@ -116,11 +117,13 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 				
 				System.out.println(task.getTaskId());
 				int resultCPU = zabbixDataUtil.obtainZabbixData(task, TYPE_CPU, path,null);
-				int resultDISK = zabbixDataUtil.obtainZabbixData(task, TYPE_DISK, path,1024*1024*1024);
+//				int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path, 1024);
+//				int resultDISKCnt = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK_CNT, path, null);
 				int resultNET = zabbixDataUtil.obtainZabbixData(task, TYPE_NET, path,1024);
 				int resultMEMORY = zabbixDataUtil.obtainZabbixData(task, TYPE_MEMORY, path,1024*1024*1024);
 				
-				result = resultCPU &  resultDISK & resultNET & resultMEMORY ;
+				result = resultCPU //& resultDISK & resultDISKCnt 
+						& resultNET & resultMEMORY ;
 				
 				//将任务状态置为“已获取”为1
 				if(result==1){
@@ -260,6 +263,35 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		if(vo != null) {
 			taskDataDao.deleteTaskData(String.valueOf(vo.getId()));
 		}
+	}
+
+	@Override
+	public int modifyTaskDataTime(String taskDataId, int startOrEnd) {
+		
+		int result = 0;
+
+		TaskDataVO vo = new TaskDataVO();
+		vo.setId(Integer.parseInt(taskDataId));
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		String currentTime = sf.format(new Date());
+		
+		if(startOrEnd==0){
+			vo.setPath("0");
+			vo.setStartTime(currentTime);
+			vo.setEndTime(currentTime);
+			result = taskDataDao.updateTaskData(vo);
+
+			//清空monitorData表中已经持久化的数据
+			if(result==1){
+				result = monitorDataDao.cleanSavedMonitorDataByTaskDataId(taskDataId);
+			}
+			
+		}else if(startOrEnd==1){
+			vo.setEndTime(currentTime);
+			result = taskDataDao.updateTaskData(vo);
+		}
+		
+		return result;
 	}
 
 }

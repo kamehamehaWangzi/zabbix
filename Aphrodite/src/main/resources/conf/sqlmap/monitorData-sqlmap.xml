@@ -45,4 +45,10 @@
 		</if>
 	</select>
 	
+	<delete id="deleteDataByTaskDataId" parameterType="java.lang.String">
+		<if test="_parameter!=null and _parameter!=''">
+			delete from monitordata where taskDataid = #{_parameter}
+		</if>
+	</delete>
+	
 </mapper>

@@ -18,12 +18,15 @@ public class MonitorDataDao extends AbstractMyBatisDao{
 	}	
 	
 	/**
-	 * 查找某个任务的监控项集合
 	 * @param taskDataId
 	 * @return
 	 */
 	public List<String> queryItemNameByTaskDataId(String taskDataId){
 		return this.getSqlSession().selectList("dao.MonitorDataDao.queryItemNameByTaskDataId", taskDataId);
+	}
+	
+	public int cleanSavedMonitorDataByTaskDataId(String taskDataId){
+		return this.getSqlSession().delete("dao.MonitorDataDao.deleteDataByTaskDataId", taskDataId);
 	}
 	
 }

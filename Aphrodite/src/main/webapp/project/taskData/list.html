@@ -65,7 +65,8 @@
 										<th>执行用例</th>
 										<th>开始时间</th>
 										<th>结束时间</th>
-										<th>监控数据</th>
+										<th>定时监控</th>
+										<th>即时监控(优先)</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -81,12 +82,16 @@
 											<a href="#" data-ng-click="toMonitor(item.id)">查看数据</a>
 											<a href="#" data-ng-click="persistent(item.id)" data-ng-if="item.path!='1'">获取数据</a>
 										</td>
+										<td>
+											<a href="#" data-ng-click="doStart(item.id)">即时开始</a>
+											<a href="#" data-ng-click="doEnd(item.id)">即时结束</a>
+										</td>
 									</tr>
 									
 								</tbody>
 								<tfoot>
 									<tr>
-										<td colspan="6" align="right">
+										<td colspan="7" align="right">
 											<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="5" items-per-page="pageSize" previous-text="上一页" next-text="下一页" boundary-link-numbers="true" force-ellipses="true" ng-change="search()"></uib-pagination>
 										</td>
 									</tr>
@@ -290,6 +295,49 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 		 
 	 }
 	 
+	
+	$scope.doStart = function(taskDataId){
+		$http({
+			method:'PUT',
+			url: 'r/taskData/setStart',
+			params: {
+				'taskDataId' :  taskDataId
+			}
+		}).success(function(data){
+			console.log(data);
+			$scope.search();
+		});
+	}
+	
+	$scope.doEnd = function(taskDataId){
+		$http({
+			method:'PUT',
+			url:'r/taskData/setEnd',
+			params:{
+				'taskDataId' : taskDataId
+			}
+		}).success(function(data){
+			console.log(data);
+			$scope.search();
+			
+			//触发持久化
+			$http({
+				url: 'r/taskData/obtainTaskMonitor2DB',
+				method: 'GET',
+				params: {
+					'task_id':taskDataId
+				}
+			}).success(function(data){
+				if(data==1){
+					swal("监控数据持久化成功！");
+					$scope.toMonitor(taskDataId);
+				}else{
+					swal("监控数据获取失败！");
+				}
+			})
+		});
+	}
+	
 	/*
 	$http({
 			method: 'GET',

@@ -31,7 +31,18 @@
 	</insert>
 	
 	<update id="updateTaskData" parameterType="org.pbccrc.platform.vo.TaskDataVO">
-		update taskData set path = #{path} 
+		update taskData
+		<set>
+			<if test="path!=null and path!='' ">
+				path = #{path},
+			</if>
+			<if test="startTime!=null and startTime!='' ">
+				startTime = #{startTime},
+			</if>
+			<if test="endTime!=null and endTime!=''">
+				endTime = #{endTime},
+			</if>
+		</set>
 		<where>
 				id = #{id}
 		</where>
