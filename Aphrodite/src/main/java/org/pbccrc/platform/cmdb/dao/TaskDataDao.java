@@ -23,8 +23,8 @@ public class TaskDataDao extends AbstractMyBatisDao {
 		return this.getSqlSession().update("dao.TaskDataDao.updateTaskData",vo);
 	}
 	
-	public void deleteTaskData(String id) {
-		this.getSqlSession().delete("dao.TaskDataDao.deleteTaskData", id);
+	public int deleteTaskData(String id) {
+		return this.getSqlSession().delete("dao.TaskDataDao.deleteTaskData", id);
 	}
 	
 	public TaskDataVO queryByTaskDataId(String id) {

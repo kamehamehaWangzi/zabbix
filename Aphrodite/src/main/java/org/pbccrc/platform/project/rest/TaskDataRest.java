@@ -119,14 +119,6 @@ public class TaskDataRest {
 		//修改数据库记录
 		int modifyResult = taskDataBiz.modifyTaskDataTime(taskDataId, 1);
 		
-//		//即时收集数据
-//		if(modifyResult==1){
-//			String path = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_PATH);
-//			int collectResult = taskDataBiz.saveTaskDataMonitor2DB(taskDataId, path);
-//			resultJson.put("result", collectResult);
-//		}else{
-//			resultJson.put("result", "0");
-//		}
 		resultJson.put("result", modifyResult);
 		return Response.ok(resultJson).build();
 	}

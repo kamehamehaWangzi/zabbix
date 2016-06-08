@@ -83,12 +83,12 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		TaskDataVO taskVO = taskDataDao.queryByTaskDataId(id);
 		
 		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU, path, null);
-//		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path, 1024);
-//		int resultDISKCnt = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK_CNT, path, null);
+		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path, 1024);
+		int resultDISKCnt = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK_CNT, path, null);
 		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET, path, 1024);
 		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY, path, 1024*1024*1024);
 		
-		result = resultCPU //& resultDISK & resultDISKCnt 
+		result = resultCPU & resultDISK & resultDISKCnt 
 				& resultNET & resultMEMORY ;
 
 		//将任务状态置为“已获取”为1
@@ -117,12 +117,12 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 				
 				System.out.println(task.getTaskId());
 				int resultCPU = zabbixDataUtil.obtainZabbixData(task, TYPE_CPU, path,null);
-//				int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path, 1024);
-//				int resultDISKCnt = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK_CNT, path, null);
+				int resultDISK = zabbixDataUtil.obtainZabbixData(task, TYPE_DISK, path, 1024);
+				int resultDISKCnt = zabbixDataUtil.obtainZabbixData(task, TYPE_DISK_CNT, path, null);
 				int resultNET = zabbixDataUtil.obtainZabbixData(task, TYPE_NET, path,1024);
 				int resultMEMORY = zabbixDataUtil.obtainZabbixData(task, TYPE_MEMORY, path,1024*1024*1024);
 				
-				result = resultCPU //& resultDISK & resultDISKCnt 
+				result = resultCPU & resultDISK & resultDISKCnt 
 						& resultNET & resultMEMORY ;
 				
 				//将任务状态置为“已获取”为1
@@ -261,7 +261,11 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 	public void deleteTaskData(String taskDataId) {
 		TaskDataVO vo = taskDataDao.queryByTaskDataId(taskDataId);
 		if(vo != null) {
-			taskDataDao.deleteTaskData(String.valueOf(vo.getId()));
+			int result = taskDataDao.deleteTaskData(String.valueOf(vo.getId()));
+			//清空monitorData表中已经持久化的数据
+			if(result==1){
+				result = monitorDataDao.cleanSavedMonitorDataByTaskDataId(taskDataId);
+			}
 		}
 	}
 
