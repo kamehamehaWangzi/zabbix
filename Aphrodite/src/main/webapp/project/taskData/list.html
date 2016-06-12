@@ -79,8 +79,9 @@
 										<td>{{item.startTime}}</td>
 										<td>{{item.endTime}}</td>
 										<td>
-											<a href="#" data-ng-click="toMonitor(item.id)">查看数据</a>
-											<a href="#" data-ng-click="persistent(item.id)" data-ng-if="item.path!='1'">获取数据</a>
+<!-- 											<a href="#" data-ng-click="toMonitor(item.id)">查看数据</a> -->
+<!-- 											<a href="#" data-ng-click="persistent(item.id)" data-ng-if="item.path!='1'">获取数据</a> -->
+											<a href="#" data-ng-click="persistent(item.id,item.path)">监控数据</a>
 										</td>
 										<td>
 											<a href="#" data-ng-click="doStart(item.id)">即时开始</a>
@@ -276,22 +277,30 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 		$state.go('detailMonitor', {'task_id': task_id});
 	}
 	 
-	$scope.persistent = function(task_id){
-		 
-		 $http({
+	$scope.persistent = function(task_id,isSaved){
+
+		if(isSaved==1){//数据已经持久化成功！
+			$scope.toMonitor(task_id);
+		}else{
+			swal("正在获取监控数据……");
+			$http({
 			 url: 'r/taskData/obtainTaskMonitor2DB',
 			 method: 'GET',
 			 params: {
 				 'task_id':task_id
 			 }
-		 }).success(function(data){
+			}).success(function(data){
 			 if(data==1){
 				 swal("监控数据持久化成功！");
 				 $scope.toMonitor(task_id);
+			 }else if(data==3){
+				 swal("监控任务尚未到截止时间！");
 			 }else{
 				 swal("监控数据获取失败！");
 			 }
-		 })
+			});
+		}
+		
 		 
 	 }
 	 
@@ -328,9 +337,12 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 					'task_id':taskDataId
 				}
 			}).success(function(data){
+				console.log(data);
 				if(data==1){
 					swal("监控数据持久化成功！");
 					$scope.toMonitor(taskDataId);
+				}else if(data==3){
+					swal("监控任务尚未到截止时间！");
 				}else{
 					swal("监控数据获取失败！");
 				}

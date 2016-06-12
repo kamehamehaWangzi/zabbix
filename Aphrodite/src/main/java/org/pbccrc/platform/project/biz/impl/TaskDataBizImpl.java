@@ -1,6 +1,7 @@
 package org.pbccrc.platform.project.biz.impl;
 
 import java.io.File;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -81,6 +82,18 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		int result = 0;
 		//根据id在taskData表中获取taskData
 		TaskDataVO taskVO = taskDataDao.queryByTaskDataId(id);
+		
+		//任务结束时间与当前时间作对比，如果任务尚未结束，直接返回，不进行监控数据的获取
+		SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		Date currentDate;
+		try {
+			currentDate = new Date();
+			if(sf.parse(taskVO.getEndTime()).after(currentDate)){
+				return 3; //标识为任务截止时间未到
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
 		
 		int resultCPU = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_CPU, path, null);
 		int resultDISK = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_DISK, path, 1024);

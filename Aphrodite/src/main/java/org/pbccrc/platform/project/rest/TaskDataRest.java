@@ -148,6 +148,7 @@ public class TaskDataRest {
 	/**
 	 * 获取任务监控数据，在前台表格显示
 	 * */
+	@Deprecated
 	@Path("/detailMonitor")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
