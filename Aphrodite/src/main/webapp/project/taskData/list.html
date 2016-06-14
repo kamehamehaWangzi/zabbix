@@ -66,7 +66,7 @@
 										<th>开始时间</th>
 										<th>结束时间</th>
 										<th>定时监控</th>
-										<th>即时监控(优先)</th>
+										<th>即时监控</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -84,8 +84,14 @@
 											<a href="#" data-ng-click="persistent(item.id,item.path)">监控数据</a>
 										</td>
 										<td>
-											<a href="#" data-ng-click="doStart(item.id)">即时开始</a>
-											<a href="#" data-ng-click="doEnd(item.id)">即时结束</a>
+										    <div data-ng-show="{{item.path!=='1'}}">
+										    <span id="btnStart{{item.id}}" class="show">
+												<span class="glyphicon glyphicon-play"><a href="#" data-ng-click="doStart(item.id)">即时开始</a></span>
+											</span>
+											<span id="btnEnd{{item.id}}" class="hidden">
+												<span class="glyphicon glyphicon-stop"><a href="#" data-ng-click="doEnd(item.id)">即时结束</a></span>
+											</span>
+											</div>
 										</td>
 									</tr>
 									
@@ -303,9 +309,12 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 		
 		 
 	 }
-	 
 	
 	$scope.doStart = function(taskDataId){
+		
+		$("#btnStart" + taskDataId).attr("class", "hidden");
+		$("#btnEnd" + taskDataId).attr("class", "show");
+		
 		$http({
 			method:'PUT',
 			url: 'r/taskData/setStart',
@@ -319,6 +328,10 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 	}
 	
 	$scope.doEnd = function(taskDataId){
+		
+		$("#btnStart" + taskDataId).attr("class", "show");
+		$("#btnEnd" + taskDataId).attr("class", "hidden");
+		
 		$http({
 			method:'PUT',
 			url:'r/taskData/setEnd',
