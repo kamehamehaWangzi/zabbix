@@ -84,13 +84,17 @@
 											<a href="#" data-ng-click="persistent(item.id,item.path)">监控数据</a>
 										</td>
 										<td>
-										    <div data-ng-show="{{item.path!=='1'}}">
-										    <span id="btnStart{{item.id}}" class="show">
-												<span class="glyphicon glyphicon-play"><a href="#" data-ng-click="doStart(item.id)">即时开始</a></span>
-											</span>
-											<span id="btnEnd{{item.id}}" class="hidden">
-												<span class="glyphicon glyphicon-stop"><a href="#" data-ng-click="doEnd(item.id)">即时结束</a></span>
-											</span>
+										    <div data-ng-show="{{item.path!=='2'}}">
+										    	<div data-ng-show="{{item.path==='0'}}">
+										    		 <span id="btnStart{{item.id}}">
+														<span class="glyphicon glyphicon-play"><a href="#" data-ng-click="doStart(item.id)">即时开始</a></span>
+													</span>
+										    	</div>
+										    	<div data-ng-show="{{item.path==='1'}}">
+										    		<span id="btnEnd{{item.id}}">
+														<span class="glyphicon glyphicon-stop"><a href="#" data-ng-click="doEnd(item.id)">即时结束</a></span>
+													</span>
+										    	</div>
 											</div>
 										</td>
 									</tr>
@@ -285,9 +289,11 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 	 
 	$scope.persistent = function(task_id,isSaved){
 
-		if(isSaved==1){//数据已经持久化成功！
+		if(isSaved==2){//数据已经持久化成功！
 			$scope.toMonitor(task_id);
-		}else{
+		} else if (isSaved==1) {
+			swal("数据正在监控中,请先结束监控");
+		} else{
 			swal("正在获取监控数据……");
 			$http({
 			 url: 'r/taskData/obtainTaskMonitor2DB',
@@ -322,6 +328,7 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 				'taskDataId' :  taskDataId
 			}
 		}).success(function(data){
+			
 			console.log(data);
 			$scope.search();
 		});
@@ -329,7 +336,7 @@ function TaskDataListController($scope, $http, $stateParams, $state) {
 	
 	$scope.doEnd = function(taskDataId){
 		
-		$("#btnStart" + taskDataId).attr("class", "show");
+		//$("#btnStart" + taskDataId).attr("class", "hidden");
 		$("#btnEnd" + taskDataId).attr("class", "hidden");
 		
 		$http({

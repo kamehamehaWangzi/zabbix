@@ -66,7 +66,7 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		vo.setTaskId(taskData.getInteger("taskId"));
 		vo.setStartTime(taskData.getString("startTime"));
 		vo.setEndTime(taskData.getString("endTime"));
-//		vo.setPath(taskData.getString("path"));
+		vo.setPath("0");
 		
 		taskDataDao.insertTaskData(vo);
 		
@@ -104,8 +104,8 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		result = resultCPU & resultDISK & resultDISKCnt 
 				& resultNET & resultMEMORY ;
 
-		//将任务状态置为“已获取”为1
-		taskVO.setPath("1");
+		//将任务状态置为“已获取”为2
+		taskVO.setPath("2");
 		result = taskDataDao.updateTaskData(taskVO);
 		
 		return result;
@@ -293,7 +293,7 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		String currentTime = sf.format(new Date());
 		
 		if(startOrEnd==0){
-			vo.setPath("0");
+			vo.setPath("1");
 			vo.setStartTime(currentTime);
 			vo.setEndTime(currentTime);
 			result = taskDataDao.updateTaskData(vo);
@@ -304,6 +304,7 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 			}
 			
 		}else if(startOrEnd==1){
+			vo.setPath("2");
 			vo.setEndTime(currentTime);
 			result = taskDataDao.updateTaskData(vo);
 		}
