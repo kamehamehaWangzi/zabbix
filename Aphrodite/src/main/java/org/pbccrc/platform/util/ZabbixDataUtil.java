@@ -344,7 +344,7 @@ public class ZabbixDataUtil {
 		//获取任务涉及到的主机
 		JSONArray hosts = JSON.parseArray(task.getHosts());
 		//监控数据文件持久化的根地址
-		String basePath = path + vo.getTaskId() + "\\";    											//需要做参数化，还需要确认文件是否存在
+		String basePath = path + vo.getTaskId() + "\\" + vo.getId() + "\\";    											//需要做参数化，还需要确认文件是否存在
 		File baseFile = new File(basePath);
 		if(!baseFile.exists()){
 			try{

@@ -101,6 +101,7 @@ public class TaskDataBizImpl implements ITaskDataBiz{
 		int resultNET = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_NET, path, 1024);
 		int resultMEMORY = zabbixDataUtil.obtainZabbixData(taskVO, TYPE_MEMORY, path, 1024*1024*1024);
 		
+		
 		result = resultCPU & resultDISK & resultDISKCnt 
 				& resultNET & resultMEMORY ;
 
