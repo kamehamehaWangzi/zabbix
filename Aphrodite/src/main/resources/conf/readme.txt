@@ -11,4 +11,4 @@ salt token saved to ${cachedir}/tokens/    ex: /var/cache/salt/master/tokens/
 mysql远程连接缓慢:
 [mysqld]
 #禁止域名解析
-skip-name-resolve
+skip-name-resolve   
