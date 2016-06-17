@@ -551,6 +551,23 @@ function config($stateProvider, $urlRouterProvider, $ocLazyLoadProvider, $contro
 			url: '/deploy',
 			templateUrl: 'deploy/deploy_task.html'
 		})
+		
+//		²¿Êðdeploy
+		.state('deploy_agent',{
+			url: '/deloy_agent',
+			templateUrl: 'deploy/deploy_agent.html',
+			resolve: {
+                loadPlugin: function ($ocLazyLoad) {
+                    return $ocLazyLoad.load([
+                        {
+                            serie: true,
+                            files: [ 'js/libs/bootstrap/bootstrap-multiselect.js', 'js/libs/sweetalert/sweetalert.min.js' , 'js/libs/icheck/icheck.min.js', 'js/libs/bootstrap/moment.min.js', 'js/libs/bootstrap/daterangepicker.js', 'js/libs/echarts/echarts-all.js', 'js/main/graph.js' ]
+                        }
+                    ]);
+                }
+            }
+		})
+		
 	    .state('alarm', {
 			url: '/alarm',
 			templateUrl: 'monitor/alert/alarm_status.html'

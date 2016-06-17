@@ -149,3 +149,15 @@ CREATE TABLE `script_template` (
   `status` int(11) DEFAULT '0' COMMENT '模板状态(0-正常 1-作废）',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8;
+
+DROP TABLE IF EXISTS `host_agent`;
+CREATE TABLE `host_agent` (
+  `Id` int(11) NOT NULL AUTO_INCREMENT,
+  `agentip` varchar(20) NOT NULL DEFAULT '' COMMENT 'agent机器IP地址',
+  `agentName` varchar(255) NOT NULL DEFAULT '' COMMENT 'agent机器部署用户',
+  `agentpwd` varchar(100) NOT NULL DEFAULT '' COMMENT 'agent默认用户密码',
+  `osType` varchar(10) DEFAULT NULL COMMENT 'agent系统类型',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='agent机器表';
+
