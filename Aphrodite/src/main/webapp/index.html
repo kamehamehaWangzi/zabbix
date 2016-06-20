@@ -22,9 +22,12 @@
     <link href="css/bootstrap-multiselect.css" rel="stylesheet">
     
     <link href="css/animate.css" rel="stylesheet">
+    <link href="css/dm-notif-style.css" rel="stylesheet">
+    
     <link id="loadBefore" href="css/style.css" rel="stylesheet">
   </head>
   <body>
+  	<div id="dm-notif" style="z-index: 99999"></div>
 	<div id="wrapper" data-ng-controller="indexCtrl">
         <nav class="navbar-default navbar-static-side" role="navigation">
             <div class="sidebar-collapse">
@@ -78,7 +81,7 @@
 <!-- 							<li><a data-ui-sref="script_execute">脚本批量执行</a></li> -->
 <!-- 							<li><a data-ui-sref="cobbler_system">部署操作系统</a></li> -->
 <!-- 							<li><a data-ui-sref="deploy">部署任务</a></li> -->
-							<li><a data-ui-sref="deploy_agent">部署agent</a>
+							<li><a data-ui-sref="deploy_agent">部署agent</a></li>
 						</ul>
                     </li>
                     <li>
@@ -279,6 +282,7 @@
 	<script type="text/javascript" src="js/libs/angular/angular-ui-router.min.js"></script>
 	<script type="text/javascript" src="js/libs/bootstrap/ui-bootstrap-tpls-1.1.2.min.js"></script>
 	<script type="text/javascript" src="js/libs/angular/angular-idle.js"></script>
+	<script type="text/javascript" src="js/libs/dm-notify/dm_notify.js"></script>
 	
 	<script type="text/javascript" src="js/main/app.js"></script>
 	<script type="text/javascript" src="js/main/config.js"></script>

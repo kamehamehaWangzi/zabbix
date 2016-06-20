@@ -23,6 +23,11 @@ function indexCtrl($scope, $http) {
 		});
 	}
 	
+	$scope.notify = function (level ,text) {
+		
+		dm_notification(text, level, 3000);
+	}
+	
 }
 
 function appTabCtrl($scope, $http, $stateParams, $state) {
