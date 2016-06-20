@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="dao.HostAgentDao">
+	
+<!-- 	结果集映射 -->
+	<resultMap type="org.pbccrc.platform.vo.HostAgentVO" id="hostAgentVO">
+		<id property="id" column="ID" />
+		<result property="agentIp" column="agentIp" />
+		<result property="agentName" column="agentName" />
+		<result property="agentPwd" column="agentPwd" />
+		<result property="osType" column="osType" />
+		<result property="remark" column="remark" />
+	</resultMap>
+	
+<!-- 	DML语句定义 -->
+	<select id="queryAll" parameterType="org.pbccrc.platform.vo.HostAgentVO" resultMap="hostAgentVO">
+		select * from host_agent t
+		<where>
+			<if test="agentIp != null">
+				or (t.agentIp like concat(concat('%', #{agentIp}), '%'))
+			</if>
+			<if test="osType != null">
+				or (t.osType like concat(concat('%',#{osType}),'%'))
+			</if>
+			<if test="remark != null">
+				or (t.remark like concat(concat('%',#{remark}),'%'))
+			</if>
+		</where>
+	</select>
+	
+	<insert id="insertHostAgent" parameterType="org.pbccrc.platform.vo.HostAgentVO">
+		insert into host_agent(agentIP, agentName, agentPwd, osType, remark)
+		values(#{agentIp}, #{agentName}, #{agentPwd}, #{osType}, #{remark})
+	</insert>
+	
+	<delete id="deleteHostAgent" parameterType="java.util.List">
+		delete from host_agent where id in 
+		<foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+</mapper>

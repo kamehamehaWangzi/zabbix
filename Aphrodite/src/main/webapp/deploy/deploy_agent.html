@@ -1,0 +1,219 @@
+<div data-ng-controller="MachineListController">
+	<div class="row wrapper border-bottom white-bg page-heading">
+		<div class="col-lg-12">
+			<h2><i class="fa fa-server"></i> zabbix agent</h2>
+			<ol class="breadcrumb">
+				<li>
+					<a data-ui-sref="monitor">首页</a>
+				</li>
+				<li>
+					<a>监控</a>
+				</li>
+				<li class="active">
+					<strong>agent服务器</strong>
+				</li>
+			</ol>
+		</div>
+	</div>
+	<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="row">
+			<div class="col-lg-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-title">
+						<h5><i class="glyphicon glyphicon-list"></i></h5>
+						<div class="ibox-tools">
+							<a class="collapse-link">
+								<i class="fa fa-chevron-up"></i>
+							</a>
+							<a class="close-link">
+								<i class="fa fa-times"></i>
+							</a>
+						</div>
+					</div>
+					<div class="ibox-content">
+						<div class="row">
+							<div class="col-lg-7" style="float: right;">
+								<div class="input-group">
+									<input type="text" class="input-sm form-control" data-ng-keyup="search()" data-ng-model="param" placeholder="Search in table" />
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary" data-ng-click="search()"> Go!</button>
+									</span>
+									<span class="input-group-btn">
+										<button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#deployModal">部署agent</button>
+									</span>
+									<span class="input-group-btn" style="padding-left: 5px;">
+										<button class="btn btn-sm btn-primary" type="button" data-ng-click="delAgent()">删除Agent</button>
+									</span>
+								</div>
+							</div>
+						</div>
+						<div class="table-responsive">
+							<table class="table table-striped">
+								<thead>
+									<tr>
+										<th>#</th>
+										<th>序号</th>
+										<th>IP</th>
+										<th>用户名</th>
+										<th>操作系统</th>
+										<th>备注</th>
+									</tr>
+								</thead>
+								<tbody>
+								
+									<tr data-ng-repeat="item in items">
+										<td>
+											<input data-icheck data-ng-model="iCheck" type="checkbox" name="selectId" value="{{item.id}}" />
+										</td>
+										<td>{{(currentPage - 1) * pageSize + $index + 1}}</td>
+										<td>{{item.agentIp}}</td>
+										<td>{{item.agentName}}</td>
+										<td>{{item.osType}}</td>
+										<td>{{item.remark}}</td>
+									</tr>
+									
+								</tbody>
+								<tfoot>
+									<tr>
+										<td colspan="6" align="right">
+											<uib-pagination total-items="totalItems" ng-model="currentPage" max-size="5" items-per-page="pageSize" previous-text="上一页" next-text="下一页" boundary-link-numbers="true" force-ellipses="true" ng-change="search()"></uib-pagination>
+										</td>
+									</tr>
+								</tfoot>
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+<!-- 	部署agent模块 -->
+	<div class="modal fade" id="deployModal" tabindex="-1" role="dialog" aria-labelledby="myDeployModel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content animated bounceInRight">
+				<form class="form-horizontal" role="form" data-ng-submit="deployAgent()">
+					<div class="modal-header">
+			            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="myDeployModel">
+							远程部署agent
+						</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="name" class="col-sm-2 control-label">远程主机IP</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="agent.ip" placeholder="ip" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="ip" class="col-sm-2 control-label">用户名</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="agent.name" placeholder="root" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">密码</label>
+							<div class="col-sm-10">
+								<input type="password" class="form-control" data-ng-model="agent.password" placeholder="root" required/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="osVersion" class="col-sm-2 control-label">操作系统</label>
+							<div class="col-sm-10">
+								<select class="form-control" data-ng-model="agent.osVersion">
+									<option value="CentOS7.0">CentOS7.0</option>
+									<option value="CentOS6.5">CentOS6.5</option>
+									<option value="Ubuntu">Ubuntu</option>
+									<option value="Windows">Windows</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">备注</label>
+							<div class="col-sm-10">
+								<textarea class="form-control" rows="3" data-ng-model="agent.description"></textarea>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>
+						<button type="submit" class="btn btn-sm btn-primary">部署</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+</div>
+<script type="text/javascript">
+function MachineListController($scope, $http, $state) {
+	
+	$scope.currentPage = 1;
+	$scope.pageSize = 10;
+	
+	$scope.search = function() {
+		$http({
+			method: 'GET',
+			url: 'r/deployAgent',
+			params: {'param': $scope.param, 'currentPage': $scope.currentPage, 'pageSize': $scope.pageSize}
+		}).success(function(data){
+			$scope.items = data.result;
+			$scope.totalItems = data.totalCount;
+		}).error(function(data){
+			console.log(data);
+		});
+	}
+    
+    $scope.search();
+    
+	$scope.deployAgent = function(){
+		console.log($scope.agent);
+		$http({
+			async : false,
+			method : 'POST',
+			url: 'r/deployAgent',
+			params:{'agent':$scope.agent}
+		}).success(function(data){
+			if(data == '200') {
+				$('#deployModal').modal('hide');
+				$scope.search();
+			}
+		});
+	}
+	
+	$scope.delAgent = function() {
+		$scope.ids = '';
+		$("input[name='selectId']:checked").each(function() {
+			$scope.ids += ',' + $(this).val();
+		});
+		
+		if($scope.ids != '') {
+			swal({
+	            title: "确定删除?",
+	            text: "确定不再监控该服务器并删除",
+	            type: "warning",
+	            showCancelButton: true,
+	            confirmButtonColor: "#DD6B55",
+	            cancelButtonText: "取消",
+	            confirmButtonText: "删除",
+	            closeOnConfirm: false
+	        }, function () {
+	        	$http({
+	    			method: 'DELETE',
+	    			url: 'r/deployAgent',
+	    			params: {'ids': $scope.ids}
+	    		}).success(function(data) {
+	    			if(data == '200') {
+	    				swal("Deleted!", "agent已删除.", "success");
+	    				$scope.search();
+	    			}
+	    		}).error(function(data){
+	    			console.log(data);
+	    		});
+	        });
+		}
+    }
+	
+}
+</script>
