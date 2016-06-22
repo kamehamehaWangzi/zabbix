@@ -102,12 +102,6 @@
 		<div class="modal-dialog">
 			<div class="modal-content animated bounceInRight">
 				<form class="form-horizontal" role="form" data-ng-submit="deployAgent()">
-					<div class="modal-header">
-			            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title" id="myDeployModel">
-							远程部署agent
-						</h4>
-					</div>
 					<div class="modal-body">
 						<div class="form-group">
 							<label for="name" class="col-sm-2 control-label">远程主机IP</label>
@@ -441,18 +435,6 @@ function MachineListController($scope, $http, $state) {
 			}
 		}).error(function(data){
 			console.log(data);
-		});
-	}
-	
-	$scope.deployAgent = function(){
-		console.log($scope.agent);
-		$http({
-			async : false,
-			method : 'POST',
-			url: 'r/machine/deployAgent',
-			params:{'agent':$scope.agent}
-		}).success(function(data){
-			swal(data);
 		});
 	}
 	

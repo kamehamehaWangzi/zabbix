@@ -8,8 +8,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
-
-import org.apache.ibatis.annotations.Delete;
 import org.pbccrc.platform.deploy.biz.IDeployHostBiz;
 import org.pbccrc.platform.model.Pagination;
 import org.pbccrc.platform.vo.HostAgentVO;
@@ -50,9 +48,9 @@ public class DeployAgentRest {
 	@POST
 	public Response addAgent(@QueryParam("agent")String agent){
 		JSONObject agentInfo = JSONObject.parseObject(agent);
-		deployHostBiz.deployRemoteMachine(agentInfo);
+		int result = deployHostBiz.deployRemoteMachine(agentInfo);
 		System.out.println(agent);
-		return Response.ok(200).build();
+		return Response.ok(result).build();
 	}
 	
 	@DELETE

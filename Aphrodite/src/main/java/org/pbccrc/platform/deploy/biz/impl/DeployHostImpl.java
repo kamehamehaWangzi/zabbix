@@ -25,6 +25,7 @@ public class DeployHostImpl implements IDeployHostBiz {
 	
 	/**
 	 * 远程部署agent
+	 * @return 
 	 */
 	@Override
 	public int deployRemoteMachine(JSONObject hostInfo) {
@@ -33,11 +34,22 @@ public class DeployHostImpl implements IDeployHostBiz {
 		vo.setAgentIp(hostInfo.getString("ip"));
 		vo.setAgentName(hostInfo.getString("name"));
 		vo.setAgentPwd(hostInfo.getString("password"));
+		vo.setAgentPort(hostInfo.getString("agentPort"));
 		vo.setOsType(hostInfo.getString("osVersion"));
 		vo.setRemark(hostInfo.getString("description"));
+		
+		//验证端口是否被占用 ，必要时可以 取消注释
+//		int testResult = deployAgentUtil.testIsUserdPort(vo.getAgentIp(), vo.getAgentName(), vo.getAgentPwd(),vo.getAgentPort());
+//		if(testResult==-1){
+//			return -1; //用户名或密码错误
+//		}
+//		if(testResult == 1){
+//			return 3;//端口占用
+//		}
+		
 		//1.远程部署
 		System.out.println("正在部署……");
-		deployAgentUtil.deployAgent(vo.getAgentIp(), vo.getAgentName(), vo.getAgentPwd());
+		int deployResult = deployAgentUtil.deployAgent(vo.getAgentIp(), vo.getAgentName(), vo.getAgentPwd());
 		
 		//2.记录数据库
 		
@@ -46,7 +58,7 @@ public class DeployHostImpl implements IDeployHostBiz {
 		int insertResult = hostAgentDao.insertHostAgent(vo);
 		System.out.println(insertResult);
 		
-		return 0;
+		return deployResult;
 	}
 
 	@Override

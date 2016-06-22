@@ -6,6 +6,7 @@ public class HostAgentVO {
 	private String agentIp;
 	private String agentName;
 	private String agentPwd;
+	private String agentPort;
 	private String osType;
 	private String remark;
 	
@@ -44,6 +45,12 @@ public class HostAgentVO {
 	}
 	public void setRemark(String remark) {
 		this.remark = remark;
+	}
+	public String getAgentPort() {
+		return agentPort;
+	}
+	public void setAgentPort(String agentPort) {
+		this.agentPort = agentPort;
 	}
 	
 	

@@ -119,6 +119,12 @@
 							</div>
 						</div>
 						<div class="form-group">
+							<label for="sn" class="col-sm-2 control-label">agent端口</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" data-ng-model="agentPort" required readonly/>
+							</div>
+						</div>
+						<div class="form-group">
 							<label for="osVersion" class="col-sm-2 control-label">操作系统</label>
 							<div class="col-sm-10">
 								<select class="form-control" data-ng-model="agent.osVersion">
@@ -151,6 +157,7 @@ function MachineListController($scope, $http, $state) {
 	
 	$scope.currentPage = 1;
 	$scope.pageSize = 10;
+	$scope.agentPort ="10050";
 	
 	$scope.search = function() {
 		$http({
@@ -167,15 +174,32 @@ function MachineListController($scope, $http, $state) {
     
     $scope.search();
     
+//     data-ng-blur="testPort();" 实时验证端口是否被占用
+//     $scope.testPort = function(){
+//     	console.log($scope.agent);
+//     	if($scope.agent.ip=='' || $scope.agent.name==''||$scope.agent.password ==''){
+//     		swal("请补全ip,name,password");
+//     	}else if($scope.agent.agentPort!=null && $scope.agent.agentPort!=''){
+// 	    	swal($scope.agent.agentPort);
+//     	}
+//     }
+    
 	$scope.deployAgent = function(){
 		console.log($scope.agent);
+		$scope.agent.agentPort=$scope.agentPort;
+		
 		$http({
 			async : false,
 			method : 'POST',
 			url: 'r/deployAgent',
 			params:{'agent':$scope.agent}
 		}).success(function(data){
-			if(data == '200') {
+			if(data == -1){
+				swal("用户名或密码错误！");
+			}else if(data == 3){
+				swal("端口占用或已安装zabbix服务！");
+			}else if(data == 1) {
+				swal("部署成功！");
 				$('#deployModal').modal('hide');
 				$scope.search();
 			}
