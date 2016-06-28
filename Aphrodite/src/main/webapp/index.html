@@ -70,8 +70,11 @@
                     <li>
                         <a href="#"><i class="fa fa-bell"></i> <span class="nav-label">告警</span><span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level collapse">
-                            <li><a data-ui-sref="alarm">告警事件</a></li>                             
-                            <li><a data-ui-sref="alarm_action">告警配置</a></li> 
+                            <li><a id="alarm" data-ui-sref="alarm">告警事件</a></li>                             
+                            <li><a data-ui-sref="alarm_action">告警配置</a></li>
+                            <!--  
+                            <li><a data-ng-click="notify(1, 'test notify')">告警测试</a></li>
+                            --> 
                         </ul>
                     </li>
                     <li>
@@ -290,22 +293,37 @@
 	<script type="text/javascript" src="js/main/directives.js"></script>
 	
 	<script type="text/javascript">
-		$(document).ready(function() {
-	        setTimeout(function() {
-	            toastr.options = {
-	                closeButton: true,
-	                progressBar: true,
-	                showMethod: 'slideDown',
-	                timeOut: 4000
-	            };
-	            toastr.success('<strong>建议使用 Chrome/Firefox 浏览器</strong>', 'Welcome to Aphrodite');
+	function scanningWarning() {
+		$.ajax({
+			type : 'GET',
+			url: 'r/warning/scanningWarning',
+			success : function(data) {
+				var appElement = document.querySelector('[data-ng-controller=indexCtrl]');
+				var $scope = angular.element(appElement).scope(); 
+				for(var t in data.result){
+					$scope.notify(data.result[t].priority, data.result[t].description);
+				}
+			}
+		});
+	}
 	
-	        }, 1300);
-	        
-	    });
+	
+	$(document).ready(function() {
+        setTimeout(function() {
+            toastr.options = {
+                closeButton: true,
+                progressBar: true,
+                showMethod: 'slideDown',
+                timeOut: 4000
+            };
+            toastr.success('<strong>建议使用 Chrome/Firefox 浏览器</strong>', 'Welcome to Aphrodite');
+
+        }, 1300);
+        
+        setInterval("scanningWarning()", 1 * 60 * 1000);
+    });
 		
 	</script>
-	
 	
   </body>
 </html>

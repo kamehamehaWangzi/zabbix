@@ -39,9 +39,10 @@ function dm_notification(text, color, time, icon) {
     // Append the label to the cont
     $cont.append(html_element);
 
-    // Remove the notification on click
+    // Remove the notification on click and forward to alarm
     html_element.on('click', function() {
         dm_notification_close($(this));
+        $("#alarm").click();
     });
 
     // After time seconds, the notification fades out
