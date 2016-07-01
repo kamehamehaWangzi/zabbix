@@ -89,7 +89,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 
 		// 生成一个待压缩的文件夹downfile，待返回链接供前端下载
 		String basePath = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_DOWNLOAD_PATH);
-		basePath = basePath + "\\taskData_hosts_ " + taskDataId;
+		basePath = basePath + File.separator + "taskData_hosts_ " + taskDataId;
 
 		if (hostArray != null && !hostArray.isEmpty()) {
 			//配置查询条件，查询监控数据
@@ -104,7 +104,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 				
 				//拼接文件存储路径
 				HostVO host = hostDao.queryById(hostArray.getString(i));
-				String path = basePath + "\\" + host.getIp1();
+				String path = basePath + File.separator + host.getIp1();
 				
 				// 每个Item一个图, 1. 按照固定Item处理，每次item都得取循环一次; 2.循环Item处理
 				for (MonitorDataVO vo : resultData) {
@@ -194,7 +194,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					plot.setRenderer(lsr);
 					
 					try {
-						String filePath = path + "\\" + vo.getMonitorType() + "\\";
+						String filePath = path + File.separator + vo.getMonitorType() + File.separator;
 						File file = new File(filePath);
 						if(!file.exists()){
 							file.mkdirs();
@@ -224,7 +224,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 		
 		// 生成一个待压缩的文件夹downfile，待返回链接供前端下载
 		String basePath = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_DOWNLOAD_PATH);
-		basePath = basePath + "\\taskData_items_" + taskDataId;
+		basePath = basePath + File.separator + "taskData_items_" + taskDataId;
 		
 		// 配置查询条件
 		Map<String, String> paramMap = new HashMap<String, String>();
@@ -335,7 +335,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 					plot.setRenderer(lsr);
 					
 					try {
-						String filePath = basePath + "\\";
+						String filePath = basePath + File.separator;
 						File file = new File(filePath);
 						if(!file.exists()){
 							file.mkdirs();
@@ -585,17 +585,15 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 		
 		// IO operation
 		OutputStream os = null;
-		// 生成一个待压缩的文件夹downfile，待返回链接供前端下载
-		String basePath = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_EXPORT_PATH);
-		basePath = basePath + "\\taskData_hosts_ " + taskDataId;
 		try {
+			// 生成一个待压缩的文件夹downfile，待返回链接供前端下载
+			String basePath = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_MONITOR_DATA_EXPORT_PATH);
+			
+			basePath = basePath + File.separator + "taskData_hosts_ " + taskDataId;
+			
 			File file = new File(basePath);
 			if(!file.exists()){
-				try{
-					file.mkdirs();
-				}catch(Exception e){
-					e.printStackTrace();
-				}
+				file.mkdirs();
 			}
 			exportPath = basePath + System.currentTimeMillis() + ".xls";
 			os = new FileOutputStream(exportPath);
