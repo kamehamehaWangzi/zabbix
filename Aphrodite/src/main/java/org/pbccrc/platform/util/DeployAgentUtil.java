@@ -113,8 +113,11 @@ public class DeployAgentUtil {
 				System.out.println("启动zabbix agent 的服务");
 				String startStr = "cd /usr/local/;" + "chmod -R 777 zabbix/;" + "cd /usr/local/zabbix/sbin;"
 						+ "./zabbix_agentd -c /usr/local/zabbix/etc/zabbix_agentd.conf;pwd;"
-						+ "firewall-cmd --zone=public --add-port=10050/tcp --permanent;"
-						+ "firewall-cmd --reload;ls;";
+						+ "firewall-cmd --zone=public --add-port=10050/tcp --permanent;" //针对CentOs7
+						+ "firewall-cmd --reload;"
+						+ "/sbin/iptables -I INPUT -p tcp --dport 10050 -j ACCEPT;"//针对CentOs6.5
+						+ "/etc/rc.d/init.d/iptables save;"
+						+ "ls;";
 				runCommonByConsole(startStr);
 				System.out.println("********************************************");
 				System.out.println("***       zabbix agent 启动完成！                  ***");
