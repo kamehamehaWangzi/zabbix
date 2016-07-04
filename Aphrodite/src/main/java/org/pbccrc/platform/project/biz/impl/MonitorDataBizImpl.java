@@ -211,7 +211,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 		}
 		// 压缩downfile，生成downfile.zip，返回地址链接给前端
 		File zipSourceFile = new File(basePath);
-		String zipEndFilePath = zipSourceFile.getParentFile().getAbsolutePath()+"//taskData_host_" + taskDataId+".zip";
+		String zipEndFilePath = zipSourceFile.getParentFile().getAbsolutePath()+ File.separator + "taskData_host_" + taskDataId+".zip";
 		ZipUtil.zipFile(basePath, zipEndFilePath);
 		return "taskData_host_" + taskDataId+".zip";
 	}
@@ -354,7 +354,7 @@ public class MonitorDataBizImpl implements IMonitorDataBiz {
 		}
 		// 3对文件打包zip 压缩downfile，生成downfile.zip，返回地址链接给前端
 		File zipSourceFile = new File(basePath);
-		String zipEndFilePath = zipSourceFile.getParentFile().getAbsolutePath()+"//taskData_item_" + taskDataId+".zip";
+		String zipEndFilePath = zipSourceFile.getParentFile().getAbsolutePath()+ File.separator + "taskData_item_" + taskDataId+".zip";
 		ZipUtil.zipFile(basePath, zipEndFilePath);
 		return "taskData_item_" + taskDataId+".zip";
 	}
