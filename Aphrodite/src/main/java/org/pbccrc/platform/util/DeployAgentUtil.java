@@ -40,8 +40,9 @@ public class DeployAgentUtil {
 	 * @param commonStr 待执行的命令行
 	 * @throws IOException
 	 */
-	private void runCommonByConsole(String commonStr) throws IOException {
+	private String runCommonByConsole(String commonStr) throws IOException {
 
+		StringBuffer resultStr = new StringBuffer("");
 		// 执行远程命令
 		session = conn.openSession();
 		session.execCommand(commonStr);
@@ -55,6 +56,7 @@ public class DeployAgentUtil {
 			if (line == null) {
 				break;
 			}
+			resultStr.append(line+"\n");
 			System.out.println(line);
 		}
 
@@ -62,7 +64,8 @@ public class DeployAgentUtil {
 		if (session != null) {
 			session.close();
 		}
-
+		
+		return resultStr.toString();
 	}
 
 	/**
@@ -80,6 +83,7 @@ public class DeployAgentUtil {
 	 */
 	public int deployAgent(String hostIp, String userName, String password) {
 
+		int deployResult = 0;
 		String path = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_SOURCE_PATH);
 		try {
 			// 连接到主机
@@ -119,6 +123,21 @@ public class DeployAgentUtil {
 						+ "/etc/rc.d/init.d/iptables save;"
 						+ "ls;";
 				runCommonByConsole(startStr);
+				
+				/* 步骤5. 将zabbix_agent配置成系统服务*/
+				System.out.println("检测客户机是否部署完成");
+				String testStr = "cp /home/zabbix-2.2.6/misc/init.d/fedora/core/zabbix_agentd /etc/rc.d/init.d/zabbix_agentd;"
+						+ "cd /etc/rc.d/init.d/;"
+						+ "./zabbix_agentd status;";
+				String result = runCommonByConsole(testStr);
+				
+				//是否部署成功
+				if(result.contains("zabbix_agentd") && (result.contains("正在运行") | result.contains("is running"))){
+					deployResult = 1;
+				}
+				
+				System.out.println(result);
+				
 				System.out.println("********************************************");
 				System.out.println("***       zabbix agent 启动完成！                  ***");
 				System.out.println("********************************************");
@@ -129,7 +148,8 @@ public class DeployAgentUtil {
 		} finally {
 			conn.close();
 		}
-		return 1;
+		
+		return deployResult;
 	}
 
 	@Test

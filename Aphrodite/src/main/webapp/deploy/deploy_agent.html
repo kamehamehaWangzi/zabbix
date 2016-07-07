@@ -202,6 +202,8 @@ function MachineListController($scope, $http, $state) {
 				swal("部署成功！");
 				$('#deployModal').modal('hide');
 				$scope.search();
+			}else{
+				swal("部署失败！");
 			}
 		});
 	}
