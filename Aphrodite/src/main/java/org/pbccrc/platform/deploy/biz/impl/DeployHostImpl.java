@@ -73,4 +73,9 @@ public class DeployHostImpl implements IDeployHostBiz {
 		return hostAgentDao.deletAgent(paramList);
 	}
 
+	@Override
+	public String obtainDeployProgress() {
+		return deployAgentUtil.getCommonStr().toString();
+	}
+
 }

@@ -14,4 +14,6 @@ public interface IDeployHostBiz {
 	public List<HostAgentVO> queryHostAgents(HostAgentVO vo, Pagination pagination);
 
 	public int deleteDeployHostAgent(String ids);
+
+	public String obtainDeployProgress();
 }

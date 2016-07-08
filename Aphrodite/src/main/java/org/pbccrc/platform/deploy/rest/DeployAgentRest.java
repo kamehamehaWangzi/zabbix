@@ -53,6 +53,13 @@ public class DeployAgentRest {
 		return Response.ok(result).build();
 	}
 	
+	@GET
+	@Path("/deployProgress")
+	public Response deployProgress(){
+		String commonStr = deployHostBiz.obtainDeployProgress();
+		return Response.ok(commonStr).build();
+	}
+	
 	@DELETE
 	public Response deleteAgent(@QueryParam("ids")String ids){
 		if(ids != null && ids.trim().length() > 0){

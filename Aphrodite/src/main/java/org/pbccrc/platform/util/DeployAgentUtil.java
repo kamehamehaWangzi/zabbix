@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,8 +33,19 @@ public class DeployAgentUtil {
 	private Connection conn = null;
 	private Session session = null;
 	
+//	private HttpSession httpSession = request.getSession();
+	private StringBuffer commonStr = new StringBuffer("");
+	
 	// 生成一个待压缩的文件夹downfile，待返回链接供前端下载
 	
+	public StringBuffer getCommonStr() {
+		return commonStr;
+	}
+
+	public void setCommonStr(StringBuffer commonStr) {
+		this.commonStr = commonStr;
+	}
+
 	/**
 	 * 私有方法->直供自己调用 在远程客户端执行commStr命令
 	 * 
@@ -57,6 +69,7 @@ public class DeployAgentUtil {
 				break;
 			}
 			resultStr.append(line+"\n");
+			this.commonStr.append(line+"\n");
 			System.out.println(line);
 		}
 
@@ -82,7 +95,7 @@ public class DeployAgentUtil {
 	 * @return -1:用户名密码不正确；  1部署成功
 	 */
 	public int deployAgent(String hostIp, String userName, String password) {
-
+		
 		int deployResult = 0;
 		String path = request.getSession().getServletContext().getRealPath(Constant.ZABBIX_SOURCE_PATH);
 		try {
@@ -137,7 +150,7 @@ public class DeployAgentUtil {
 				}
 				
 				System.out.println(result);
-				
+				commonStr = new StringBuffer("");
 				System.out.println("********************************************");
 				System.out.println("***       zabbix agent 启动完成！                  ***");
 				System.out.println("********************************************");
@@ -261,6 +274,15 @@ public class DeployAgentUtil {
 		
 		return outFile;
 	}
+
+//	public void obtainDeployStr(){
+//		String deployStr = "";
+//		if(httpSession.getAttribute("deployStr")!=null){
+//			String deploySession= (String)httpSession.getAttribute("deployStr");
+//		}else{
+//			
+//		}
+//	}
 	
 //	public static void main(String[] args) {
 //		DeployAgentUtil util = new DeployAgentUtil();

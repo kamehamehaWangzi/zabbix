@@ -141,6 +141,12 @@
 								<textarea class="form-control" rows="3" data-ng-model="agent.description"></textarea>
 							</div>
 						</div>
+						<div class="form-group">
+							<label for="description" class="col-sm-2 control-label">Console</label>
+							<div class="col-sm-10">
+								<textarea id="deploy" class="form-control" rows="10" data-ng-model="deployProgress"></textarea>
+							</div>
+						</div>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-sm btn-default" data-dismiss="modal">关闭</button>
@@ -187,9 +193,9 @@ function MachineListController($scope, $http, $state) {
 	$scope.deployAgent = function(){
 		console.log($scope.agent);
 		$scope.agent.agentPort=$scope.agentPort;
-		
+		deployAgentProgress();
 		$http({
-			async : false,
+			async : true,
 			method : 'POST',
 			url: 'r/deployAgent',
 			params:{'agent':$scope.agent}
@@ -201,11 +207,25 @@ function MachineListController($scope, $http, $state) {
 			}else if(data == 1) {
 				swal("部署成功！");
 				$('#deployModal').modal('hide');
+				$scope.agent = "";
+				$scope.deployProgress = "";
 				$scope.search();
 			}else{
 				swal("部署失败！");
 			}
 		});
+	}
+	
+	$scope.deployProgressFun = function(){
+		$http({
+			async : true,
+			method : 'GET',
+			url: 'r/deployAgent/deployProgress'
+		}).success(function(data){
+			$scope.deployProgress = data;
+			var d = document.getElementById("deploy").scrollHeight;
+			document.getElementById("deploy").scrollTop=d;
+		});	
 	}
 	
 	$scope.delAgent = function() {
@@ -242,4 +262,14 @@ function MachineListController($scope, $http, $state) {
     }
 	
 }
+
+	function deployAgentProgress(){
+		setInterval("getDeployInfo()", 1 * 1 * 1000);
+	}
+
+	function getDeployInfo() {
+		var appElement = document.querySelector('[data-ng-controller=MachineListController]');
+		var $scope = angular.element(appElement).scope(); 
+		$scope.deployProgressFun();
+	}
 </script>
