@@ -47,6 +47,12 @@ public class DeployHostImpl implements IDeployHostBiz {
 //			return 3;//端口占用
 //		}
 		
+		List<String> isExistDeployed = hostAgentDao.queryHostByIp(vo.getAgentIp());
+		
+		if(isExistDeployed != null && isExistDeployed.size()>0){
+			return 4; //机器已经部署
+		}
+		
 		//1.远程部署
 		System.out.println("正在部署……");
 		int deployResult = deployAgentUtil.deployAgent(vo.getAgentIp(), vo.getAgentName(), vo.getAgentPwd());
@@ -54,9 +60,10 @@ public class DeployHostImpl implements IDeployHostBiz {
 		//2.记录数据库
 		
 		System.out.println(vo.toString());
-		
-		int insertResult = hostAgentDao.insertHostAgent(vo);
-		System.out.println(insertResult);
+		if(deployResult==1){
+			int insertResult = hostAgentDao.insertHostAgent(vo);
+			System.out.println(insertResult);
+		}
 		
 		return deployResult;
 	}

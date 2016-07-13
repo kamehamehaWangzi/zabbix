@@ -103,7 +103,7 @@
 						<div class="form-group">
 							<label for="name" class="col-sm-2 control-label">远程主机IP</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" data-ng-model="agent.ip" placeholder="ip" required/>
+								<input type="text" class="form-control" data-ng-model="agent.ip"  placeholder="ip" required/>
 							</div>
 						</div>
 						<div class="form-group">
@@ -210,6 +210,8 @@ function MachineListController($scope, $http, $state) {
 				$scope.agent = "";
 				$scope.deployProgress = "";
 				$scope.search();
+			}else if(data == 4) {
+				swal("该IP:"+$scope.agent.ip+"所属机器已经部署！");
 			}else{
 				swal("部署失败！");
 			}

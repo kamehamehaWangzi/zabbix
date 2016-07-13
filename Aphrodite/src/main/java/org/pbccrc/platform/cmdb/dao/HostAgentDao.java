@@ -21,4 +21,8 @@ public class HostAgentDao extends AbstractMyBatisDao {
 	public int deletAgent(List<String> ids) {
 		return this.getSqlSession().delete("dao.HostAgentDao.deleteHostAgent", ids);
 	}
+	
+	public List<String> queryHostByIp(String hostIp){
+		return this.getSqlSession().selectList("dao.HostAgentDao.queryHostByIp", hostIp);
+	} 
 }

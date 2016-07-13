@@ -29,6 +29,15 @@
 		</where>
 	</select>
 	
+	<select id="queryHostByIp" parameterType="java.lang.String" resultType="java.lang.String">
+		select distinct(id) from host_agent
+		<if test="_parameter != '' and _parameter != null ">
+			<where>
+				agentIp = #{_parameter}
+			</where>
+		</if>
+	</select>
+	
 	<insert id="insertHostAgent" parameterType="org.pbccrc.platform.vo.HostAgentVO">
 		insert into host_agent(agentIP, agentName, agentPwd, osType, remark)
 		values(#{agentIp}, #{agentName}, #{agentPwd}, #{osType}, #{remark})
